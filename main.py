@@ -31,11 +31,10 @@ def main():
         tick += 1
 
         if config['location'] == 'game':
-            scenes.game.functions.update(screen, config, bg, plate, astrs, entities, health, score, tick)
-            scenes.game.functions.check_collides(config, astrs, plate, entities)
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, entities, health, score, tick)
+            scenes.game.functions.check_collides(config, base_dir, astrs, plate, entities)
             scenes.game.functions.add_astr(screen, astrs, base_dir, config, tick)
-            scenes.game.functions.check_events(config, plate)
-
+            scenes.game.functions.check_events(config, base_dir, plate)
 
 
         if tick >= config['FPS'] * 4:

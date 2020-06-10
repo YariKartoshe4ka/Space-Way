@@ -4,6 +4,10 @@ from sys import exit
 from .objects import *
 
 
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.mixer.init()
+
+
 def init(screen, base_dir, config, msg):
     bg = Background(screen, base_dir, 0, 0)
     plate = SpacePlate(screen, base_dir)
@@ -13,13 +17,15 @@ def init(screen, base_dir, config, msg):
     return bg, plate, health, score
 
 
-def check_events(config, plate):
+def check_events(config, base_dir, plate):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
         elif event.type == pygame.KEYDOWN and config['location'] == 'game':
             if event.key == pygame.K_SPACE and plate.rect.top >= plate.screen_rect.top + 50:
+                pygame.mixer.music.load(f'{base_dir}/assets/sounds/jump.wav')
+                pygame.mixer.music.play()
                 plate.is_jump = True
 
 
@@ -29,7 +35,7 @@ def add_astr(screen, astrs, base_dir, config, tick):
         astrs.add(astr)
 
 
-def update(screen, config, bg, plate, astrs, entities, health, score, tick):
+def update(screen, config, base_dir, bg, plate, astrs, entities, health, score, tick):
     if tick % 2 == 0:
         bg.update()
 
@@ -38,6 +44,8 @@ def update(screen, config, bg, plate, astrs, entities, health, score, tick):
     for astr in astrs.copy():
         if astr.rect.right <= -5:
             astrs.remove(astr)
+            pygame.mixer.music.load(f'{base_dir}/assets/sounds/score.wav')
+            pygame.mixer.music.play()
             config['score'] += 1
 
     for astr in astrs.sprites():
@@ -61,10 +69,13 @@ def update(screen, config, bg, plate, astrs, entities, health, score, tick):
     plate.blit()
 
 
-def check_collides(config, astrs, plate, entities):
+def check_collides(config, base_dir, astrs, plate, entities):
     astrs = pygame.sprite.spritecollide(plate, astrs, True)
 
     if astrs:
+        pygame.mixer.music.load(f'{base_dir}/assets/sounds/bang.wav')
+        pygame.mixer.music.play()
+
         for astr in astrs:
             astr.is_bang = True
             config['health'] -= 1
@@ -72,6 +83,8 @@ def check_collides(config, astrs, plate, entities):
             entities.add(astr)
 
     elif plate.rect.bottom >= plate.screen_rect.bottom:
+        pygame.mixer.music.load(f'{base_dir}/assets/sounds/bang.wav')
+        pygame.mixer.music.play()
         plate.is_jump = True
         config['health'] -= 1
 

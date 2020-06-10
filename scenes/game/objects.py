@@ -44,12 +44,13 @@ class SpacePlate(pygame.sprite.Sprite):
         self.gravity = 7
 
         self.is_jump = False
-        self.jump = 10   
+        self.jump = 10
+        self.jump_sound = f'{base_dir}/assets/sounds/jump.wav'
 
     def update(self):
         if not self.is_jump:
             self.rect.y += self.gravity
-        else:
+        else:     
 
             if self.jump >= -5:
                 if self.jump < 0:
