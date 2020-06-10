@@ -22,19 +22,22 @@ def main():
     tick = 0
 
     # Scenes init
-    bg, plate = scenes.game.functions.init(screen, base_dir)
+    bg, plate, = scenes.game.functions.init(screen, base_dir)
+    astrs = pygame.sprite.Group()
 
 
     while True:
         tick += 1
 
         if config['location'] == 'game':
-            scenes.game.functions.update(screen, bg, plate, tick)
+            scenes.game.functions.update(screen, config, bg, plate, astrs, tick)
+            scenes.game.functions.check_collides(config, astrs, plate)
+            scenes.game.functions.add_astr(screen, astrs, base_dir, config, tick)
             scenes.game.functions.check_events(config, plate)
 
 
 
-        if tick >= config['FPS']:
+        if tick >= config['FPS'] * 4:
             tick = 0
 
         pygame.display.update()

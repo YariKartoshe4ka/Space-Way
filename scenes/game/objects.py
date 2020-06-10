@@ -1,5 +1,6 @@
 import pygame
 from os import getcwd
+from random import randint
 
 pygame.font.init()
 
@@ -64,3 +65,27 @@ class SpacePlate(pygame.sprite.Sprite):
 
     def blit(self):
         self.screen.blit(self.img, self.rect)
+
+
+class Asrteroid(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config):
+        super().__init__()
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/idle.bmp')
+        self.img = self.img_idle
+
+        self.rect = self.img.get_rect()
+        self.rect.y = randint(1, config['mode'][1] - 56)
+        self.rect.left = self.screen_rect.right
+
+    def blit(self):
+        self.screen.blit(self.img, self.rect)
+
+    def update(self):
+        self.speed = self.config['level'] * 10
+        self.rect.x -= self.speed
