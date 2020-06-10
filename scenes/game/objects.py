@@ -151,8 +151,8 @@ class Score:
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = 80
-        self.height = 40
+        #self.width = 80
+        #self.height = 40
         self.msg = msg
         self.color = (255, 255, 255)
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 22)

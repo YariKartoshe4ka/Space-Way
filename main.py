@@ -3,7 +3,7 @@ from json import load
 import pygame
 
 import scenes.game.functions
-import scenes.game.objects
+import scenes.headpiece.functions
 
 
 def main():
@@ -21,7 +21,10 @@ def main():
 
     tick = 0
 
-    # Scenes init
+    # Headpiece init
+    text = scenes.headpiece.functions.init(screen, base_dir, config, 'YariKartoshe4ka')
+
+    # Game init
     bg, plate, health, score = scenes.game.functions.init(screen, base_dir, config, 'score: 0')
     entities = pygame.sprite.Group()
     astrs = pygame.sprite.Group()
@@ -30,7 +33,11 @@ def main():
     while True:
         tick += 1
 
-        if config['location'] == 'game':
+        if config['scene'] == 'headpiece':
+            scenes.headpiece.functions.check_events(config, base_dir)
+            scenes.headpiece.functions.update(screen, config, text, tick)
+
+        elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, entities, health, score, tick)
             scenes.game.functions.check_collides(config, base_dir, astrs, plate, entities)
             scenes.game.functions.add_astr(screen, astrs, base_dir, config, tick)

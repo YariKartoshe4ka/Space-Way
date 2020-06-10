@@ -2,7 +2,7 @@
     "caption": "Space Way",
     "mode": [700, 450],
     "FPS": 30,
-    "location": "game",
+    "scene": "headpiece",
     "level": 0.2,
     "health": 3,
     "score": 0

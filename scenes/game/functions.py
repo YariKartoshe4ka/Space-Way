@@ -22,7 +22,7 @@ def check_events(config, base_dir, plate):
         if event.type == pygame.QUIT:
             exit()
 
-        elif event.type == pygame.KEYDOWN and config['location'] == 'game':
+        elif event.type == pygame.KEYDOWN and config['scene'] == 'game':
             if event.key == pygame.K_SPACE and plate.rect.top >= plate.screen_rect.top + 50:
                 pygame.mixer.music.load(f'{base_dir}/assets/sounds/jump.wav')
                 pygame.mixer.music.play()
@@ -89,4 +89,4 @@ def check_collides(config, base_dir, astrs, plate, entities):
         config['health'] -= 1
 
     if config['health'] == 0:
-        config['location'] = 'lobby'
+        config['scene'] = 'lobby'
