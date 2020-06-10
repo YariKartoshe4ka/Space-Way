@@ -22,7 +22,8 @@ def main():
     tick = 0
 
     # Scenes init
-    bg, plate, = scenes.game.functions.init(screen, base_dir)
+    bg, plate, health, score = scenes.game.functions.init(screen, base_dir, config, 'score: 0')
+    entities = pygame.sprite.Group()
     astrs = pygame.sprite.Group()
 
 
@@ -30,8 +31,8 @@ def main():
         tick += 1
 
         if config['location'] == 'game':
-            scenes.game.functions.update(screen, config, bg, plate, astrs, tick)
-            scenes.game.functions.check_collides(config, astrs, plate)
+            scenes.game.functions.update(screen, config, bg, plate, astrs, entities, health, score, tick)
+            scenes.game.functions.check_collides(config, astrs, plate, entities)
             scenes.game.functions.add_astr(screen, astrs, base_dir, config, tick)
             scenes.game.functions.check_events(config, plate)
 
