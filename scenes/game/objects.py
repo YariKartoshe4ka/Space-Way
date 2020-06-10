@@ -64,6 +64,3 @@ class SpacePlate(pygame.sprite.Sprite):
 
     def blit(self):
         self.screen.blit(self.img, self.rect)
-
-
-
