@@ -16,6 +16,9 @@ def main():
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
 
+    with open(f'{base_dir}/config/user.json', 'r') as file:
+        config['user'] = load(file)
+
     screen = pygame.display.set_mode(config['mode'])
     pygame.display.set_caption(config['caption'])
 
