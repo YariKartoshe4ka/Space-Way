@@ -20,7 +20,7 @@ def update(screen, config, text, tick):
     screen.fill((0, 0, 0))
 
     if tick % 120 == 0:
-        config['scene'] = 'game'
+        config['scene'] = 'lobby'
 
     if tick % 60 == 0:
         text.msg = 'With love'

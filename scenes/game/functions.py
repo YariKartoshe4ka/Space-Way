@@ -69,14 +69,14 @@ def update(screen, config, base_dir, bg, plate, astrs, entities, health, score, 
     plate.blit()
 
 
-def check_collides(config, base_dir, astrs, plate, entities):
-    astrs = pygame.sprite.spritecollide(plate, astrs, True)
+def check_collides(config, base_dir, astrs, plate, entities, play, table):
+    collides = pygame.sprite.spritecollide(plate, astrs, True)
 
-    if astrs:
+    if collides:
         pygame.mixer.music.load(f'{base_dir}/assets/sounds/bang.wav')
         pygame.mixer.music.play()
 
-        for astr in astrs:
+        for astr in collides:
             astr.is_bang = True
             config['health'] -= 1
 
@@ -89,4 +89,17 @@ def check_collides(config, base_dir, astrs, plate, entities):
         config['health'] -= 1
 
     if config['health'] == 0:
+
+        with open(f'{base_dir}/config/score.csv', 'a') as file:
+            line = ','.join([str(config['score']), config['nick']]) + '\n'
+            file.write(line)
+
+        config['health'] = 3
+
+        plate.reset()
+        astrs.empty()
+        entities.empty()
+
+        play.to_bottom = True
+        table.to_top = True
         config['scene'] = 'lobby'

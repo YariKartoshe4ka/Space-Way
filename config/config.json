@@ -2,8 +2,9 @@
     "caption": "Space Way",
     "mode": [700, 450],
     "FPS": 30,
-    "scene": "headpiece",
+    "scene": "lobby",
     "level": 0.2,
     "health": 3,
-    "score": 0
+    "score": 0,
+    "nick": "YariKartoshe4ka"
 }

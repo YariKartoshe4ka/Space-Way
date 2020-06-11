@@ -47,6 +47,11 @@ class SpacePlate(pygame.sprite.Sprite):
         self.jump = 10
         self.jump_sound = f'{base_dir}/assets/sounds/jump.wav'
 
+    def reset(self):
+        self.rect.centery = self.screen_rect.centery
+        self.is_jump = False
+        self.jump = 10
+
     def update(self):
         if not self.is_jump:
             self.rect.y += self.gravity
