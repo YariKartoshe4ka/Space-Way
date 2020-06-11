@@ -30,7 +30,7 @@ def main():
     play_button, table_button = scenes.lobby.functions.init(screen, base_dir, config)
 
     # Table init
-    table = scenes.table.functions.init(screen, base_dir)
+    table, back_button = scenes.table.functions.init(screen, base_dir, config)
 
     # Game init
     bg, plate, health, score = scenes.game.functions.init(screen, base_dir, config, 'Score: 0')
@@ -46,12 +46,12 @@ def main():
             scenes.headpiece.functions.update(screen, config, text, tick)
 
         elif config['scene'] == 'lobby':
-            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button)
+            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button)
             scenes.lobby.functions.update(bg, play_button, table_button)
 
         elif config['scene'] == 'table':
-            scenes.table.functions.check_events()
-            scenes.table.functions.update(base_dir, bg, table)
+            scenes.table.functions.check_events(back_button, play_button, table_button)
+            scenes.table.functions.update(base_dir, bg, table, back_button, play_button)
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, entities, health, score, tick)

@@ -11,7 +11,7 @@ def init(screen, base_dir, config):
     return play, table
 
 
-def check_events(config, base_dir, play, table):
+def check_events(config, base_dir, play, table, back):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -30,6 +30,7 @@ def check_events(config, base_dir, play, table):
                 play.to_top = True
                 table.change_scene = True
                 table.to_bottom = True
+                back.to_top = True
 
 
 
@@ -38,6 +39,6 @@ def update(bg, play, table):
 
     play.update()
     play.blit()
-
+    
     table.update()
     table.blit()

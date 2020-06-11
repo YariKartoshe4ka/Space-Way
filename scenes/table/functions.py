@@ -4,19 +4,30 @@ from sys import exit
 from .objects import *
 
 
-def init(screen, base_dir):
+def init(screen, base_dir, config):
     score = TableScore(screen, base_dir)
+    back = BackButton(screen, base_dir, config)
 
-    return score
+    return score, back
 
 
-def check_events():
+def check_events(back, play, table): 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
+        elif event.type == pygame.MOUSEBUTTONDOWN:
+            x, y = pygame.mouse.get_pos()
 
-def update(base_dir, bg, score):
+            if back._rect.collidepoint((x, y)):
+                print('click back!')
+                back.change_scene = True
+                back.to_bottom = True
+                play.to_bottom = True
+                table.to_top = True
+
+
+def update(base_dir, bg, score, back, play):
     bg.blit()
 
     with open(f'{base_dir}/config/score.csv', 'r') as file:
@@ -36,3 +47,6 @@ def update(base_dir, bg, score):
     score.msg = msg
     score.update()
     score.blit()
+
+    back.update()
+    back.blit()

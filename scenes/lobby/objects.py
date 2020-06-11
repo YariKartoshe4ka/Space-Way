@@ -31,14 +31,14 @@ class PlayButton:
     def update(self):
 
         if self.to_bottom:
-            if self.rect.centery + 15 <= self.screen_rect.centery:
-                self.rect.y += 15
+            if self.rect.centery <= self.screen_rect.centery:
+                self.rect.y += 16
             else:
                 self.to_bottom = False
 
         if self.to_top:
             if self.rect.bottom >= self.screen_rect.top:
-                self.rect.y -= 15
+                self.rect.y -= 16
             else:
                 self.to_top = False
 
