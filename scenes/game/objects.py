@@ -26,11 +26,13 @@ class Background:
 
 
 class SpacePlate(pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir):
+    def __init__(self, screen, base_dir, config):
         super().__init__()
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
+
+        self.config = config
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/plate/idle.bmp')
         self.img_fly = pygame.image.load(f'{base_dir}/assets/images/plate/fly.bmp')
@@ -45,7 +47,9 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.is_jump = False
         self.jump = 10
-        self.jump_sound = f'{base_dir}/assets/sounds/jump.wav'
+        self.jump_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/jump.wav')
+        self.bang_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/bang.wav')
+        self.score_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/score.wav')
 
     def reset(self):
         self.rect.centery = self.screen_rect.centery
@@ -110,8 +114,7 @@ class Asrteroid(pygame.sprite.Sprite):
 
             return True
 
-        self.speed = self.config['level'] * 10
-        self.rect.x -= self.speed
+        self.rect.x -= self.config['speed']
 
         if self.is_bang:
             self.img = self.img_bang[self.bang // 6]

@@ -3,8 +3,8 @@
     "mode": [700, 450],
     "FPS": 30,
     "scene": "lobby",
-    "level": 0.2,
+    "sub_scene": "",
+    "speed": 2,
     "health": 3,
-    "score": 0,
-    "nick": "YariKartoshe4ka"
+    "score": 0
 }

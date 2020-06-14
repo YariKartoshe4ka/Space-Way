@@ -11,9 +11,9 @@ def init(screen, base_dir, config):
     return score, back
 
 
-def check_events(back, play, table): 
+def check_events(back, play, table, settings): 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT:
+        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             exit()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
@@ -25,9 +25,10 @@ def check_events(back, play, table):
                 back.to_bottom = True
                 play.to_bottom = True
                 table.to_top = True
+                settings.to_top = True
 
 
-def update(base_dir, bg, score, back, play):
+def update(base_dir, bg, score, back):
     bg.blit()
 
     with open(f'{base_dir}/config/score.csv', 'r') as file:
