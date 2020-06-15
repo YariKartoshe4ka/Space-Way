@@ -86,13 +86,6 @@ class Asrteroid(pygame.sprite.Sprite):
         self.config = config
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/idle.bmp')
-
-        self.img_bang = [pygame.image.load(f'{base_dir}/assets/images/asteroid/bang/bang_1.bmp'),
-                         pygame.image.load(f'{base_dir}/assets/images/asteroid/bang/bang_2.bmp'),
-                         pygame.image.load(f'{base_dir}/assets/images/asteroid/bang/bang_3.bmp'),
-                         pygame.image.load(f'{base_dir}/assets/images/asteroid/bang/bang_4.bmp'),
-                         pygame.image.load(f'{base_dir}/assets/images/asteroid/bang/bang_5.bmp')]
-
         self.img = self.img_idle
 
         self.rect = self.img.get_rect()
@@ -107,17 +100,7 @@ class Asrteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        if self.bang >= 30:
-            self.bang = 0
-            self.is_bang = False
-
-            return True
-
         self.rect.x -= self.config['speed']
-
-        if self.is_bang:
-            self.img = self.img_bang[self.bang // 6]
-            self.bang += 1
 
 
 class Score:

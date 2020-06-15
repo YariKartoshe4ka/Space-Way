@@ -159,6 +159,10 @@ def check_collides(config, base_dir, astrs, plate, play, table, settings):
             pygame.mixer.music.play()
             astr.is_bang = True
 
+            with open(f'{base_dir}/config/score.csv', 'a') as file:
+                line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
+                file.write(line)
+
             plate.reset()
             astrs.empty()
 
