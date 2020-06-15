@@ -46,8 +46,7 @@ def main():
     settings_buttons.add(effects_button, full_screen_button)
 
     # Game init
-    bg, plate, health, score = scenes.game.functions.init(screen, base_dir, config, 'Score: 0')
-    entities = pygame.sprite.Group()
+    bg, plate, score, end, pause = scenes.game.functions.init(screen, base_dir, config, 'Score: 0')
     astrs = pygame.sprite.Group()
 
 
@@ -63,17 +62,17 @@ def main():
             scenes.lobby.functions.update(bg, play_button, table_button, settings_button, caption)
 
         elif config['scene'] == 'table':
-            scenes.table.functions.check_events(back_button, play_button, table_button, settings_button)
+            scenes.table.functions.check_events(config, back_button, play_button, table_button, settings_button)
             scenes.table.functions.update(base_dir, bg, table, back_button)
 
         elif config['scene'] == 'settings':
-            scenes.settings.functions.check_events(back_button, play_button, table_button, settings_button, effects_button, full_screen_button, nick_input)
+            scenes.settings.functions.check_events(config, back_button, play_button, table_button, settings_button, effects_button, full_screen_button, nick_input)
             scenes.settings.functions.update(bg, config, back_button, settings_buttons, nick_input)
 
         elif config['scene'] == 'game':
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, entities, health, score, tick)
-            scenes.game.functions.check_collides(config, base_dir, astrs, plate, entities, play_button, table_button, settings_button)
-            scenes.game.functions.check_events(config, base_dir, plate)
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, score, end, pause, tick)
+            scenes.game.functions.check_collides(config, base_dir, astrs, plate, play_button, table_button, settings_button)
+            scenes.game.functions.check_events(config, base_dir, plate, astrs, end, pause, play_button, table_button, settings_button)
 
 
         if tick >= config['FPS'] * 10:

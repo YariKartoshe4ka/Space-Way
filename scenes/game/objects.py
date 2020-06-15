@@ -1,5 +1,4 @@
 import pygame
-from os import getcwd
 from random import randint
 
 pygame.font.init()
@@ -47,9 +46,9 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.is_jump = False
         self.jump = 10
-        self.jump_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/jump.wav')
-        self.bang_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/bang.wav')
-        self.score_sound = pygame.mixer.Sound(f'{base_dir}/assets/sounds/score.wav')
+        self.sounds = {'jump': f'{base_dir}/assets/sounds/jump.wav',
+                       'bang': f'{base_dir}/assets/sounds/bang.wav',
+                       'score': f'{base_dir}/assets/sounds/score.wav'}
 
     def reset(self):
         self.rect.centery = self.screen_rect.centery
@@ -121,46 +120,11 @@ class Asrteroid(pygame.sprite.Sprite):
             self.bang += 1
 
 
-
-class Health:
-    def __init__(self, screen, base_dir, config):
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
-
-        self.config = config
-
-        self.img_zero = pygame.image.load(f'{base_dir}/assets/images/health/zero.bmp')
-        self.img_one = pygame.image.load(f'{base_dir}/assets/images/health/one.bmp')
-        self.img_two = pygame.image.load(f'{base_dir}/assets/images/health/two.bmp')
-        self.img_three = pygame.image.load(f'{base_dir}/assets/images/health/three.bmp')
-
-        self.img = self.img_three
-
-        self.rect = self.img.get_rect()
-        self.rect.top = self.screen_rect.top + 2
-        self.rect.left = self.screen_rect.left + 2
-
-    def update(self):
-        if self.config['health'] == 3:
-            self.img = self.img_three
-        elif self.config['health'] == 2:
-            self.img = self.img_two
-        elif self.config['health'] == 1:
-            self.img = self.img_one
-        else:
-            self.img = self.img_zero
-
-    def blit(self):
-        self.screen.blit(self.img, self.rect)
-
-
 class Score:
     def __init__(self, screen, base_dir, msg):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        #self.width = 80
-        #self.height = 40
         self.msg = msg
         self.color = (255, 255, 255)
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 22)
@@ -181,3 +145,194 @@ class Score:
     def blit(self):
         self.screen.blit(self.img, self.rect)
 
+
+class End:
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (0, 153, 255)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 60)
+        self.border = 1
+
+        self._screen = pygame.Surface((self.config['mode']), pygame.SRCALPHA)
+
+        self._rect = pygame.Rect(0, 0, self.config['mode'][0], self.config['mode'][1])
+        self._rect.x = 0
+        self._rect.y = 0
+
+        self.buttons = pygame.sprite.Group()
+        self.buttons.add(LobbyButton(screen, base_dir))
+        self.buttons.add(AgainButton(screen, base_dir))
+
+    def update(self):
+        self.img_fg = self.font.render(f"Your score: {self.config['score']}", True, self.fg_color)
+        self.img_bg = self.font.render(f"Your score: {self.config['score']}", True, self.bg_color)
+        self.rect = self.img_fg.get_rect()
+
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.y = 125
+
+        width = 63
+        space = 7
+        x = (self.config['mode'][0] - (len(self.buttons) * width + (len(self.buttons) - 1) * space)) // 2
+        
+        for button in self.buttons.sprites():
+            button.rect.x = x
+            button.update()
+            x += width + space
+
+    def blit(self):
+        self.screen.blit(self._screen, self._rect)
+        self._screen.fill((0, 0, 0, 0))
+        self.screen.blit(self.img_bg, (self.rect.x + self.border, self.rect.y))
+        self.screen.blit(self.img_bg, (self.rect.x - self.border, self.rect.y))
+        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y + self.border))
+        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y - self.border))
+        self.screen.blit(self.img_fg, self.rect)
+
+        for button in self.buttons.sprites(): button.blit()
+
+
+class LobbyButton(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir):
+        super().__init__()
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
+        self.img = self.img_idle
+        self.rect = self.img.get_rect()
+
+        self.rect.center = self.screen_rect.center
+
+        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self._screen.fill((0, 0, 0, 0))
+
+        self._rect = pygame.Rect(0, 0, self.width, self.height)
+        self._rect.center = self.rect.center
+
+    def update(self):
+        self._rect.center = self.rect.center
+
+    def blit(self):
+        self.screen.blit(self._screen, self.rect)
+        self.screen.blit(self.img, self.rect)
+        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+
+
+class AgainButton(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir):
+        super().__init__()
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
+        self.img = self.img_idle
+        self.rect = self.img.get_rect()
+
+        self.rect.center = self.screen_rect.center
+
+        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self._screen.fill((0, 0, 0, 0))
+
+        self._rect = pygame.Rect(0, 0, self.width, self.height)
+        self._rect.center = self.rect.center
+
+    def update(self):
+        self._rect.center = self.rect.center
+
+    def blit(self):
+        self.screen.blit(self._screen, self.rect)
+        self.screen.blit(self.img, self.rect)
+        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+
+
+class Pause:
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (0, 153, 255)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 60)
+        self.border = 1
+
+        self.img_fg = self.font.render('Pause', True, self.fg_color)
+        self.img_bg = self.font.render('Pause', True, self.bg_color)
+        self.rect = self.img_fg.get_rect()
+
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.y = 125
+
+        self._screen = pygame.Surface((self.config['mode']), pygame.SRCALPHA)
+
+        self._rect = pygame.Rect(0, 0, self.config['mode'][0], self.config['mode'][1])
+        self._rect.x = 0
+        self._rect.y = 0
+
+        self.buttons = pygame.sprite.Group()
+        self.buttons.add(LobbyButton(screen, base_dir))
+        self.buttons.add(ResumeButton(screen, base_dir))
+
+    def update(self):
+        width = 63
+        space = 7
+        x = (self.config['mode'][0] - (len(self.buttons) * width + (len(self.buttons) - 1) * space)) // 2
+        
+        for button in self.buttons.sprites():
+            button.rect.x = x
+            button.update()
+            x += width + space
+
+    def blit(self):
+        self.screen.blit(self._screen, self._rect)
+        self._screen.fill((0, 0, 0, 0))
+        self.screen.blit(self.img_bg, (self.rect.x + self.border, self.rect.y))
+        self.screen.blit(self.img_bg, (self.rect.x - self.border, self.rect.y))
+        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y + self.border))
+        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y - self.border))
+        self.screen.blit(self.img_fg, self.rect)
+
+        for button in self.buttons.sprites(): button.blit()
+
+
+class ResumeButton(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir):
+        super().__init__()
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
+        self.img = self.img_idle
+        self.rect = self.img.get_rect()
+
+        self.rect.center = self.screen_rect.center
+
+        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
+        self._screen.fill((0, 0, 0, 0))
+
+        self._rect = pygame.Rect(0, 0, self.width, self.height)
+        self._rect.center = self.rect.center
+
+    def update(self):
+        self._rect.center = self.rect.center
+
+    def blit(self):
+        self.screen.blit(self._screen, self.rect)
+        self.screen.blit(self.img, self.rect)
+        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)

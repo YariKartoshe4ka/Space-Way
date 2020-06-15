@@ -11,10 +11,17 @@ def init(screen, base_dir, config):
     return score, back
 
 
-def check_events(back, play, table, settings): 
+def check_events(config, back, play, table, settings): 
     for event in pygame.event.get():
-        if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
+        if event.type == pygame.QUIT:
             exit()
+
+        elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+            back.change_scene = True
+            back.to_bottom = True
+            play.to_bottom = True
+            table.to_top = True
+            settings.to_top = True
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
