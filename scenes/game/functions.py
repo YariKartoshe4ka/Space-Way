@@ -155,8 +155,9 @@ def check_collides(config, base_dir, astrs, plate, play, table, settings):
 
     if collides:
         for astr in collides:
-            pygame.mixer.music.load(plate.sounds['bang'])
-            pygame.mixer.music.play()
+            if config['user']['effects']:
+                pygame.mixer.music.load(plate.sounds['bang'])
+                pygame.mixer.music.play()
             astr.is_bang = True
 
             with open(f'{base_dir}/config/score.csv', 'a') as file:
