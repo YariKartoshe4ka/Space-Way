@@ -4,7 +4,7 @@ from json import loads
 from time import sleep
 from sys import platform, exit, argv
 from distutils.version import StrictVersion
-from subprocess import Popen, DEVNULL
+from subprocess import Popen
 from zipfile import ZipFile
 from shutil import copyfile, copytree, rmtree
 
