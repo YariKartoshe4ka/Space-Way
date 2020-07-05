@@ -1,5 +1,8 @@
 import os
+from sys import exit
 from json import load
+from subprocess import Popen
+from updater import is_available
 import pygame
 
 import scenes.headpiece.functions
@@ -17,6 +20,10 @@ def main():
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
 
+    if is_available(config):
+        Popen(['python3', f'{base_dir}/updater.py'])
+        exit()
+
     with open(f'{base_dir}/config/user.json', 'r') as file:
         config['user'] = load(file)
 
@@ -26,6 +33,7 @@ def main():
         screen = pygame.display.set_mode(config['mode'])
 
     pygame.display.set_caption(config['caption'])
+    pygame.display.set_icon(pygame.image.load(f'{base_dir}/icon.ico'))
 
     clock = pygame.time.Clock()
 
