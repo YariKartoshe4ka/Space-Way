@@ -1,12 +1,12 @@
 # Space Way
-![](https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/icon.ico){ width=256 }
+<img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/icon.ico" width="256px" />
 
 This repo is arcade game about space
 
 ### Supported Operating Systems
 - Linux
 - Mac OS
-- Windows (in future)
+- Windows
 
 ### Requirements
 - Python3
