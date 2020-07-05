@@ -20,8 +20,9 @@ def main():
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
 
-    if is_available(config):
-        Popen(['python3', f'{base_dir}/updater.py'])
+    update = is_available(config)
+    if update:
+        Popen(['python3', f'{base_dir}/updater.py', update])
         exit()
 
     with open(f'{base_dir}/config/user.json', 'r') as file:
