@@ -1,0 +1,2 @@
+pygame==1.9.6
+requests>=2.24.0

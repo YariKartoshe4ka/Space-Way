@@ -4,3 +4,5 @@ __pycache__
 *.debug.*
 .p4a
 other
+tmp
+logs.txt
