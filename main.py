@@ -1,8 +1,5 @@
 import os
-from sys import exit
 from json import load
-from subprocess import Popen
-from updater import is_available
 import pygame
 
 import scenes.headpiece.functions
@@ -19,11 +16,6 @@ def main():
 
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
-
-    update = is_available(config)
-    if update:
-        Popen(['python3', f'{base_dir}/updater.py', update])
-        exit()
 
     with open(f'{base_dir}/config/user.json', 'r') as file:
         config['user'] = load(file)
