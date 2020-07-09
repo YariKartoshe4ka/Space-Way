@@ -18,11 +18,11 @@ def check_software_updates(version, base_dir):
 
         if parse(version) < parse(remote_version):
             if platform == 'win32':
-                Popen(f'start "" "{base_dir}/Updater.exe" {remote_version} {base_dir}', shell=True)
+                Popen(['start', '', f'{base_dir}/Updater.exe', remote_version, base_dir], shell=True)
                 exit()
 
             elif platform in ['linux', 'linux2', 'darwin']:
-                Popen(f'python "{base_dir}/updater.py" {remote_version} {base_dir}', shell=True)
+                Popen(['python3', f'{base_dir}/main.py', remote_version, base_dir], shell=True)
                 exit()
 
 
@@ -34,7 +34,7 @@ def install_software_updates(remote_version, base_dir):
             exe = get(f'https://github.com/YariKartoshe4ka/Space-Way/releases/download/{remote_version}/Space-Way-{remote_version}-portable.exe')
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
-            Popen(f'start "" "{base_dir}/Space Way.exe"', shell=True)
+            Popen(['start', '', f'{base_dir}/Space Way.exe'] shell=True)
             exit()
 
         unlink(f'{base_dir}/Space Way.exe')
@@ -57,7 +57,7 @@ def install_software_updates(remote_version, base_dir):
 
         rmtree(f'{base_dir}/tmp')
 
-        Popen(f'start "" "{base_dir}/Space Way.exe"', shell=True)
+        Popen(['start', '', f'{base_dir}/Space Way.exe', remote_version, base_dir], shell=True)
         exit()
 
     elif platform in ['linux', 'linux2', 'darwin']:
@@ -73,7 +73,7 @@ def install_software_updates(remote_version, base_dir):
         with ZipFile(f'{base_dir}/tmp/update.zip') as file:
             file.extractall(f'{base_dir}/tmp/')
 
-        Popen(f'pip3 install -r {base_dir}/tmp/requirements.txt').wait()
+        Popen(['pip3', 'install', '-r', f'{base_dir}/tmp/requirements.txt']).wait()
 
         rmtree(f'{base_dir}/assets')
         rmtree(f'{base_dir}/scenes')
@@ -89,12 +89,12 @@ def install_software_updates(remote_version, base_dir):
 
         rmtree(f'{base_dir}/tmp')
 
-        Popen(f'python3 "{base_dir}/main.py" {remote_version} {base_dir}', shell=True)
+        Popen(['python3', f'{base_dir}/main.py'], shell=True)
         exit()
 
 
 if __name__ == '__main__':
-    sleep(1)
+    sleep(0.5)
 
     _, remote_version, base_dir = argv
     install_software_updates(remote_version, base_dir)
