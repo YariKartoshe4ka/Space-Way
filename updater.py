@@ -22,7 +22,7 @@ def check_software_updates(version, base_dir):
                 exit()
 
             elif platform in ['linux', 'linux2', 'darwin']:
-                Popen(['python3', f'{base_dir}/main.py', remote_version, base_dir], shell=True)
+                Popen(f'python3 "{base_dir}/updater.py" "{remote_version}" "{base_dir}"', shell=True)
                 exit()
 
 
@@ -64,7 +64,7 @@ def install_software_updates(remote_version, base_dir):
         try:
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
-            Popen(['python3', f'{base_dir}/main.py'], shell=True)
+            Popen(f'python3 "{base_dir}/main.py"', shell=True)
             exit()
 
         with open(f'{base_dir}/tmp/update.zip', 'wb') as file:
@@ -73,7 +73,7 @@ def install_software_updates(remote_version, base_dir):
         with ZipFile(f'{base_dir}/tmp/update.zip') as file:
             file.extractall(f'{base_dir}/tmp/')
 
-        Popen(['pip3', 'install', '-r', f'{base_dir}/tmp/requirements.txt']).wait()
+        Popen(['pip3', 'install', '-r', f'{base_dir}/tmp/Space-Way-{remote_version}/requirements.txt']).wait()
 
         rmtree(f'{base_dir}/assets')
         rmtree(f'{base_dir}/scenes')
@@ -89,7 +89,7 @@ def install_software_updates(remote_version, base_dir):
 
         rmtree(f'{base_dir}/tmp')
 
-        Popen(['python3', f'{base_dir}/main.py'], shell=True)
+        Popen(f'python3 "{base_dir}/main.py"', shell=True)
         exit()
 
 
@@ -98,3 +98,4 @@ if __name__ == '__main__':
 
     _, remote_version, base_dir = argv
     install_software_updates(remote_version, base_dir)
+    print(True)
