@@ -21,6 +21,10 @@ def check_software_updates(version, base_dir):
                 Popen(f'start "" "{base_dir}/Updater.exe" {remote_version} {base_dir}', shell=True)
                 exit()
 
+            elif platform in ['linux', 'linux2', 'darwin']:
+                Popen(f'python "{base_dir}/updater.py" {remote_version} {base_dir}', shell=True)
+                exit()
+
 
 def install_software_updates(remote_version, base_dir):
     mkdir(f'{base_dir}/tmp')
@@ -54,6 +58,38 @@ def install_software_updates(remote_version, base_dir):
         rmtree(f'{base_dir}/tmp')
 
         Popen(f'start "" "{base_dir}/Space Way.exe"', shell=True)
+        exit()
+
+    elif platform in ['linux', 'linux2', 'darwin']:
+        try:
+            zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
+        except:
+            Popen(f'python3 "{base_dir}/main.py" {remote_version} {base_dir}', shell=True)
+            exit()
+
+        with open(f'{base_dir}/tmp/update.zip', 'wb') as file:
+            file.write(zip.content)
+
+        with ZipFile(f'{base_dir}/tmp/update.zip') as file:
+            file.extractall(f'{base_dir}/tmp/')
+
+        Popen(f'pip3 install -r {base_dir}/tmp/requirements.txt').wait()
+
+        rmtree(f'{base_dir}/assets')
+        rmtree(f'{base_dir}/scenes')
+        unlink(f'{base_dir}/main.py')
+        unlink(f'{base_dir}/icon.ico')
+        unlink(f'{base_dir}/config/config.json')
+
+        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets', f'{base_dir}/assets')
+        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/scenes', f'{base_dir}/scenes')
+        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/main.py', f'{base_dir}/main.py')
+        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
+        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
+
+        rmtree(f'{base_dir}/tmp')
+
+        Popen(f'python3 "{base_dir}/main.py" {remote_version} {base_dir}', shell=True)
         exit()
 
 
