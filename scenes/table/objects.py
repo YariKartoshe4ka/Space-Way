@@ -88,7 +88,7 @@ class BackButton:
                     self.change_scene = False
                     self.config['scene'] = 'lobby'
 
-        if self.to_top:
+        elif self.to_top:
             if self.rect.bottom + 5 >= self.screen_rect.bottom:
                 self.rect.y -= 4
             else:

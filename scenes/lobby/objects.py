@@ -30,12 +30,6 @@ class PlayButton:
 
     def update(self):
 
-        if self.to_bottom:
-            if self.rect.centery <= self.screen_rect.centery:
-                self.rect.y += 16
-            else:
-                self.to_bottom = False
-
         if self.to_top:
             if self.rect.bottom >= self.screen_rect.top:
                 self.rect.y -= 16
@@ -45,6 +39,13 @@ class PlayButton:
                 if self.change_scene:
                     self.change_scene = False
                     self.config['scene'] = 'game'
+
+        elif self.to_bottom:
+            if self.rect.centery <= self.screen_rect.centery:
+                self.rect.y += 16
+            else:
+                self.to_bottom = False
+
 
         self._rect.center = self.rect.center
 
@@ -93,7 +94,7 @@ class TableButton:
                     self.change_scene = False
                     self.config['scene'] = 'table'
 
-        if self.to_top:
+        elif self.to_top:
             if self.rect.bottom + 5 >= self.screen_rect.bottom:
                 self.rect.y -= 4
             else:
@@ -147,7 +148,7 @@ class SettingsButton:
                     self.config['scene'] = 'settings'
                     self.config['scene'] = 'settings'
 
-        if self.to_top:
+        elif self.to_top:
             if self.rect.bottom + 5 >= self.screen_rect.bottom:
                 self.rect.y -= 4
             else:
