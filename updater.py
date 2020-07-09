@@ -34,7 +34,7 @@ def install_software_updates(remote_version, base_dir):
             exe = get(f'https://github.com/YariKartoshe4ka/Space-Way/releases/download/{remote_version}/Space-Way-{remote_version}-portable.exe')
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
-            Popen(['start', '', f'{base_dir}/Space Way.exe'] shell=True)
+            Popen(['start', '', f'{base_dir}/Space Way.exe'], shell=True)
             exit()
 
         unlink(f'{base_dir}/Space Way.exe')
@@ -64,7 +64,7 @@ def install_software_updates(remote_version, base_dir):
         try:
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
-            Popen(f'python3 "{base_dir}/main.py" {remote_version} {base_dir}', shell=True)
+            Popen(['python3', f'{base_dir}/main.py'], shell=True)
             exit()
 
         with open(f'{base_dir}/tmp/update.zip', 'wb') as file:
