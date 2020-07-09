@@ -18,13 +18,11 @@ def check_software_updates(version, base_dir):
 
         if parse(version) < parse(remote_version):
             if platform == 'win32':
-                Popen(['start', '', f'{base_dir}/Updater.exe', remote_version, base_dir])
+                Popen(f'start "" "{base_dir}/Updater.exe" {remote_version} {base_dir}', shell=True)
                 exit()
 
 
-def install_software_updates():
-    _, remote_version, base_dir = argv
-
+def install_software_updates(remote_version, base_dir):
     mkdir(f'{base_dir}/tmp')
 
     if platform == 'win32':
@@ -32,7 +30,7 @@ def install_software_updates():
             exe = get(f'https://github.com/YariKartoshe4ka/Space-Way/releases/download/{remote_version}/Space-Way-{remote_version}-portable.exe')
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
-            Popen(['start', '', f'{base_dir}/Space Way.exe'])
+            Popen(f'start "" "{base_dir}/Space Way.exe"', shell=True)
             exit()
 
         unlink(f'{base_dir}/Space Way.exe')
@@ -43,7 +41,7 @@ def install_software_updates():
             file.write(zip.content)
 
         with ZipFile(f'{base_dir}/tmp/update.zip') as file:
-            file.exctractall()
+            file.extractall(f'{base_dir}/tmp/')
 
         rmtree(f'{base_dir}/assets')
         unlink(f'{base_dir}/icon.ico')
@@ -55,10 +53,12 @@ def install_software_updates():
 
         rmtree(f'{base_dir}/tmp')
 
-        Popen(['start', '', f'{base_dir}/Space Way.exe'])
+        Popen(f'start "" "{base_dir}/Space Way.exe"', shell=True)
         exit()
 
 
 if __name__ == '__main__':
     sleep(1)
-    install_software_updates()
+
+    _, remote_version, base_dir = argv
+    install_software_updates(remote_version, base_dir)
