@@ -156,7 +156,7 @@ class NickInput:
         else:
             self.img = self.img_disable
 
-        self._img = self.font.render(self.config['user']['nick'], True, self.fg_color, self.bg_color)
+        self._img = self.font.render(self.config['user']['nick'][-17:], True, self.fg_color, self.bg_color)
         self._img_rect = self._img.get_rect()
         self._img_rect.center = self.rect.center
 
