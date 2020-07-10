@@ -54,6 +54,8 @@ def check_events(config, back, play, table, settings, effects, full_screen, nick
         elif event.type == pygame.KEYDOWN and nick.is_enable:
             if event.key == pygame.K_BACKSPACE:
                 nick.config['user']['nick'] = nick.config['user']['nick'][:len(nick.config['user']['nick']) - 1]
+            elif event.key == pygame.K_RETURN:
+                nick.is_enable = False
             else:
                 nick.config['user']['nick'] += event.unicode
             

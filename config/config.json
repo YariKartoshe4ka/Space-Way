@@ -2,7 +2,7 @@
     "caption": "Space Way",
     "mode": [700, 450],
     "FPS": 30,
-    "scene": "headpiece",
+    "scene": "lobby",
     "sub_scene": "game",
     "speed": 2,
     "score": 0,
