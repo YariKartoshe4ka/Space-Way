@@ -11,6 +11,7 @@ import scenes.game.functions
 
 
 def main():
+    os.environ['SDL_VIDEO_CENTERED'] = '1'
     pygame.init()
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -52,6 +53,7 @@ def main():
     # Game init
     bg, plate, score, end, pause = scenes.game.functions.init(screen, base_dir, config, 'Score: 0')
     astrs = pygame.sprite.Group()
+    boosts = pygame.sprite.Group()
 
 
     while True:
@@ -74,8 +76,8 @@ def main():
             scenes.settings.functions.update(bg, config, back_button, settings_buttons, nick_input)
 
         elif config['scene'] == 'game':
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, score, end, pause, tick)
-            scenes.game.functions.check_collides(config, base_dir, astrs, plate, play_button, table_button, settings_button)
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
+            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button)
             scenes.game.functions.check_events(config, base_dir, plate, astrs, end, pause, play_button, table_button, settings_button)
 
 
