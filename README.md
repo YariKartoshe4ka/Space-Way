@@ -18,7 +18,9 @@ Play button starts the game <img src="https://raw.githubusercontent.com/YariKart
 
 Table button views your score table <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/table.bmp" alt="Table button" width="32px">  
 
-Settings button starts settings menu <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/settings.bmp" alt="Settings button" width="32px">
+Settings button starts settings menu <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/settings.bmp" alt="Settings button" width="32px">  
+
+To quit from game click _ESCAPE_
 
 ###### Score table
 
@@ -37,6 +39,17 @@ To disable/enable full-screen mode, click the full-screen button <img src="https
 **Note:** The green color of the button indicates that the option is enabled, and the red color indicates that it is disabled  
 
 To return to lobby click back button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
+
+###### Gameplay
+
+The goal of the game is to fly as long as possible without colliding with asteroids. To jump click _SPACE_ or _LEFT/RIGHT MOUSE BUTTON_. You will be awarded one point for each obstacle you pass  
+Along the way you can meet various boosts:  
+
+- Time boost - slows down obstacles for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/time_idle.bmp" alt="Time boost" width="30px">
+- Double boost - doubling the points you get for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/double_idle.bmp" alt="Double boost" width="30px">
+- Shield boost - one-time collision protection <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/shield_idle.bmp" alt="Shield boost" width="30px">
+
+**Note:** To pause/resume the game click _ESCAPE_
 
 
 ### Supported Operating Systems
