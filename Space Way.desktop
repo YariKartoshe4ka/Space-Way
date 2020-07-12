@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=1.0
+Name=Ubuntu 18.04 VM
+Comment=Start Ubuntu 18.04 VM
+Exec=/bin/bash
+Icon=/home/yaroslav/Programming/Python3/Pygame/Space Way Redux/icon.ico
+Terminal=true
+Type=Application
