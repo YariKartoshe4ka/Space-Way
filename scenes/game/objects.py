@@ -51,6 +51,7 @@ class SpacePlate(pygame.sprite.Sprite):
                        'score': f'{base_dir}/assets/sounds/score.wav'}
 
     def reset(self):
+        self.img = self.img_idle
         self.rect.centery = self.screen_rect.centery
         self.is_jump = False
         self.jump = 10
@@ -92,15 +93,215 @@ class Asrteroid(pygame.sprite.Sprite):
         self.rect.y = randint(1, config['mode'][1] - 56)
         self.rect.left = self.screen_rect.right
 
-        self.is_bang = False
-        self.bang = 0
-
-
     def blit(self):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
         self.rect.x -= self.config['speed']
+
+
+class TimeBoost(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config, y):
+        super().__init__()
+
+        self.name = 'time'
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (255, 0, 0)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/time_idle.bmp')
+        self.img = self.img_idle
+
+        self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/time_small.bmp')
+        self.img_3 = self.img_small
+
+        self.rect = self.img.get_rect()
+        self.rect.y = y
+        self.rect.left = self.screen_rect.right
+
+        self.rect_3 = self.img_3.get_rect()
+        self.rect_3.top = self.screen_rect.top + 2
+        self.rect_3.left = self.screen_rect.left + 2
+
+        self.speed = 2
+        self.is_active = False
+        self.life = 5
+        self.tick = 0
+
+    def update(self):
+        if self.is_active:
+            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+            else:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+
+            if self.life * self.config['FPS'] - self.tick <= 0:
+                self.config['speed'] = self.speed
+                self.kill()
+            else:
+                self.tick += 1
+        else:
+            self.rect.x -= self.config['speed']
+
+        if self.rect.right < 0:
+            self.kill()
+
+    def blit(self):
+        if self.is_active:
+            self.screen.blit(self.img_2, self.rect_2)
+            self.screen.blit(self.img_3, self.rect_3)
+        else:
+            self.screen.blit(self.img, self.rect)
+
+
+class DoubleBoost(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config, y):
+        super().__init__()
+
+        self.name = 'double'
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (255, 0, 0)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
+        self.img = self.img_idle
+
+        self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/double_small.bmp')
+        self.img_3 = self.img_small
+
+        self.rect = self.img.get_rect()
+        self.rect.y = y
+        self.rect.left = self.screen_rect.right
+
+        self.rect_3 = self.img_3.get_rect()
+        self.rect_3.top = self.screen_rect.top + 2
+        self.rect_3.left = self.screen_rect.left + 2
+
+        self.is_active = False
+        self.life = 5
+        self.tick = 0
+
+    def update(self):
+        if self.is_active:
+            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+            else:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+
+            if self.life * self.config['FPS'] - self.tick <= 0:
+                self.kill()
+            else:
+                self.tick += 1
+        else:
+            self.rect.x -= self.config['speed']
+
+        if self.rect.right < 0:
+            self.kill()
+
+    def blit(self):
+        if self.is_active:
+            self.screen.blit(self.img_2, self.rect_2)
+            self.screen.blit(self.img_3, self.rect_3)
+        else:
+            self.screen.blit(self.img, self.rect)
+
+
+class ShieldBoost(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config, plate, y):
+        super().__init__()
+
+        self.name = 'shield'
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.plate = plate
+
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (255, 0, 0)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_idle.bmp')
+        self.img = self.img_idle
+
+        self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_small.bmp')
+        self.img_3 = self.img_small
+
+        self.img_activate = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
+        self.img_4 = self.img_activate
+
+        self.rect = self.img.get_rect()
+        self.rect.y = y
+        self.rect.left = self.screen_rect.right
+
+        self.rect_3 = self.img_3.get_rect()
+        self.rect_3.top = self.screen_rect.top + 2
+        self.rect_3.left = self.screen_rect.left + 2
+
+        self.rect_4 = self.img_4.get_rect()
+
+        self.is_active = False
+        self.life = 5
+        self.tick = 0
+
+    def update(self):
+        if self.is_active:
+            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+            else:
+                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
+                self.rect_2 = self.img_2.get_rect()
+                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.left = self.screen_rect.left + 24
+
+            if self.life * self.config['FPS'] - self.tick <= 0:
+                self.kill()
+            else:
+                self.tick += 1
+
+            self.rect_4.center = self.plate.rect.center
+        else:
+            self.rect.x -= self.config['speed']
+
+        if self.rect.right < 0:
+            self.kill()
+
+    def blit(self):
+        if self.is_active:
+            self.screen.blit(self.img_2, self.rect_2)
+            self.screen.blit(self.img_3, self.rect_3)
+            self.screen.blit(self.img_4, self.rect_4)
+        else:
+            self.screen.blit(self.img, self.rect)
 
 
 class Score:

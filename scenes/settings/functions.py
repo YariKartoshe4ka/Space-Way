@@ -56,7 +56,7 @@ def check_events(config, back, play, table, settings, effects, full_screen, nick
                 nick.config['user']['nick'] = nick.config['user']['nick'][:len(nick.config['user']['nick']) - 1]
             elif event.key == pygame.K_RETURN:
                 nick.is_enable = False
-            else:
+            elif event.unicode.encode('ascii', errors='ignore') != b'':
                 nick.config['user']['nick'] += event.unicode
             
             nick.save()

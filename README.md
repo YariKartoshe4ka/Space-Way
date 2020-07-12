@@ -6,14 +6,37 @@
 Space Way is arcade game about space, in which you must overcome the space path by flying around obstacles
 
 
-### Gameplay
-When the lobby is loaded, you can start playing by clicking <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/play.bmp" alt="Play button" width="32px"> (to pause or continue playing, tap _ESCAPE_ key). For jumping press _SPACE_ key or _LEFT MOUSE BUTTON_
+### Review
 
-You can view your top five highscores by clicking <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/table.bmp" alt="Table button" width="32px">
+###### Headpiece
 
-You can change your nick and some settings by clicking <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/settings.bmp" alt="Settings button" width="32px">
+If you run a space path, you will see a headpiece that lasts 4 seconds. After that, the lobby will be loaded automatically. There you will see several buttons
 
-You can return to lobby by clicking <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
+###### Lobby
+
+Play button starts the game <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/play.bmp" alt="Play button" width="32px">  
+
+Table button views your score table <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/table.bmp" alt="Table button" width="32px">  
+
+Settings button starts settings menu <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/settings.bmp" alt="Settings button" width="32px">
+
+###### Score table
+
+Here you can see the top of your results  
+To return to lobby click back button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
+
+###### Settings
+
+Here you can change your settings  
+To change your nickname, click on the input field and enter your nickname  
+
+To disable/enable effects, click the effects button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/effects_false.bmp" alt="Effects button" width="32px">  
+
+To disable/enable full-screen mode, click the full-screen button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/full_screen_false.bmp" alt="Full-screen button" width="32px">  
+
+**Note:** The green color of the button indicates that the option is enabled, and the red color indicates that it is disabled  
+
+To return to lobby click back button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
 
 
 ### Supported Operating Systems
