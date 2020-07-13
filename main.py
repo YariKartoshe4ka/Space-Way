@@ -1,8 +1,8 @@
 import os
 from json import load
 from updater import check_software_updates
-
 import pygame
+
 import scenes.headpiece.functions
 import scenes.lobby.functions
 import scenes.table.functions
