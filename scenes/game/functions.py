@@ -187,26 +187,25 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
     if astrs_collides:
+        if config['user']['effects']:
+                    pygame.mixer.music.load(plate.sounds['bang'])
+                    pygame.mixer.music.play()
+    
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
                 boosts.remove(boost)
                 break
         else:
-            for astr in astrs_collides:
-                if config['user']['effects']:
-                    pygame.mixer.music.load(plate.sounds['bang'])
-                    pygame.mixer.music.play()
+            with open(f'{base_dir}/config/score.csv', 'a') as file:
+                line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
+                file.write(line)
 
-                with open(f'{base_dir}/config/score.csv', 'a') as file:
-                    line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
-                    file.write(line)
+            plate.reset()
+            astrs.empty()
+            boosts.empty()
 
-                plate.reset()
-                astrs.empty()
-                boosts.empty()
-
-                config['speed'] = 2
-                config['sub_scene'] = 'end'
+            config['speed'] = 2
+            config['sub_scene'] = 'end'
 
     elif boosts_collides and not boosts_collides[0].is_active:
         boost = boosts_collides[0]
@@ -224,15 +223,16 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
 
     elif plate.rect.bottom >= plate.screen_rect.bottom:
-        for boost in boosts:
-            if boost.name == 'shield' and boost.is_active:
-                boosts.remove(boost)
-                break
-        else:
-            if config['user']['effects']:
+        if config['user']['effects']:
                 pygame.mixer.music.load(plate.sounds['bang'])
                 pygame.mixer.music.play()
 
+        for boost in boosts:
+            if boost.name == 'shield' and boost.is_active:
+                boosts.remove(boost)
+                plate.is_jump = True
+                break
+        else:
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
                 file.write(line)
