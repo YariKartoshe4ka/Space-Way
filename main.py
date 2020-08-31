@@ -77,12 +77,15 @@ def main():
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
-            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button)
+            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button, table)
             scenes.game.functions.check_events(config, base_dir, plate, astrs, end, pause, play_button, table_button, settings_button)
 
 
         if tick >= config['FPS'] * 10:
             tick = 0
+
+        if config.get('debug'):
+            print(f'FPS:   {clock.get_fps()}', end='\r')
 
         pygame.display.update()
         clock.tick(config['FPS'])

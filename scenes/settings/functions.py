@@ -48,8 +48,10 @@ def check_events(config, back, play, table, settings, effects, full_screen, nick
             if nick._rect.collidepoint((x, y)):
                 print('click nick!')
                 nick.is_enable = True
+                pygame.key.start_text_input()
             else:
                 nick.is_enable = False
+                pygame.key.stop_text_input()
 
         elif event.type == pygame.KEYDOWN and nick.is_enable:
             if event.key == pygame.K_BACKSPACE:

@@ -182,7 +182,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pause.blit()
 
 
-def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings):
+def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings, score):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
@@ -199,6 +199,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
                 file.write(line)
+
+            score.is_update = True
 
             plate.reset()
             astrs.empty()
@@ -236,6 +238,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
                 file.write(line)
+
+            score.is_update = True
 
             plate.reset()
             astrs.empty()
