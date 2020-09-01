@@ -64,7 +64,7 @@ def main():
             scenes.headpiece.functions.update(screen, config, text, tick)
 
         elif config['scene'] == 'lobby':
-            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button, settings_button)
+            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button, settings_button, caption)
             scenes.lobby.functions.update(bg, play_button, table_button, settings_button, caption)
 
         elif config['scene'] == 'table':
@@ -85,7 +85,7 @@ def main():
             tick = 0
 
         if config.get('debug'):
-            print(f'FPS:   {clock.get_fps()}', end='\r')
+            print(f'FPS: {clock.get_fps()}', end='\r')
 
         pygame.display.update()
         clock.tick(config['FPS'])

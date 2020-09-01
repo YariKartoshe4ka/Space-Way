@@ -163,9 +163,11 @@ class SettingsButton:
 
 
 class Caption:
-    def __init__(self, screen, base_dir, caption='Space Way'):
+    def __init__(self, screen, base_dir, config, caption='Space Way'):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
+
+        self.config = config
 
         self.fg_color = (255, 255, 255)
         self.bg_color = (0, 153, 255)
@@ -173,7 +175,11 @@ class Caption:
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 72)
 
         self.img_fg = self.font.render(caption, True, self.fg_color)
-        self.img_bg = self.font.render(caption, True, self.bg_color)
+
+        self.colors = [self.font.render(caption, True, (0, 153, 255)),
+                       self.font.render(caption, True, (252, 15, 192)),
+                       self.font.render(caption, True, (0, 255, 0))]
+
         self.rect = self.img_fg.get_rect()
 
         self.rect.centerx = self.screen_rect.centerx
@@ -181,8 +187,8 @@ class Caption:
 
     def blit(self):
 
-        self.screen.blit(self.img_bg, (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y - self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
         self.screen.blit(self.img_fg, self.rect)

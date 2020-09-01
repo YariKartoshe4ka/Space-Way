@@ -44,6 +44,7 @@ def check_events(config, back, play, table, settings, effects, full_screen, nick
                 print('click full screen!')
                 full_screen.config['user']['full_screen'] = not full_screen.config['user']['full_screen']
                 full_screen.is_save = True
+                pygame.display.toggle_fullscreen()
 
             if nick._rect.collidepoint((x, y)):
                 print('click nick!')

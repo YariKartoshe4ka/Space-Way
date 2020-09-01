@@ -1,5 +1,6 @@
 import pygame
 from sys import exit
+from json import dump
 
 from .objects import *
 
@@ -8,12 +9,12 @@ def init(screen, base_dir, config):
     play = PlayButton(screen, base_dir, config)
     table = TableButton(screen, base_dir, config)
     settings = SettingsButton(screen, base_dir, config)
-    caption = Caption(screen, base_dir)
+    caption = Caption(screen, base_dir, config)
 
     return play, table, settings, caption
 
 
-def check_events(config, base_dir, play, table, back, settings):
+def check_events(config, base_dir, play, table, back, settings, caption):
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             exit()
@@ -43,6 +44,15 @@ def check_events(config, base_dir, play, table, back, settings):
                 back.to_top = True
                 settings.to_bottom = True
                 settings.change_scene = True
+
+            else:
+                if config['user']['color'] >= 2:
+                    config['user']['color'] = 0
+                else:
+                    config['user']['color'] += 1
+
+                with open(f'{base_dir}/config/user.json', 'w') as file:
+                    dump(config['user'], file, indent=4)
 
 
 

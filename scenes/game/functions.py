@@ -105,6 +105,13 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asrteroid(screen, base_dir, config))
 
+    if config['score'] >= 30 and config['score'] % 5 == 0:
+        for sprite in astrs.copy():
+            if sprite.name == 'flying':
+                break
+        else:
+            astrs.add(FlyingAsrteroid(screen, base_dir, config))
+
     if len(boosts) == 0:
         choice = randint(0, 2)
         y = randint(1, config['mode'][1] - 35)
@@ -141,7 +148,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         spawn(screen, base_dir, config, tick, plate, astrs, boosts)
 
         for astr in astrs.copy():
-            if astr.rect.right < 0:
+            if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
                 if config['user']['effects']:
                     pygame.mixer.music.load(plate.sounds['score'])

@@ -33,10 +33,14 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.config = config
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/plate/idle.bmp')
-        self.img_fly = pygame.image.load(f'{base_dir}/assets/images/plate/fly.bmp')
+        self.imgs = [[pygame.image.load(f'{base_dir}/assets/images/plate/blue_idle.bmp'),
+                      pygame.image.load(f'{base_dir}/assets/images/plate/blue_fly.bmp')],
+                     [pygame.image.load(f'{base_dir}/assets/images/plate/pink_idle.bmp'),
+                      pygame.image.load(f'{base_dir}/assets/images/plate/pink_fly.bmp')],
+                     [pygame.image.load(f'{base_dir}/assets/images/plate/green_idle.bmp'),
+                      pygame.image.load(f'{base_dir}/assets/images/plate/green_fly.bmp')]]
 
-        self.img = self.img_idle
+        self.img = self.imgs[self.config['user']['color']][0]
         self.rect = self.img.get_rect()
 
         self.rect.x = 5
@@ -51,12 +55,15 @@ class SpacePlate(pygame.sprite.Sprite):
                        'score': f'{base_dir}/assets/sounds/score.wav'}
 
     def reset(self):
-        self.img = self.img_idle
+        self.img = self.imgs[self.config['user']['color']][0]
         self.rect.centery = self.screen_rect.centery
         self.is_jump = False
         self.jump = 10
 
     def update(self):
+        if self.img not in self.imgs[self.config['user']['color']]:
+            self.img = self.imgs[self.config['user']['color']][0]
+
         if not self.is_jump:
             self.rect.y += self.gravity
         else:     
@@ -65,11 +72,11 @@ class SpacePlate(pygame.sprite.Sprite):
                 if self.jump < 0:
                     self.rect.y += (self.jump ** 2) // 3
                 else:
-                    self.img = self.img_fly
+                    self.img = self.imgs[self.config['user']['color']][1]
                     self.rect.y -= (self.jump ** 2) // 3
                 self.jump -= 1
             else:
-                self.img = self.img_idle
+                self.img = self.imgs[self.config['user']['color']][0]
                 self.is_jump = False
                 self.jump = 10
 
@@ -80,6 +87,8 @@ class SpacePlate(pygame.sprite.Sprite):
 class Asrteroid(pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config):
         super().__init__()
+
+        self.name = 'simple'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
@@ -98,6 +107,33 @@ class Asrteroid(pygame.sprite.Sprite):
 
     def update(self):
         self.rect.x -= self.config['speed']
+
+
+class FlyingAsrteroid(pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config):
+        super().__init__()
+
+        self.name = 'flying'
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/red_idle.bmp')
+        self.img = self.img_idle
+
+        self.rect = self.img.get_rect()
+        self.rect.bottom = self.screen_rect.top
+        self.rect.left = self.screen_rect.right
+
+    def blit(self):
+        self.screen.blit(self.img, self.rect)
+
+    def update(self):
+        self.rect.x -= self.config['speed'] * 1.5
+        self.rect.y += self.config['speed']
+
 
 
 class TimeBoost(pygame.sprite.Sprite):
@@ -338,7 +374,7 @@ class End:
         self.config = config
 
         self.fg_color = (255, 255, 255)
-        self.bg_color = (0, 153, 255)
+
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 60)
         self.border = 1
 
@@ -354,7 +390,11 @@ class End:
 
     def update(self):
         self.img_fg = self.font.render(f"Your score: {self.config['score']}", True, self.fg_color)
-        self.img_bg = self.font.render(f"Your score: {self.config['score']}", True, self.bg_color)
+
+        self.colors = [self.font.render(f"Your score: {self.config['score']}", True, (0, 153, 255)),
+                       self.font.render(f"Your score: {self.config['score']}", True, (252, 15, 192)),
+                       self.font.render(f"Your score: {self.config['score']}", True, (0, 255, 0))]
+        
         self.rect = self.img_fg.get_rect()
 
         self.rect.centerx = self.screen_rect.centerx
@@ -372,10 +412,10 @@ class End:
     def blit(self):
         self.screen.blit(self._screen, self._rect)
         self._screen.fill((0, 0, 0, 0))
-        self.screen.blit(self.img_bg, (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y - self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
         self.screen.blit(self.img_fg, self.rect)
 
         for button in self.buttons.sprites(): button.blit()
@@ -454,7 +494,11 @@ class Pause:
         self.border = 1
 
         self.img_fg = self.font.render('Pause', True, self.fg_color)
-        self.img_bg = self.font.render('Pause', True, self.bg_color)
+
+        self.colors = [self.font.render('Pause', True, (0, 153, 255)),
+                       self.font.render('Pause', True, (252, 15, 192)),
+                       self.font.render('Pause', True, (0, 255, 0))]
+
         self.rect = self.img_fg.get_rect()
 
         self.rect.centerx = self.screen_rect.centerx
@@ -483,10 +527,10 @@ class Pause:
     def blit(self):
         self.screen.blit(self._screen, self._rect)
         self._screen.fill((0, 0, 0, 0))
-        self.screen.blit(self.img_bg, (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.img_bg, (self.rect.x, self.rect.y - self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
+        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
         self.screen.blit(self.img_fg, self.rect)
 
         for button in self.buttons.sprites(): button.blit()
