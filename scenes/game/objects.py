@@ -1,5 +1,9 @@
 import pygame
+import sys
+sys.path.append('../../')
 from random import randint
+from mixins import BoostMixin, CaptionMixin, ButtonMixin
+
 
 pygame.font.init()
 
@@ -120,8 +124,10 @@ class FlyingAsrteroid(pygame.sprite.Sprite):
 
         self.config = config
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/red_idle.bmp')
-        self.img = self.img_idle
+        self.imgs = [pygame.image.load(f'{base_dir}/assets/images/asteroid/red_idle.bmp'),
+                     pygame.image.load(f'{base_dir}/assets/images/asteroid/blue_idle.bmp')]
+
+        self.img = self.imgs[randint(0, 1)]
 
         self.rect = self.img.get_rect()
         self.rect.bottom = self.screen_rect.top
@@ -136,9 +142,9 @@ class FlyingAsrteroid(pygame.sprite.Sprite):
 
 
 
-class TimeBoost(pygame.sprite.Sprite):
+class TimeBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.name = 'time'
 
@@ -147,9 +153,7 @@ class TimeBoost(pygame.sprite.Sprite):
 
         self.config = config
 
-        self.fg_color = (255, 255, 255)
-        self.bg_color = (255, 0, 0)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
+        self.speed = 2
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/time_idle.bmp')
         self.img = self.img_idle
@@ -165,57 +169,23 @@ class TimeBoost(pygame.sprite.Sprite):
         self.rect_3.top = self.screen_rect.top + 2
         self.rect_3.left = self.screen_rect.left + 2
 
-        self.speed = 2
-        self.is_active = False
-        self.life = 5
-        self.tick = 0
+        BoostMixin.__init__(self, base_dir, config)
 
     def update(self):
-        if self.is_active:
-            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-            else:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-
-            if self.life * self.config['FPS'] - self.tick <= 0:
-                self.config['speed'] = self.speed
-                self.kill()
-            else:
-                self.tick += 1
-        else:
-            self.rect.x -= self.config['speed']
-
-        if self.rect.right < 0:
-            self.kill()
+        self._update()
 
     def blit(self):
-        if self.is_active:
-            self.screen.blit(self.img_2, self.rect_2)
-            self.screen.blit(self.img_3, self.rect_3)
-        else:
-            self.screen.blit(self.img, self.rect)
+        self._blit()
 
 
-class DoubleBoost(pygame.sprite.Sprite):
+class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.name = 'double'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.config = config
-
-        self.fg_color = (255, 255, 255)
-        self.bg_color = (255, 0, 0)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
         self.img = self.img_idle
@@ -231,57 +201,25 @@ class DoubleBoost(pygame.sprite.Sprite):
         self.rect_3.top = self.screen_rect.top + 2
         self.rect_3.left = self.screen_rect.left + 2
 
-        self.is_active = False
-        self.life = 5
-        self.tick = 0
+        BoostMixin.__init__(self, base_dir, config)
 
     def update(self):
-        if self.is_active:
-            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-            else:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-
-            if self.life * self.config['FPS'] - self.tick <= 0:
-                self.kill()
-            else:
-                self.tick += 1
-        else:
-            self.rect.x -= self.config['speed']
-
-        if self.rect.right < 0:
-            self.kill()
+        self._update()
 
     def blit(self):
-        if self.is_active:
-            self.screen.blit(self.img_2, self.rect_2)
-            self.screen.blit(self.img_3, self.rect_3)
-        else:
-            self.screen.blit(self.img, self.rect)
+        self._blit()
 
 
-class ShieldBoost(pygame.sprite.Sprite):
+class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, plate, y):
-        super().__init__()
+        pygame.sprite.Sprite.__init__(self)
 
         self.name = 'shield'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.config = config
-
         self.plate = plate
-
-        self.fg_color = (255, 255, 255)
-        self.bg_color = (255, 0, 0)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_idle.bmp')
         self.img = self.img_idle
@@ -302,42 +240,19 @@ class ShieldBoost(pygame.sprite.Sprite):
 
         self.rect_4 = self.img_4.get_rect()
 
-        self.is_active = False
-        self.life = 5
-        self.tick = 0
+        BoostMixin.__init__(self, base_dir, config)
 
     def update(self):
+        self._update()
+
         if self.is_active:
-            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-            else:
-                self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
-                self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
-                self.rect_2.left = self.screen_rect.left + 24
-
-            if self.life * self.config['FPS'] - self.tick <= 0:
-                self.kill()
-            else:
-                self.tick += 1
-
             self.rect_4.center = self.plate.rect.center
-        else:
-            self.rect.x -= self.config['speed']
-
-        if self.rect.right < 0:
-            self.kill()
 
     def blit(self):
+        self._blit()
+
         if self.is_active:
-            self.screen.blit(self.img_2, self.rect_2)
-            self.screen.blit(self.img_3, self.rect_3)
             self.screen.blit(self.img_4, self.rect_4)
-        else:
-            self.screen.blit(self.img, self.rect)
 
 
 class Score:
@@ -366,17 +281,12 @@ class Score:
         self.screen.blit(self.img, self.rect)
 
 
-class End:
+class End(CaptionMixin):
     def __init__(self, screen, base_dir, config):
+        CaptionMixin.__init__(self, base_dir, config, "Your score: {[0]}", ['self.config["score"]'])
+
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.config = config
-
-        self.fg_color = (255, 255, 255)
-
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 60)
-        self.border = 1
 
         self._screen = pygame.Surface((self.config['mode']), pygame.SRCALPHA)
 
@@ -389,13 +299,7 @@ class End:
         self.buttons.add(AgainButton(screen, base_dir))
 
     def update(self):
-        self.img_fg = self.font.render(f"Your score: {self.config['score']}", True, self.fg_color)
-
-        self.colors = [self.font.render(f"Your score: {self.config['score']}", True, (0, 153, 255)),
-                       self.font.render(f"Your score: {self.config['score']}", True, (252, 15, 192)),
-                       self.font.render(f"Your score: {self.config['score']}", True, (0, 255, 0))]
-        
-        self.rect = self.img_fg.get_rect()
+        self._update()
 
         self.rect.centerx = self.screen_rect.centerx
         self.rect.y = 125
@@ -412,94 +316,39 @@ class End:
     def blit(self):
         self.screen.blit(self._screen, self._rect)
         self._screen.fill((0, 0, 0, 0))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
-        self.screen.blit(self.img_fg, self.rect)
+        self._blit()
 
         for button in self.buttons.sprites(): button.blit()
 
 
-class LobbyButton(pygame.sprite.Sprite):
+class LobbyButton(ButtonMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir):
-        super().__init__()
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
+        pygame.sprite.Sprite.__init__(self)
 
         self.width = self.height = 63
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
-        self.img = self.img_idle
-        self.rect = self.img.get_rect()
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
 
-        self.rect.center = self.screen_rect.center
-
-        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self._screen.fill((0, 0, 0, 0))
-
-        self._rect = pygame.Rect(0, 0, self.width, self.height)
-        self._rect.center = self.rect.center
-
-    def update(self):
-        self._rect.center = self.rect.center
-
-    def blit(self):
-        self.screen.blit(self._screen, self.rect)
-        self.screen.blit(self.img, self.rect)
-        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+        ButtonMixin.__init__(self, screen, base_dir, [], False)
 
 
-class AgainButton(pygame.sprite.Sprite):
+class AgainButton(ButtonMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir):
-        super().__init__()
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
+        pygame.sprite.Sprite.__init__(self)
 
         self.width = self.height = 63
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
-        self.img = self.img_idle
-        self.rect = self.img.get_rect()
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
 
-        self.rect.center = self.screen_rect.center
-
-        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self._screen.fill((0, 0, 0, 0))
-
-        self._rect = pygame.Rect(0, 0, self.width, self.height)
-        self._rect.center = self.rect.center
-
-    def update(self):
-        self._rect.center = self.rect.center
-
-    def blit(self):
-        self.screen.blit(self._screen, self.rect)
-        self.screen.blit(self.img, self.rect)
-        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+        ButtonMixin.__init__(self, screen, base_dir, [], False)
 
 
-class Pause:
+class Pause(CaptionMixin):
     def __init__(self, screen, base_dir, config):
+        CaptionMixin.__init__(self, base_dir, config, 'Pause')
+
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.config = config
-
-        self.fg_color = (255, 255, 255)
-        self.bg_color = (0, 153, 255)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 60)
-        self.border = 1
-
-        self.img_fg = self.font.render('Pause', True, self.fg_color)
-
-        self.colors = [self.font.render('Pause', True, (0, 153, 255)),
-                       self.font.render('Pause', True, (252, 15, 192)),
-                       self.font.render('Pause', True, (0, 255, 0))]
-
-        self.rect = self.img_fg.get_rect()
 
         self.rect.centerx = self.screen_rect.centerx
         self.rect.y = 125
@@ -527,40 +376,17 @@ class Pause:
     def blit(self):
         self.screen.blit(self._screen, self._rect)
         self._screen.fill((0, 0, 0, 0))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
-        self.screen.blit(self.img_fg, self.rect)
+        self._blit()
 
         for button in self.buttons.sprites(): button.blit()
 
 
-class ResumeButton(pygame.sprite.Sprite):
+class ResumeButton(ButtonMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir):
-        super().__init__()
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
+        pygame.sprite.Sprite.__init__(self)
 
         self.width = self.height = 63
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
-        self.img = self.img_idle
-        self.rect = self.img.get_rect()
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
 
-        self.rect.center = self.screen_rect.center
-
-        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self._screen.fill((0, 0, 0, 0))
-
-        self._rect = pygame.Rect(0, 0, self.width, self.height)
-        self._rect.center = self.rect.center
-
-    def update(self):
-        self._rect.center = self.rect.center
-
-    def blit(self):
-        self.screen.blit(self._screen, self.rect)
-        self.screen.blit(self.img, self.rect)
-        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+        ButtonMixin.__init__(self, screen, base_dir, [], False)

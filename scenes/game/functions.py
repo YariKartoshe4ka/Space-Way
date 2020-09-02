@@ -19,7 +19,7 @@ def init(screen, base_dir, config, msg):
     return bg, plate, score, end, pause
 
 
-def check_events(config, base_dir, plate, astrs, end, pause, play, table, settings):
+def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table, settings):
     if config['sub_scene'] == 'game':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,6 +91,7 @@ def check_events(config, base_dir, plate, astrs, end, pause, play, table, settin
 
                     plate.reset()
                     astrs.empty()
+                    boosts.empty()
                     config['speed'] = 2
                     config['score'] = 0
                     config['sub_scene'] = 'game'
@@ -105,7 +106,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asrteroid(screen, base_dir, config))
 
-    if config['score'] >= 30 and config['score'] % 5 == 0:
+    if config['score'] >= 20 and config['score'] % 5 == 0:
         for sprite in astrs.copy():
             if sprite.name == 'flying':
                 break
@@ -195,8 +196,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
     if astrs_collides:
         if config['user']['effects']:
-                    pygame.mixer.music.load(plate.sounds['bang'])
-                    pygame.mixer.music.play()
+            pygame.mixer.music.load(plate.sounds['bang'])
+            pygame.mixer.music.play()
     
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
@@ -233,8 +234,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
     elif plate.rect.bottom >= plate.screen_rect.bottom:
         if config['user']['effects']:
-                pygame.mixer.music.load(plate.sounds['bang'])
-                pygame.mixer.music.play()
+            pygame.mixer.music.load(plate.sounds['bang'])
+            pygame.mixer.music.play()
 
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:

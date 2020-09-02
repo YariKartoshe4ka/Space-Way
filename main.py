@@ -19,7 +19,7 @@ def main():
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
 
-    check_software_updates(config['version'], base_dir)
+    #check_software_updates(config['version'], base_dir)
 
     with open(f'{base_dir}/config/user.json', 'r') as file:
         config['user'] = load(file)
@@ -78,7 +78,7 @@ def main():
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
             scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button, table)
-            scenes.game.functions.check_events(config, base_dir, plate, astrs, end, pause, play_button, table_button, settings_button)
+            scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, play_button, table_button, settings_button)
 
 
         if tick >= config['FPS'] * 10:
