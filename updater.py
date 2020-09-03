@@ -144,6 +144,7 @@ def install_software_updates(remote_version, base_dir, window):
 
 
 if __name__ == '__main__':
+    freeze_support()
     _, remote_version, base_dir = argv
     window = Process(target=gui, args=(base_dir,))
     window.start()
