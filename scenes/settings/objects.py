@@ -31,6 +31,8 @@ class FullScreenButton(ButtonMixin, pygame.sprite.Sprite):
 
         ButtonMixin.__init__(self, screen, base_dir, config, True)
 
+        self.state = self.config['user']['full_screen']
+
 
 class NickInput:
     def __init__(self, screen, base_dir, config):

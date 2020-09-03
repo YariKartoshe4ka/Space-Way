@@ -6,7 +6,7 @@ from shutil import copyfile, rmtree, copytree
 from subprocess import Popen
 from requests import get
 from packaging.version import parse
-from multiprocessing import Process
+from multiprocessing import Process, freeze_support
 
 
 def gui(base_dir):
@@ -90,11 +90,15 @@ def install_software_updates(remote_version, base_dir, window):
         with ZipFile(f'{base_dir}/tmp/update.zip') as file:
             file.extractall(f'{base_dir}/tmp/')
 
-        rmtree(f'{base_dir}/assets')
+        rmtree(f'{base_dir}/assets', ignore_errors=True)
         unlink(f'{base_dir}/icon.ico')
         unlink(f'{base_dir}/config/config.json')
 
-        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets', f'{base_dir}/assets')
+        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets',
+                 f'{base_dir}/assets',
+                 ignore=lambda d, f: ['updater'] if 'updater' in f else [],
+                 dirs_exist_ok=True)
+
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
 

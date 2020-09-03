@@ -84,8 +84,18 @@ def main():
         if tick >= config['FPS'] * 10:
             tick = 0
 
+
+
         if config.get('debug'):
             print(f'FPS: {clock.get_fps()}', end='\r')
+
+        if full_screen_button.state != config['user']['full_screen']:
+            if config['user']['full_screen']:
+                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
+            else:
+                screen = pygame.display.set_mode(config['mode'])
+            full_screen_button.state = config['user']['full_screen']
+
 
         pygame.display.update()
         clock.tick(config['FPS'])
