@@ -38,21 +38,6 @@ def check_events(config, back, play, table, settings):
 def update(base_dir, bg, score, back):
     bg.blit()
 
-    with open(f'{base_dir}/config/score.csv', 'r') as file:
-        data = file.read().split('\n')
-
-    msg = []
-
-    data = sorted(list(map(lambda x: [int(x.split(',')[0]), x.split(',')[1]], data[1:len(data) - 1])))
-    data.reverse()
-
-    for i in data[:5]:
-        msg.append(f'{i[0]} : {i[1]}')
-
-
-    msg.insert(0, 'Score table')
-
-    score.msg = msg
     score.update()
     score.blit()
 

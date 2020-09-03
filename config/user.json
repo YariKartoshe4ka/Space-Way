@@ -1,5 +1,6 @@
 {
     "nick": "your nick here",
     "effects": true,
-    "full_screen": false
+    "full_screen": false,
+    "color": 0
 }

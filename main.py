@@ -64,7 +64,7 @@ def main():
             scenes.headpiece.functions.update(screen, config, text, tick)
 
         elif config['scene'] == 'lobby':
-            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button, settings_button)
+            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button, settings_button, caption)
             scenes.lobby.functions.update(bg, play_button, table_button, settings_button, caption)
 
         elif config['scene'] == 'table':
@@ -77,12 +77,25 @@ def main():
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
-            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button)
-            scenes.game.functions.check_events(config, base_dir, plate, astrs, end, pause, play_button, table_button, settings_button)
+            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button, table)
+            scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, play_button, table_button, settings_button)
 
 
         if tick >= config['FPS'] * 10:
             tick = 0
+
+
+
+        if config.get('debug'):
+            print(f'FPS: {clock.get_fps()}', end='\r')
+
+        if full_screen_button.state != config['user']['full_screen']:
+            if config['user']['full_screen']:
+                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
+            else:
+                screen = pygame.display.set_mode(config['mode'])
+            full_screen_button.state = config['user']['full_screen']
+
 
         pygame.display.update()
         clock.tick(config['FPS'])

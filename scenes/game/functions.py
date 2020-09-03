@@ -19,7 +19,7 @@ def init(screen, base_dir, config, msg):
     return bg, plate, score, end, pause
 
 
-def check_events(config, base_dir, plate, astrs, end, pause, play, table, settings):
+def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table, settings):
     if config['sub_scene'] == 'game':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,6 +91,7 @@ def check_events(config, base_dir, plate, astrs, end, pause, play, table, settin
 
                     plate.reset()
                     astrs.empty()
+                    boosts.empty()
                     config['speed'] = 2
                     config['score'] = 0
                     config['sub_scene'] = 'game'
@@ -104,6 +105,13 @@ def check_events(config, base_dir, plate, astrs, end, pause, play, table, settin
 def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asrteroid(screen, base_dir, config))
+
+    if config['score'] >= 20 and config['score'] % 5 == 0:
+        for sprite in astrs.copy():
+            if sprite.name == 'flying':
+                break
+        else:
+            astrs.add(FlyingAsrteroid(screen, base_dir, config))
 
     if len(boosts) == 0:
         choice = randint(0, 2)
@@ -141,7 +149,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         spawn(screen, base_dir, config, tick, plate, astrs, boosts)
 
         for astr in astrs.copy():
-            if astr.rect.right < 0:
+            if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
                 if config['user']['effects']:
                     pygame.mixer.music.load(plate.sounds['score'])
@@ -182,14 +190,14 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pause.blit()
 
 
-def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings):
+def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings, score):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
     if astrs_collides:
         if config['user']['effects']:
-                    pygame.mixer.music.load(plate.sounds['bang'])
-                    pygame.mixer.music.play()
+            pygame.mixer.music.load(plate.sounds['bang'])
+            pygame.mixer.music.play()
     
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
@@ -199,6 +207,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
                 file.write(line)
+
+            score.is_update = True
 
             plate.reset()
             astrs.empty()
@@ -224,8 +234,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
     elif plate.rect.bottom >= plate.screen_rect.bottom:
         if config['user']['effects']:
-                pygame.mixer.music.load(plate.sounds['bang'])
-                pygame.mixer.music.play()
+            pygame.mixer.music.load(plate.sounds['bang'])
+            pygame.mixer.music.play()
 
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
@@ -236,6 +246,8 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
                 file.write(line)
+
+            score.is_update = True
 
             plate.reset()
             astrs.empty()
