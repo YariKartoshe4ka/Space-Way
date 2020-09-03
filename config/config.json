@@ -2,11 +2,10 @@
     "caption": "Space Way",
     "mode": [700, 450],
     "FPS": 30,
-    "scene": "lobby",
+    "scene": "headpiece",
     "sub_scene": "game",
     "speed": 2,
-    "score": 20,
-    "version": "1.1.0",
-    "color": 0,
-    "debug": true
+    "score": 0,
+    "version": "1.2.0",
+    "color": 0
 }

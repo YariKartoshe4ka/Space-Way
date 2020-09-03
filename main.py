@@ -19,7 +19,7 @@ def main():
     with open(f'{base_dir}/config/config.json', 'r') as file:
         config = load(file)
 
-    #check_software_updates(config['version'], base_dir)
+    check_software_updates(config['version'], base_dir)
 
     with open(f'{base_dir}/config/user.json', 'r') as file:
         config['user'] = load(file)
