@@ -20,9 +20,12 @@ def gui(base_dir):
     pygame.display.set_caption('Space Way')
 
     screen_rect = screen.get_rect()
-    font = pygame.font.Font(f'{base_dir}/assets/updater/pixeboy.ttf', 28)
 
-    bg = pygame.image.load(f'{base_dir}/assets/updater/background.bmp')
+    copytree(f'{base_dir}/assets/updater', f'{base_dir}/tmp/updater')
+
+    font = pygame.font.Font(f'{base_dir}/tmp/updater/pixeboy.ttf', 28)
+
+    bg = pygame.image.load(f'{base_dir}/tmp/updater/background.bmp')
     bg_rect = bg.get_rect()
 
     tick = 0
@@ -77,6 +80,7 @@ def install_software_updates(remote_version, base_dir, window):
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
             window.terminate()
+            rmtree(f'{base_dir}/tmp')
             Popen(['start', '', f'{base_dir}/Space Way.exe'], shell=True)
             exit()
 
@@ -90,21 +94,17 @@ def install_software_updates(remote_version, base_dir, window):
         with ZipFile(f'{base_dir}/tmp/update.zip') as file:
             file.extractall(f'{base_dir}/tmp/')
 
-        rmtree(f'{base_dir}/assets', ignore_errors=True)
+        rmtree(f'{base_dir}/assets')
         unlink(f'{base_dir}/icon.ico')
         unlink(f'{base_dir}/config/config.json')
 
-        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets',
-                 f'{base_dir}/assets',
-                 ignore=lambda d, f: ['updater'] if 'updater' in f else [],
-                 dirs_exist_ok=True)
+        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets', f'{base_dir}/assets')
 
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
 
-        rmtree(f'{base_dir}/tmp')
-
         window.terminate()
+        rmtree(f'{base_dir}/tmp')
         Popen(['start', '', f'{base_dir}/Space Way.exe', remote_version, base_dir], shell=True)
         exit()
 
@@ -113,6 +113,7 @@ def install_software_updates(remote_version, base_dir, window):
             zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
         except:
             window.terminate()
+            rmtree(f'{base_dir}/tmp')
             Popen(f'python3 "{base_dir}/main.py"', shell=True)
             exit()
 
@@ -136,9 +137,8 @@ def install_software_updates(remote_version, base_dir, window):
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
         copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
 
-        rmtree(f'{base_dir}/tmp')
-
         window.terminate()
+        rmtree(f'{base_dir}/tmp')
         Popen(f'python3 "{base_dir}/main.py"', shell=True)
         exit()
 
@@ -149,4 +149,3 @@ if __name__ == '__main__':
     window = Process(target=gui, args=(base_dir,))
     window.start()
     install_software_updates(remote_version, base_dir, window)
-    

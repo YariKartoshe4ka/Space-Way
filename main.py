@@ -74,6 +74,10 @@ def main():
         elif config['scene'] == 'settings':
             scenes.settings.functions.check_events(config, back_button, play_button, table_button, settings_button, effects_button, full_screen_button, nick_input)
             scenes.settings.functions.update(bg, config, back_button, settings_buttons, nick_input)
+            
+            if full_screen_button.state != config['user']['full_screen']:
+                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * config['user']['full_screen'])
+                full_screen_button.state = config['user']['full_screen']
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
@@ -84,18 +88,8 @@ def main():
         if tick >= config['FPS'] * 10:
             tick = 0
 
-
-
         if config.get('debug'):
             print(f'FPS: {clock.get_fps()}', end='\r')
-
-        if full_screen_button.state != config['user']['full_screen']:
-            if config['user']['full_screen']:
-                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
-            else:
-                screen = pygame.display.set_mode(config['mode'])
-            full_screen_button.state = config['user']['full_screen']
-
 
         pygame.display.update()
         clock.tick(config['FPS'])
