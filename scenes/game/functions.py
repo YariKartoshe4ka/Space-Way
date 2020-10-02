@@ -31,14 +31,12 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
             elif event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE and plate.rect.top >= plate.screen_rect.top + 50:
                     if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.music.load(plate.sounds['jump'])
-                        pygame.mixer.music.play()
+                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
             elif event.type == pygame.MOUSEBUTTONDOWN and plate.rect.top >= plate.screen_rect.top + 50:
                 if config['user']['effects'] and plate.jump == 10:
-                    pygame.mixer.music.load(plate.sounds['jump'])
-                    pygame.mixer.music.play()
+                    pygame.mixer.Sound(plate.sounds['jump']).play()
                 plate.is_jump = True
 
     elif config['sub_scene'] == 'end':
@@ -152,8 +150,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
             if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
                 if config['user']['effects']:
-                    pygame.mixer.music.load(plate.sounds['score'])
-                    pygame.mixer.music.play()
+                    pygame.mixer.Sound(plate.sounds['score']).play()
 
                 for boost in boosts.copy():
                     if boost.name == 'double' and boost.is_active:
@@ -196,8 +193,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
     if astrs_collides:
         if config['user']['effects']:
-            pygame.mixer.music.load(plate.sounds['bang'])
-            pygame.mixer.music.play()
+            pygame.mixer.Sound(plate.sounds['bang']).play()
     
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
@@ -234,8 +230,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
 
     elif plate.rect.bottom >= plate.screen_rect.bottom:
         if config['user']['effects']:
-            pygame.mixer.music.load(plate.sounds['bang'])
-            pygame.mixer.music.play()
+            pygame.mixer.Sound(plate.sounds['bang']).play()
 
         for boost in boosts:
             if boost.name == 'shield' and boost.is_active:
