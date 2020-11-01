@@ -102,31 +102,34 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
 
 def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
-        astrs.add(Asrteroid(screen, base_dir, config))
+        astrs.add(Asteroid(screen, base_dir, config))
 
     if config['score'] >= 20 and config['score'] % 5 == 0:
         for sprite in astrs.copy():
             if sprite.name == 'flying':
                 break
         else:
-            astrs.add(FlyingAsrteroid(screen, base_dir, config))
+            astrs.add(FlyingAsteroid(screen, base_dir, config))
 
     if len(boosts) == 0:
         choice = randint(0, 2)
-        y = randint(1, config['mode'][1] - 35)
-        astr = astrs.sprites()[-1]
-
-        while not (y < astr.rect.y - 40) and not (y > astr.rect.y + astr.rect.height + 10):
-            y = randint(1, config['mode'][1] - 35)
 
         if choice == 0:
-            boosts.add(TimeBoost(screen, base_dir, config, y))
-
+            boost = TimeBoost(screen, base_dir, config)
         elif choice == 1:
-            boosts.add(DoubleBoost(screen, base_dir, config, y))
-
+            boost = DoubleBoost(screen, base_dir, config)
         elif choice == 2:
-            boosts.add(ShieldBoost(screen, base_dir, config, plate, y))
+            boost = ShieldBoost(screen, base_dir, config, plate)
+
+        while pygame.sprite.spritecollideany(boost, astrs):
+            if choice == 0:
+                boost = TimeBoost(screen, base_dir, config)
+            elif choice == 1:
+                boost = DoubleBoost(screen, base_dir, config)
+            elif choice == 2:
+                boost = ShieldBoost(screen, base_dir, config, plate)
+
+        boosts.add(boost)
 
 
 def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick):

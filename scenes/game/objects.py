@@ -88,7 +88,7 @@ class SpacePlate(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
 
-class Asrteroid(pygame.sprite.Sprite):
+class Asteroid(pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config):
         super().__init__()
 
@@ -99,11 +99,11 @@ class Asrteroid(pygame.sprite.Sprite):
 
         self.config = config
 
-        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/idle.bmp')
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/gray_idle.bmp')
         self.img = self.img_idle
 
         self.rect = self.img.get_rect()
-        self.rect.y = randint(1, config['mode'][1] - 56)
+        self.rect.y = randint(1, self.screen_rect.height - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
     def blit(self):
@@ -113,7 +113,7 @@ class Asrteroid(pygame.sprite.Sprite):
         self.rect.x -= self.config['speed']
 
 
-class FlyingAsrteroid(pygame.sprite.Sprite):
+class FlyingAsteroid(pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config):
         super().__init__()
 
@@ -143,7 +143,7 @@ class FlyingAsrteroid(pygame.sprite.Sprite):
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, y):
+    def __init__(self, screen, base_dir, config):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'time'
@@ -162,7 +162,7 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_3 = self.img_small
 
         self.rect = self.img.get_rect()
-        self.rect.y = y
+        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
         self.rect_3 = self.img_3.get_rect()
@@ -179,7 +179,7 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, y):
+    def __init__(self, screen, base_dir, config):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'double'
@@ -194,7 +194,7 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_3 = self.img_small
 
         self.rect = self.img.get_rect()
-        self.rect.y = y
+        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
         self.rect_3 = self.img_3.get_rect()
@@ -211,7 +211,7 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, plate, y):
+    def __init__(self, screen, base_dir, config, plate):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'shield'
@@ -231,7 +231,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_4 = self.img_activate
 
         self.rect = self.img.get_rect()
-        self.rect.y = y
+        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
         self.rect_3 = self.img_3.get_rect()
