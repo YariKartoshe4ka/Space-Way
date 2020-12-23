@@ -13,8 +13,9 @@ class ButtonMixin:
 
         self.settings_path = f'{base_dir}/config/user.json'
 
-        if switch:
-            self.img = self.imgs['false']
+        if self.switch:
+            self.state = self.config['user'][self.index]
+            self.change_image()
 
         self.rect = self.img.get_rect()
 
@@ -36,12 +37,8 @@ class ButtonMixin:
             self.is_save = False
 
         if self.switch:
-            self.is_enable = self.config['user'][self.index]
-
-            if self.is_enable:
-                self.img = self.imgs['true']
-            else:
-                self.img = self.imgs['false']
+            self.state = self.config['user'][self.index]
+            self.change_image()
 
         self._rect.center = self.rect.center
 
@@ -49,6 +46,12 @@ class ButtonMixin:
         self.screen.blit(self._screen, self.rect)
         self.screen.blit(self.img, self.rect)
         self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+
+    def change_image(self):
+        if self.state:
+            self.img = self.imgs['true']
+        else:
+            self.img = self.imgs['false']
 
 
 class FloatButtonMixin:

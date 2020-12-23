@@ -2,5 +2,6 @@
     "nick": "your nick here",
     "effects": false,
     "full_screen": false,
+    "difficulty": 1,
     "color": 0
 }

@@ -1,6 +1,7 @@
 import pygame
 import sys
 sys.path.append('../../')
+from json import dump
 from mixins import ButtonMixin
 
 
@@ -31,7 +32,33 @@ class FullScreenButton(ButtonMixin, pygame.sprite.Sprite):
 
         ButtonMixin.__init__(self, screen, base_dir, config, True)
 
-        self.state = self.config['user']['full_screen']
+        self.changed = self.config['user'][self.index]
+
+
+class DifficultyButton(ButtonMixin, pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.width = self.height = 63
+
+        self.index = 'difficulty'
+
+        self.imgs = {'easy': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
+                     'middle': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
+                     'hard': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
+                     'insanse': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_insanse.bmp')}
+
+        ButtonMixin.__init__(self, screen, base_dir, config, True)
+
+    def change_image(self):
+        if self.state == 0:
+            self.img = self.imgs['easy']
+        elif self.state == 1:
+            self.img = self.imgs['middle']
+        elif self.state == 2:
+            self.img = self.imgs['hard']
+        elif self.state == 3:
+            self.img = self.imgs['insanse']
 
 
 class NickInput:

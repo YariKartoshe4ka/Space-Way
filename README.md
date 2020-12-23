@@ -73,13 +73,13 @@ Along the way you can meet various boosts:
 3. Launch the program with a shortcut
 
 ###### Linux / Mac OS
-1. Download the archive with source code from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest)
-2. Unpack it
-3. Install dependences with this command:
+For installing Space Way on Linux/Mac OS run this command in terminal
+
 ```bash
+cd ~
+wget https://github.com/YariKartoshe4ka/Space-Way/archive/1.2.1.zip
+unzip 1.2.1.zip
+cd Space-Way-1.2.1
 pip3 install -r requirements.txt
-```
-4. Run main.py file with this command:
-```bash
 python3 main.py
 ```

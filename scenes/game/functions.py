@@ -104,7 +104,8 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asteroid(screen, base_dir, config))
 
-    if config['score'] >= 20 and config['score'] % 5 == 0:
+    # Spawn flying asteroid if difficulty > middle
+    if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
         for sprite in astrs.copy():
             if sprite.name == 'flying':
                 break

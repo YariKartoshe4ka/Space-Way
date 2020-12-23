@@ -50,7 +50,9 @@ class SpacePlate(pygame.sprite.Sprite):
         self.rect.x = 5
         self.rect.centery = self.screen_rect.centery
 
-        self.gravity = 7
+        self.gravity_default = 7
+        self.gravity = self.gravity_default
+        self.gravity_scale = 0.25
 
         self.is_jump = False
         self.jump = 10
@@ -63,14 +65,17 @@ class SpacePlate(pygame.sprite.Sprite):
         self.rect.centery = self.screen_rect.centery
         self.is_jump = False
         self.jump = 10
+        self.gravity = self.gravity_default
 
     def update(self):
         if self.img not in self.imgs[self.config['user']['color']]:
             self.img = self.imgs[self.config['user']['color']][0]
 
         if not self.is_jump:
+            self.gravity += self.gravity_scale
             self.rect.y += self.gravity
         else:     
+            self.gravity = self.gravity_default
 
             if self.jump >= -5:
                 if self.jump < 0:
