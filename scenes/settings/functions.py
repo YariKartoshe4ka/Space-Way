@@ -7,12 +7,13 @@ from .objects import *
 def init(screen, base_dir, config):
     effects = EffectsButton(screen, base_dir, config)
     full_screen = FullScreenButton(screen, base_dir, config)
+    difficulty = DifficultyButton(screen, base_dir, config)
     nick = NickInput(screen, base_dir, config)
 
-    return effects, full_screen, nick
+    return effects, full_screen, difficulty, nick
 
 
-def check_events(config, back, play, table, settings, effects, full_screen, nick):
+def check_events(config, back, play, table, settings, effects, full_screen, difficulty, nick):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -37,13 +38,18 @@ def check_events(config, back, play, table, settings, effects, full_screen, nick
 
             elif effects._rect.collidepoint((x, y)):
                 print('click effects!')
-                effects.config['user']['effects'] = not effects.config['user']['effects']
+                effects.config['user'][effects.index] = not effects.config['user'][effects.index]
                 effects.is_save = True
 
             elif full_screen._rect.collidepoint((x, y)):
                 print('click full screen!')
-                full_screen.config['user']['full_screen'] = not full_screen.config['user']['full_screen']
+                full_screen.config['user'][full_screen.index] = not full_screen.config['user'][full_screen.index]
                 full_screen.is_save = True
+
+            elif difficulty._rect.collidepoint((x, y)):
+                print('click difficulty!')
+                difficulty.config['user'][difficulty.index] = (difficulty.config['user'][difficulty.index] + 1) % 4
+                difficulty.is_save = True
 
             if nick._rect.collidepoint((x, y)):
                 print('click nick!')

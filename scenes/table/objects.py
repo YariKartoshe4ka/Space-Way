@@ -69,7 +69,6 @@ class TableScore:
 
 
     def blit(self):
-        print(len(self.imgs))
         for i in range(len(self.msg)):
             self.screen.blit(self.imgs[i][1], (self.rects[i].x + self.border, self.rects[i].y))
             self.screen.blit(self.imgs[i][1], (self.rects[i].x - self.border, self.rects[i].y))

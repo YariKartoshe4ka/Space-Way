@@ -13,8 +13,9 @@ class ButtonMixin:
 
         self.settings_path = f'{base_dir}/config/user.json'
 
-        if switch:
-            self.img = self.imgs['false']
+        if self.switch:
+            self.state = self.config['user'][self.index]
+            self.change_image()
 
         self.rect = self.img.get_rect()
 
@@ -36,12 +37,8 @@ class ButtonMixin:
             self.is_save = False
 
         if self.switch:
-            self.is_enable = self.config['user'][self.index]
-
-            if self.is_enable:
-                self.img = self.imgs['true']
-            else:
-                self.img = self.imgs['false']
+            self.state = self.config['user'][self.index]
+            self.change_image()
 
         self._rect.center = self.rect.center
 
@@ -49,6 +46,12 @@ class ButtonMixin:
         self.screen.blit(self._screen, self.rect)
         self.screen.blit(self.img, self.rect)
         self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+
+    def change_image(self):
+        if self.state:
+            self.img = self.imgs['true']
+        else:
+            self.img = self.imgs['false']
 
 
 class FloatButtonMixin:
@@ -156,7 +159,6 @@ class BoostMixin:
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
 
         self.is_active = False
-        self.life = 5
         self.tick = 0
 
     def _update(self):
@@ -173,8 +175,7 @@ class BoostMixin:
                 self.rect_2.left = self.screen_rect.left + 24
 
             if self.life * self.config['FPS'] - self.tick <= 0:
-                if self.name == 'time':
-                    self.config['speed'] = self.speed
+                self.prepare_kill()
                 self.kill()
             else:
                 self.tick += 1
@@ -190,3 +191,14 @@ class BoostMixin:
             self.screen.blit(self.img_3, self.rect_3)
         else:
             self.screen.blit(self.img, self.rect)
+
+    def update(self):
+        self._update()
+
+    def blit(self):
+        self._blit()
+
+    def prepare_kill(self):
+        pass
+
+
