@@ -1,7 +1,7 @@
 {
     "nick": "your nick here",
-    "effects": false,
+    "effects": true,
     "full_screen": false,
-    "difficulty": 1,
+    "difficulty": 0,
     "color": 0
 }

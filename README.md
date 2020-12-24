@@ -34,7 +34,9 @@ To change your nickname, click on the input field and enter your nickname
 
 To disable/enable effects, click the effects button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/effects_false.bmp" alt="Effects button" width="32px">  
 
-To disable/enable full-screen mode, click the full-screen button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/full_screen_false.bmp" alt="Full-screen button" width="32px">  
+To disable/enable full-screen mode, click the full-screen button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/full_screen_false.bmp" alt="Full-screen button" width="32px">
+
+To change difficulty, click the emoticon button (green - easy, yellow - middle, red - hard, purple - insanse)  
 
 **Note:** The green color of the button indicates that the option is enabled, and the red color indicates that it is disabled  
 
@@ -48,6 +50,7 @@ Along the way you can meet various boosts:
 - Time boost - slows down obstacles for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/time_idle.bmp" alt="Time boost" width="30px">
 - Double boost - doubling the points you get for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/double_idle.bmp" alt="Double boost" width="30px">
 - Shield boost - one-time collision protection <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/shield_idle.bmp" alt="Shield boost" width="30px">
+- Mirror boost - vertical flipping of the space plate <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/mirror_idle.bmp" alt="Mirror boost" width="30px">
 
 **Note:** To pause/resume the game click _ESCAPE_
 
@@ -60,9 +63,9 @@ Along the way you can meet various boosts:
 
 ### Requirements (Linux / Mac OS)
 - Python3
-- Pygame
-- Requests
-- Packaging
+- Pygame (Python3 module)
+- Requests (Python3 module)
+- Packaging (Python3 module)
 
 
 ### Installing
@@ -77,9 +80,9 @@ For installing Space Way on Linux/Mac OS run this command in terminal
 
 ```bash
 cd ~
-wget https://github.com/YariKartoshe4ka/Space-Way/archive/1.2.1.zip
-unzip 1.2.1.zip
-cd Space-Way-1.2.1
+wget https://github.com/YariKartoshe4ka/Space-Way/archive/1.3.0.zip
+unzip 1.3.0.zip
+cd Space-Way-1.3.0
 pip3 install -r requirements.txt
 python3 main.py
 ```

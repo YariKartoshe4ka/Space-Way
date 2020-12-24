@@ -159,7 +159,6 @@ class BoostMixin:
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
 
         self.is_active = False
-        self.life = 5
         self.tick = 0
 
     def _update(self):
@@ -176,8 +175,7 @@ class BoostMixin:
                 self.rect_2.left = self.screen_rect.left + 24
 
             if self.life * self.config['FPS'] - self.tick <= 0:
-                if self.name == 'time':
-                    self.config['speed'] = self.speed
+                self.prepare_kill()
                 self.kill()
             else:
                 self.tick += 1
@@ -193,3 +191,14 @@ class BoostMixin:
             self.screen.blit(self.img_3, self.rect_3)
         else:
             self.screen.blit(self.img, self.rect)
+
+    def update(self):
+        self._update()
+
+    def blit(self):
+        self._blit()
+
+    def prepare_kill(self):
+        pass
+
+

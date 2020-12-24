@@ -28,16 +28,25 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 config['sub_scene'] = 'pause'
 
-            elif event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE and plate.rect.top >= plate.screen_rect.top + 50:
+            elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
+                if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
+                    if config['user']['effects'] and plate.jump == 10:
+                        pygame.mixer.Sound(plate.sounds['jump']).play()
+                    plate.is_jump = True
+                elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
                     if config['user']['effects'] and plate.jump == 10:
                         pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
-            elif event.type == pygame.MOUSEBUTTONDOWN and plate.rect.top >= plate.screen_rect.top + 50:
-                if config['user']['effects'] and plate.jump == 10:
-                    pygame.mixer.Sound(plate.sounds['jump']).play()
-                plate.is_jump = True
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
+                    if config['user']['effects'] and plate.jump == 10:
+                        pygame.mixer.Sound(plate.sounds['jump']).play()
+                    plate.is_jump = True
+                elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
+                    if config['user']['effects'] and plate.jump == 10:
+                        pygame.mixer.Sound(plate.sounds['jump']).play()
+                    plate.is_jump = True
 
     elif config['sub_scene'] == 'end':
         for event in pygame.event.get():
@@ -104,7 +113,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asteroid(screen, base_dir, config))
 
-    # Spawn flying asteroid if difficulty > middle
+    # Spawn flying asteroid if difficulty >= middle
     if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
         for sprite in astrs.copy():
             if sprite.name == 'flying':
@@ -113,7 +122,11 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
             astrs.add(FlyingAsteroid(screen, base_dir, config))
 
     if len(boosts) == 0:
-        choice = randint(0, 2)
+        max_choice = 2
+
+        # Spawn mirror boost if difficulty >= hard
+        if config['user']['difficulty'] >= 2: max_choice += 1
+        choice = randint(0, max_choice)
 
         if choice == 0:
             boost = TimeBoost(screen, base_dir, config)
@@ -121,6 +134,8 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
             boost = DoubleBoost(screen, base_dir, config)
         elif choice == 2:
             boost = ShieldBoost(screen, base_dir, config, plate)
+        elif choice == 3:
+            boost = MirrorBoost(screen, base_dir, config, plate)
 
         while pygame.sprite.spritecollideany(boost, astrs):
             if choice == 0:
@@ -129,6 +144,8 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
                 boost = DoubleBoost(screen, base_dir, config)
             elif choice == 2:
                 boost = ShieldBoost(screen, base_dir, config, plate)
+            elif choice == 3:
+                boost = MirrorBoost(screen, base_dir, config, plate)
 
         boosts.add(boost)
 
@@ -231,8 +248,12 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
         elif boost.name == 'shield':
             boost.is_active = True
 
+        elif boost.name == 'mirror':
+            boost.is_active = True
+            plate.rect.y += 24
+            plate.flip = True
 
-    elif plate.rect.bottom >= plate.screen_rect.bottom:
+    elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
 

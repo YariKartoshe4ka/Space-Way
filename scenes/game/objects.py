@@ -12,20 +12,20 @@ class Background:
     def __init__(self, screen, base_dir, x, y):
         self.screen = screen
 
-        self.bg = pygame.image.load(f'{base_dir}/assets/images/bg/background.bmp')
-        self.rect = self.bg.get_rect()
+        self.img = pygame.image.load(f'{base_dir}/assets/images/bg/background.bmp')
+        self.rect = self.img.get_rect()
 
         self.rect.x = x
         self.rect.y = y
 
     def update(self):
-        self.rect.x -= 1
+        self.rect.x -= 2
 
         if self.rect.x <= -840:
             self.rect.x = 0
 
     def blit(self):
-        self.screen.blit(self.bg, self.rect)
+        self.screen.blit(self.img, self.rect)
 
 
 class SpacePlate(pygame.sprite.Sprite):
@@ -36,6 +36,8 @@ class SpacePlate(pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.config = config
+
+        self.flip = False
 
         self.imgs = [[pygame.image.load(f'{base_dir}/assets/images/plate/blue_idle.bmp'),
                       pygame.image.load(f'{base_dir}/assets/images/plate/blue_fly.bmp')],
@@ -66,6 +68,7 @@ class SpacePlate(pygame.sprite.Sprite):
         self.is_jump = False
         self.jump = 10
         self.gravity = self.gravity_default
+        self.flip = False
 
     def update(self):
         if self.img not in self.imgs[self.config['user']['color']]:
@@ -73,16 +76,25 @@ class SpacePlate(pygame.sprite.Sprite):
 
         if not self.is_jump:
             self.gravity += self.gravity_scale
-            self.rect.y += self.gravity
-        else:     
+            if self.flip:
+                self.rect.y -= self.gravity
+            else:
+                self.rect.y += self.gravity
+        else:
             self.gravity = self.gravity_default
 
             if self.jump >= -5:
                 if self.jump < 0:
-                    self.rect.y += (self.jump ** 2) // 3
+                    if self.flip:
+                        self.rect.y -= (self.jump ** 2) // 3
+                    else:
+                        self.rect.y += (self.jump ** 2) // 3
                 else:
                     self.img = self.imgs[self.config['user']['color']][1]
-                    self.rect.y -= (self.jump ** 2) // 3
+                    if self.flip:
+                        self.rect.y += (self.jump ** 2) // 3
+                    else:
+                        self.rect.y -= (self.jump ** 2) // 3
                 self.jump -= 1
             else:
                 self.img = self.imgs[self.config['user']['color']][0]
@@ -90,7 +102,12 @@ class SpacePlate(pygame.sprite.Sprite):
                 self.jump = 10
 
     def blit(self):
-        self.screen.blit(self.img, self.rect)
+        if self.flip:
+            rect = self.rect.copy()
+            if self.is_jump: rect.y -= 24
+            self.screen.blit(pygame.transform.flip(self.img, False, True), rect)
+        else:
+            self.screen.blit(self.img, self.rect)
 
 
 class Asteroid(pygame.sprite.Sprite):
@@ -109,6 +126,7 @@ class Asteroid(pygame.sprite.Sprite):
 
         self.rect = self.img.get_rect()
         self.rect.y = randint(1, self.screen_rect.height - self.rect.height - 2)
+
         self.rect.left = self.screen_rect.right
 
     def blit(self):
@@ -148,13 +166,15 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config):
+    def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'time'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
+
+        self.life = life
 
         self.config = config
 
@@ -176,21 +196,20 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
         BoostMixin.__init__(self, base_dir, config)
 
-    def update(self):
-        self._update()
-
-    def blit(self):
-        self._blit()
+    def prepare_kill(self):
+        self.config['speed'] = self.speed
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config):
+    def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'double'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
+
+        self.life = life
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
         self.img = self.img_idle
@@ -208,21 +227,17 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
 
         BoostMixin.__init__(self, base_dir, config)
 
-    def update(self):
-        self._update()
-
-    def blit(self):
-        self._blit()
-
 
 class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, plate):
+    def __init__(self, screen, base_dir, config, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'shield'
 
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
+
+        self.life = life
 
         self.plate = plate
 
@@ -258,6 +273,40 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
 
         if self.is_active:
             self.screen.blit(self.img_4, self.rect_4)
+
+
+class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
+    def __init__(self, screen, base_dir, config, plate, life=5):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.name = 'mirror'
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.life = life
+        self.config = config
+        self.plate = plate
+
+        self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_idle.bmp')
+        self.img = self.img_idle
+
+        self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_small.bmp')
+        self.img_3 = self.img_small
+
+        self.rect = self.img.get_rect()
+        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
+        self.rect.left = self.screen_rect.right
+
+        self.rect_3 = self.img_3.get_rect()
+        self.rect_3.top = self.screen_rect.top + 2
+        self.rect_3.left = self.screen_rect.left + 2
+
+        BoostMixin.__init__(self, base_dir, config)
+
+    def prepare_kill(self):
+        self.plate.flip = False
+        
 
 
 class Score:
