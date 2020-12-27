@@ -13,8 +13,7 @@ class Text:
         self.img = self.font.render(self.msg, True, self.color)
         self.rect = self.img.get_rect()
 
-        self.rect.centerx = self.screen_rect.centerx
-        self.rect.centery = self.screen_rect.centery
+        self.rect.center = self.screen_rect.center
 
     def update(self):
         self.img = self.font.render(self.msg, True, self.color)

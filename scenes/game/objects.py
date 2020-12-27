@@ -19,7 +19,7 @@ class Background:
         self.rect.y = y
 
     def update(self):
-        self.rect.x -= 2
+        self.rect.x -= 1
 
         if self.rect.x <= -840:
             self.rect.x = 0
@@ -39,18 +39,21 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.flip = False
 
-        self.imgs = [[pygame.image.load(f'{base_dir}/assets/images/plate/blue_idle.bmp'),
-                      pygame.image.load(f'{base_dir}/assets/images/plate/blue_fly.bmp')],
-                     [pygame.image.load(f'{base_dir}/assets/images/plate/pink_idle.bmp'),
-                      pygame.image.load(f'{base_dir}/assets/images/plate/pink_fly.bmp')],
-                     [pygame.image.load(f'{base_dir}/assets/images/plate/green_idle.bmp'),
-                      pygame.image.load(f'{base_dir}/assets/images/plate/green_fly.bmp')]]
+        self.imgs = [pygame.image.load(f'{base_dir}/assets/images/plate/blue.bmp'),
+                     pygame.image.load(f'{base_dir}/assets/images/plate/pink.bmp'),
+                     pygame.image.load(f'{base_dir}/assets/images/plate/green.bmp')]
 
-        self.img = self.imgs[self.config['user']['color']][0]
+        self.is_flame = False
+        self.img_flame = pygame.image.load(f'{base_dir}/assets/images/plate/flame.bmp')
+        self.rect_flame = self.img_flame.get_rect()
+
+        self.img = self.imgs[self.config['user']['color']]
         self.rect = self.img.get_rect()
 
         self.rect.x = 5
         self.rect.centery = self.screen_rect.centery
+
+        self.rect_flame.centerx = self.rect.centerx + 1
 
         self.gravity_default = 7
         self.gravity = self.gravity_default
@@ -63,16 +66,16 @@ class SpacePlate(pygame.sprite.Sprite):
                        'score': f'{base_dir}/assets/sounds/score.wav'}
 
     def reset(self):
-        self.img = self.imgs[self.config['user']['color']][0]
         self.rect.centery = self.screen_rect.centery
         self.is_jump = False
         self.jump = 10
+        self.is_flame = False
         self.gravity = self.gravity_default
         self.flip = False
 
     def update(self):
-        if self.img not in self.imgs[self.config['user']['color']]:
-            self.img = self.imgs[self.config['user']['color']][0]
+        if self.img != self.imgs[self.config['user']['color']]:
+            self.img = self.imgs[self.config['user']['color']]
 
         if not self.is_jump:
             self.gravity += self.gravity_scale
@@ -90,24 +93,31 @@ class SpacePlate(pygame.sprite.Sprite):
                     else:
                         self.rect.y += (self.jump ** 2) // 3
                 else:
-                    self.img = self.imgs[self.config['user']['color']][1]
+                    self.is_flame = True
                     if self.flip:
                         self.rect.y += (self.jump ** 2) // 3
                     else:
                         self.rect.y -= (self.jump ** 2) // 3
                 self.jump -= 1
             else:
-                self.img = self.imgs[self.config['user']['color']][0]
+                self.is_flame = False
                 self.is_jump = False
                 self.jump = 10
 
+        if self.flip:
+            self.rect_flame.bottom = self.rect.top
+        else:
+            self.rect_flame.top = self.rect.bottom
+
     def blit(self):
         if self.flip:
-            rect = self.rect.copy()
-            if self.is_jump: rect.y -= 24
-            self.screen.blit(pygame.transform.flip(self.img, False, True), rect)
+            self.screen.blit(pygame.transform.flip(self.img, False, True), self.rect)
+            if self.is_flame:
+                self.screen.blit(pygame.transform.flip(self.img_flame, False, True), self.rect_flame)
         else:
             self.screen.blit(self.img, self.rect)
+            if self.is_flame:
+                self.screen.blit(self.img_flame, self.rect_flame)
 
 
 class Asteroid(pygame.sprite.Sprite):
