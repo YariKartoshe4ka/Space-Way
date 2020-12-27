@@ -56,7 +56,7 @@ def quit(window):
     window.terminate()
     rmtree(f'{base_dir}/tmp')
 
-    if platfrom.startswith('win'):
+    if platform.startswith('win'):
         Popen(['start', '', f'{base_dir}/Space Way.exe'], shell=True)
 
     elif platform.startswith('linux') or platform == 'darwin':
