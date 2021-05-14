@@ -161,17 +161,22 @@ class BoostMixin:
         self.is_active = False
         self.tick = 0
 
+        self.rect_3 = self.img_3.get_rect()
+        self.rect_3.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
+        self.rect_3.left = self.screen_rect.left + 2
+
     def _update(self):
         if self.is_active:
+            self.rect_3.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
             if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
                 self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
                 self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_2.left = self.screen_rect.left + 24
             else:
                 self.img_2 = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
                 self.rect_2 = self.img_2.get_rect()
-                self.rect_2.top = self.screen_rect.top + 2
+                self.rect_2.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_2.left = self.screen_rect.left + 24
 
             if self.life * self.config['FPS'] - self.tick <= 0:

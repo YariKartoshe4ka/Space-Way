@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from random import randint
+from random import randint, choice
 
 from .objects import *
 
@@ -115,37 +115,37 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
 
     # Spawn flying asteroid if difficulty >= middle
     if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
-        for sprite in astrs.copy():
+        for sprite in astrs:
             if sprite.name == 'flying':
                 break
         else:
             astrs.add(FlyingAsteroid(screen, base_dir, config))
 
-    if len(boosts) == 0:
-        max_choice = 2
+    if tick % (config['FPS'] * boosts.next_spawn) == 0:
+        boosts.next_spawn = randint(3, 7)
+        choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
 
         # Spawn mirror boost if difficulty >= hard
-        if config['user']['difficulty'] >= 2: max_choice += 1
-        choice = randint(0, max_choice)
+        if config['user']['difficulty'] >= 2:
+            choices['mirror'] = MirrorBoost
 
-        if choice == 0:
-            boost = TimeBoost(screen, base_dir, config)
-        elif choice == 1:
-            boost = DoubleBoost(screen, base_dir, config)
-        elif choice == 2:
-            boost = ShieldBoost(screen, base_dir, config, plate)
-        elif choice == 3:
-            boost = MirrorBoost(screen, base_dir, config, plate)
+        name = choice(list(choices))
+        number_in_queue = len(boosts) + 1
+
+        while name in boosts:
+            name = choice(list(choices))
+
+        if name == 'time' or name == 'double':
+            boost = choices[name](screen, base_dir, config, number_in_queue)
+        elif name == 'shield' or name == 'mirror':
+            boost = choices[name](screen, base_dir, config, number_in_queue, plate)
 
         while pygame.sprite.spritecollideany(boost, astrs):
-            if choice == 0:
-                boost = TimeBoost(screen, base_dir, config)
-            elif choice == 1:
-                boost = DoubleBoost(screen, base_dir, config)
-            elif choice == 2:
-                boost = ShieldBoost(screen, base_dir, config, plate)
-            elif choice == 3:
-                boost = MirrorBoost(screen, base_dir, config, plate)
+            name = choice(list(choices))
+            if name == 'time' or name == 'double':
+                boost = choices[name](screen, base_dir, config, number_in_queue)
+            elif name == 'shield' or name == 'mirror':
+                boost = choices[name](screen, base_dir, config, number_in_queue, plate)
 
         boosts.add(boost)
 
@@ -167,17 +167,16 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
         spawn(screen, base_dir, config, tick, plate, astrs, boosts)
 
-        for astr in astrs.copy():
+        for astr in astrs:
             if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
                 if config['user']['effects']:
                     pygame.mixer.Sound(plate.sounds['score']).play()
 
-                for boost in boosts.copy():
-                    if boost.name == 'double' and boost.is_active:
-                        config['score'] += 2
-                    else:
-                        config['score'] += 1
+                if 'double' in boosts and boosts.get('double').is_active:
+                    config['score'] += 2
+                else:
+                    config['score'] += 1
 
         for astr in astrs.sprites():
             astr.update() 
@@ -216,10 +215,9 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
     
-        for boost in boosts:
-            if boost.name == 'shield' and boost.is_active:
-                boosts.remove(boost)
-                break
+        if 'shield' in boosts and boosts.get('shield').is_active:
+            boosts.remove(boosts.get('shield'))
+
         else:
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
@@ -234,34 +232,33 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             config['speed'] = 2
             config['sub_scene'] = 'end'
 
-    elif boosts_collides and not boosts_collides[0].is_active:
-        boost = boosts_collides[0]
+    elif boosts_collides:
+        for boost in boosts_collides:
+            if not boost.is_active:
+                if boost.name == 'time':
+                    boost.is_active = True
+                    boost.speed = config['speed']
+                    config['speed'] = 2
 
-        if boost.name == 'time':
-            boost.is_active = True
-            boost.speed = config['speed']
-            config['speed'] = 2
+                elif boost.name == 'double':
+                    boost.is_active = True
 
-        elif boost.name == 'double':
-            boost.is_active = True
+                elif boost.name == 'shield':
+                    boost.is_active = True
 
-        elif boost.name == 'shield':
-            boost.is_active = True
-
-        elif boost.name == 'mirror':
-            boost.is_active = True
-            plate.rect.y += 24
-            plate.flip = True
+                elif boost.name == 'mirror':
+                    boost.is_active = True
+                    plate.rect.y += 24
+                    plate.flip = True
 
     elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
 
-        for boost in boosts:
-            if boost.name == 'shield' and boost.is_active:
-                boosts.remove(boost)
-                plate.is_jump = True
-                break
+        if 'shield' in boosts and boosts.get('shield').is_active:
+            boosts.remove(boosts.get('shield'))
+            plate.is_jump = True
+
         else:
             with open(f'{base_dir}/config/score.csv', 'a') as file:
                 line = ','.join([str(config['score']), config['user']['nick']]) + '\n'

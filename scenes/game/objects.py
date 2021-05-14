@@ -175,8 +175,10 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
 
 
+
+
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, life=5):
+    def __init__(self, screen, base_dir, config, number_in_queue, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'time'
@@ -185,6 +187,7 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
+        self.number_in_queue = number_in_queue
 
         self.config = config
 
@@ -200,10 +203,6 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
-        self.rect_3 = self.img_3.get_rect()
-        self.rect_3.top = self.screen_rect.top + 2
-        self.rect_3.left = self.screen_rect.left + 2
-
         BoostMixin.__init__(self, base_dir, config)
 
     def prepare_kill(self):
@@ -211,7 +210,7 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, life=5):
+    def __init__(self, screen, base_dir, config, number_in_queue, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'double'
@@ -220,6 +219,7 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
+        self.number_in_queue = number_in_queue
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
         self.img = self.img_idle
@@ -231,15 +231,11 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
         self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
 
-        self.rect_3 = self.img_3.get_rect()
-        self.rect_3.top = self.screen_rect.top + 2
-        self.rect_3.left = self.screen_rect.left + 2
-
         BoostMixin.__init__(self, base_dir, config)
 
 
 class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, plate, life=5):
+    def __init__(self, screen, base_dir, config, number_in_queue, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'shield'
@@ -248,6 +244,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
+        self.number_in_queue = number_in_queue
 
         self.plate = plate
 
@@ -263,10 +260,6 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.rect = self.img.get_rect()
         self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
-
-        self.rect_3 = self.img_3.get_rect()
-        self.rect_3.top = self.screen_rect.top + 2
-        self.rect_3.left = self.screen_rect.left + 2
 
         self.rect_4 = self.img_4.get_rect()
 
@@ -286,7 +279,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, plate, life=5):
+    def __init__(self, screen, base_dir, config, number_in_queue, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'mirror'
@@ -295,7 +288,10 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
+        self.number_in_queue = number_in_queue
+        
         self.config = config
+
         self.plate = plate
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_idle.bmp')
@@ -307,10 +303,6 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
         self.rect = self.img.get_rect()
         self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
         self.rect.left = self.screen_rect.right
-
-        self.rect_3 = self.img_3.get_rect()
-        self.rect_3.top = self.screen_rect.top + 2
-        self.rect_3.left = self.screen_rect.left + 2
 
         BoostMixin.__init__(self, base_dir, config)
 
