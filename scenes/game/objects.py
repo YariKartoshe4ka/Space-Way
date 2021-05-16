@@ -175,10 +175,8 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
 
 
-
-
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, number_in_queue, life=5):
+    def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'time'
@@ -187,7 +185,6 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
-        self.number_in_queue = number_in_queue
 
         self.config = config
 
@@ -205,12 +202,17 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
         BoostMixin.__init__(self, base_dir, config)
 
-    def prepare_kill(self):
+    def activate(self):
+        self.is_active = True
+        self.speed = self.config['speed']
+        self.config['speed'] = 2
+
+    def deactivate(self):
         self.config['speed'] = self.speed
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, number_in_queue, life=5):
+    def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'double'
@@ -219,7 +221,6 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
-        self.number_in_queue = number_in_queue
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
         self.img = self.img_idle
@@ -235,7 +236,7 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, number_in_queue, plate, life=5):
+    def __init__(self, screen, base_dir, config, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'shield'
@@ -244,7 +245,6 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
-        self.number_in_queue = number_in_queue
 
         self.plate = plate
 
@@ -279,7 +279,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
 
 
 class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config, number_in_queue, plate, life=5):
+    def __init__(self, screen, base_dir, config, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
         self.name = 'mirror'
@@ -288,7 +288,6 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
-        self.number_in_queue = number_in_queue
         
         self.config = config
 
@@ -306,7 +305,12 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
 
         BoostMixin.__init__(self, base_dir, config)
 
-    def prepare_kill(self):
+    def activate(self):
+        self.is_active = True
+        self.plate.rect.y += 24
+        self.plate.flip = True
+
+    def deactivate(self):
         self.plate.flip = False
         
 

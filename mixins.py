@@ -162,7 +162,6 @@ class BoostMixin:
         self.tick = 0
 
         self.rect_3 = self.img_3.get_rect()
-        self.rect_3.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
         self.rect_3.left = self.screen_rect.left + 2
 
     def _update(self):
@@ -180,7 +179,7 @@ class BoostMixin:
                 self.rect_2.left = self.screen_rect.left + 24
 
             if self.life * self.config['FPS'] - self.tick <= 0:
-                self.prepare_kill()
+                self.deactivate()
                 self.kill()
             else:
                 self.tick += 1
@@ -203,7 +202,10 @@ class BoostMixin:
     def blit(self):
         self._blit()
 
-    def prepare_kill(self):
+    def activate(self):
+        self.is_active = True
+
+    def deactivate(self):
         pass
 
 

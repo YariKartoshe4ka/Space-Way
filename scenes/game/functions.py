@@ -1,6 +1,6 @@
 import pygame
 from sys import exit
-from random import randint, choice
+from random import choice, randint
 
 from .objects import *
 
@@ -110,6 +110,7 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
 
 
 def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
+    # Spawn asteroid
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astrs.add(Asteroid(screen, base_dir, config))
 
@@ -121,8 +122,10 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         else:
             astrs.add(FlyingAsteroid(screen, base_dir, config))
 
-    if tick % (config['FPS'] * boosts.next_spawn) == 0:
-        boosts.next_spawn = randint(3, 7)
+    # Spawn boost
+    if config['score'] >= boosts.next_spawn:
+        boosts.next_spawn += randint(4, 8)
+
         choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
 
         # Spawn mirror boost if difficulty >= hard
@@ -130,22 +133,25 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
             choices['mirror'] = MirrorBoost
 
         name = choice(list(choices))
-        number_in_queue = len(boosts) + 1
 
-        while name in boosts:
-            name = choice(list(choices))
+        # if (len(boosts) == 3 and config['user']['difficulty'] == 2) or \
+        #    (len(boosts) == 4 and config['user']['difficulty'] == 3):
+        #    boosts.next_spawn += 1
+
+        # while name in boosts:
+        #     name = choice(list(choices))
 
         if name == 'time' or name == 'double':
-            boost = choices[name](screen, base_dir, config, number_in_queue)
+            boost = choices[name](screen, base_dir, config)
         elif name == 'shield' or name == 'mirror':
-            boost = choices[name](screen, base_dir, config, number_in_queue, plate)
+            boost = choices[name](screen, base_dir, config, plate)
 
         while pygame.sprite.spritecollideany(boost, astrs):
             name = choice(list(choices))
             if name == 'time' or name == 'double':
-                boost = choices[name](screen, base_dir, config, number_in_queue)
+                boost = choices[name](screen, base_dir, config)
             elif name == 'shield' or name == 'mirror':
-                boost = choices[name](screen, base_dir, config, number_in_queue, plate)
+                boost = choices[name](screen, base_dir, config, plate)
 
         boosts.add(boost)
 
@@ -173,18 +179,18 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
                 if config['user']['effects']:
                     pygame.mixer.Sound(plate.sounds['score']).play()
 
-                if 'double' in boosts and boosts.get('double').is_active:
+                if 'double' in boosts:
                     config['score'] += 2
                 else:
                     config['score'] += 1
 
-        for astr in astrs.sprites():
-            astr.update() 
+        for astr in astrs:
+            astr.update()
             astr.blit()
 
         plate.update()
 
-        for boost in boosts.sprites():
+        for boost in boosts:
             boost.update()
             boost.blit()
 
@@ -215,7 +221,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
     
-        if 'shield' in boosts and boosts.get('shield').is_active:
+        if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
 
         else:
@@ -235,27 +241,13 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
     elif boosts_collides:
         for boost in boosts_collides:
             if not boost.is_active:
-                if boost.name == 'time':
-                    boost.is_active = True
-                    boost.speed = config['speed']
-                    config['speed'] = 2
-
-                elif boost.name == 'double':
-                    boost.is_active = True
-
-                elif boost.name == 'shield':
-                    boost.is_active = True
-
-                elif boost.name == 'mirror':
-                    boost.is_active = True
-                    plate.rect.y += 24
-                    plate.flip = True
+                boosts.activate(boost)
 
     elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
 
-        if 'shield' in boosts and boosts.get('shield').is_active:
+        if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
             plate.is_jump = True
 

@@ -4,7 +4,7 @@
     "FPS": 30,
     "scene": "game",
     "sub_scene": "game",
-    "speed": 4,
+    "speed": 2,
     "score": 0,
     "version": "1.4.0"
 }

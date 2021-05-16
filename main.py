@@ -56,7 +56,6 @@ def main():
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
-
     while True:
         tick += 1
 
