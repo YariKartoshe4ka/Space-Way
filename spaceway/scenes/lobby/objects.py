@@ -1,7 +1,8 @@
 import pygame
 import sys
 sys.path.append('../../')
-from mixins import FloatButtonMixin, CaptionMixin
+
+from spaceway.mixins import FloatButtonMixin, CaptionMixin
 
 
 class PlayButton(FloatButtonMixin):

@@ -1,7 +1,7 @@
 import pygame
 import sys
 sys.path.append('../../')
-from mixins import FloatButtonMixin
+from spaceway.mixins import FloatButtonMixin
 
 
 pygame.font.init()
