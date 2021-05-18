@@ -19,10 +19,10 @@ with open('requirements.txt', 'r') as file:
 
 # Setup icon and link if platform is linux
 if platform.startswith('linux'):
-    data_files.append(('share/applications', ['shortcuts/Space Way.desktop']))
+    data_files.append(('share/applications', ['setupfiles/Space Way.desktop']))
     icon_path = os.path.expanduser('~/.icons/spaceway.png')
     if not os.path.exists(icon_path):
-        copyfile('shortcuts/spaceway.png', icon_path)
+        copyfile('setupfiles/spaceway.png', icon_path)
 
 
 setup(

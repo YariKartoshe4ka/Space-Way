@@ -1,151 +1,98 @@
-from sys import platform, exit, argv
-from os import mkdir, unlink
-from zipfile import ZipFile
-from shutil import copyfile, rmtree, copytree
-from subprocess import Popen
-from requests import get
+""" Module responsible for the Space Way updates """
+
+import os
 from packaging.version import parse
-from multiprocessing import Process, freeze_support
+from webbrowser import open
+
+from requests import get
+import pygame
 
 
-def gui(base_dir):
-    import pygame
-    import os
+def dialog(base_dir) -> None:
+    """ Creator of information dialog """
 
+    # Preinitialization and initialization
     os.environ['SDL_VIDEO_CENTERED'] = '1'
-
     pygame.init()
-    screen = pygame.display.set_mode((300, 200))
-    pygame.display.set_caption('Space Way')
 
+    # Setup screen
+    MODE = (WIDTH, HEIGHT) = (300, 200)
+    screen = pygame.display.set_mode(MODE)
     screen_rect = screen.get_rect()
+    pygame.display.set_caption('Space Way Update')
 
-    copytree(f'{base_dir}/assets/updater', f'{base_dir}/tmp/updater')
-
-    font = pygame.font.Font(f'{base_dir}/tmp/updater/pixeboy.ttf', 28)
-
-    bg = pygame.image.load(f'{base_dir}/tmp/updater/background.bmp')
-    bg_rect = bg.get_rect()
-
-    tick = 0
     clock = pygame.time.Clock()
 
-    loading = font.render('Updating .', True, (255, 255, 255))
-    loading_rect = loading.get_rect()
-    loading_rect.center = screen_rect.center
+    # Setup fonts
+    font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
+
+    # Setup other drawable objects
+    bg = pygame.image.load(f'{base_dir}/assets/updater/background.bmp')
+    bg_rect = bg.get_rect()
+
+    title_top = font.render('New version', True, (0, 255, 255))
+    title_top_rect = title_top.get_rect()
+    title_top_rect.center = screen_rect.center
+    title_top_rect.top -= 20
+
+    title_bottom = font.render('available', True, (0, 255, 255))
+    title_bottom_rect = title_bottom.get_rect()
+    title_bottom_rect.center = screen_rect.center
+
+    view_text = font.render('View', True, (0, 255, 0))
+    view_text_rect = view_text.get_rect()
+    view_text_rect.centerx = WIDTH // 4
+    view_text_rect.bottom = screen_rect.bottom - 15
+
+    close_text = font.render('Close', True, (255, 0, 0))
+    close_text_rect = close_text.get_rect()
+    close_text_rect.centerx = WIDTH - WIDTH // 4
+    close_text_rect.bottom = screen_rect.bottom - 15
 
     while True:
         for event in pygame.event.get():
+            # Checks if user close window
             if event.type == pygame.QUIT:
-                exit()
+                return
 
-        if tick >= 30: tick = 0
+            # Checks if user press mouse button
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                pos = (x, y) = pygame.mouse.get_pos()
 
-        screen.fill((0, 0, 0))
+                # If he pressed `View`
+                if view_text_rect.collidepoint(pos):
+                    open('https://github.com/YariKartoshe4ka/Space-Way/releases/latest')
+
+                # If he pressed `Close`
+                elif close_text_rect.collidepoint(pos):
+                    return
+
+        # Blitting objects
         screen.blit(bg, bg_rect)
-        screen.blit(loading, loading_rect)
+        screen.blit(title_top, title_top_rect)
+        screen.blit(title_bottom, title_bottom_rect)
+        screen.blit(view_text, view_text_rect)
+        screen.blit(close_text, close_text_rect)
+
+        # Update screen
         pygame.display.update()
 
-        loading = font.render('Updating ' + '.' * (tick // 10 + 1), True, (0, 255, 255))
-
-        tick += 1
+        # Sync FPS
         clock.tick(30)
 
 
-def quit(window):
-    window.terminate()
-    rmtree(f'{base_dir}/tmp')
+def check_software_updates(version, base_dir) -> None:
+    """ Сhecks for available updates. If there are any, opens an information dialog """
 
-    if platform.startswith('win'):
-        Popen(['start', '', f'{base_dir}/Space Way.exe'], shell=True)
-
-    elif platform.startswith('linux') or platform == 'darwin':
-        Popen(f'python3 "{base_dir}/main.py"', shell=True)
-
-    exit()
-
-
-def check_software_updates(version, base_dir):
+    # Get remote vesrion of `config.json` if network connection available
     try:
         r = get('https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/config/config.json')
     except:
         return
-    else:
-        remote_version = r.json().get('version', '0.0.0')
 
-        if parse(version) < parse(remote_version):
-            if platform.startswith('win'):
-                Popen(['start', '', f'{base_dir}/Updater.exe', remote_version, base_dir], shell=True)
-                exit()
+    # Get value of `version` in remote version of `config.json`
+    remote_version = r.json().get('version', '0.0.0')
 
-            elif platform.startswith('linux') or platform == 'darwin':
-                Popen(f'python3 "{base_dir}/updater.py" "{remote_version}" "{base_dir}"', shell=True)
-                exit()
-
-
-def install_software_updates(remote_version, base_dir, window):
-    mkdir(f'{base_dir}/tmp')
-
-    if platform.startswith('win'):
-        try:
-            exe = get(f'https://github.com/YariKartoshe4ka/Space-Way/releases/download/{remote_version}/Space-Way-{remote_version}-portable.exe')
-            zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
-        except:
-            quit(window)
-
-        unlink(f'{base_dir}/Space Way.exe')
-        with open(f'{base_dir}/Space Way.exe', 'wb') as file:
-            file.write(exe.content)
-
-        with open(f'{base_dir}/tmp/update.zip', 'wb') as file:
-            file.write(zip.content)
-
-        with ZipFile(f'{base_dir}/tmp/update.zip') as file:
-            file.extractall(f'{base_dir}/tmp/')
-
-        rmtree(f'{base_dir}/assets')
-        unlink(f'{base_dir}/icon.ico')
-        unlink(f'{base_dir}/config/config.json')
-
-        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets', f'{base_dir}/assets')
-
-        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
-        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
-
-        quit(window)
-
-    elif platform.startswith('linux') or platform == 'darwin':
-        try:
-            zip = get(f'https://github.com/YariKartoshe4ka/Space-Way/archive/{remote_version}.zip')
-        except:
-            quit(window)
-
-        with open(f'{base_dir}/tmp/update.zip', 'wb') as file:
-            file.write(zip.content)
-
-        with ZipFile(f'{base_dir}/tmp/update.zip') as file:
-            file.extractall(f'{base_dir}/tmp/')
-
-        Popen(['pip3', 'install', '-r', f'{base_dir}/tmp/Space-Way-{remote_version}/requirements.txt']).wait()
-
-        rmtree(f'{base_dir}/assets')
-        rmtree(f'{base_dir}/scenes')
-        unlink(f'{base_dir}/main.py')
-        unlink(f'{base_dir}/icon.ico')
-        unlink(f'{base_dir}/config/config.json')
-
-        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/assets', f'{base_dir}/assets')
-        copytree(f'{base_dir}/tmp/Space-Way-{remote_version}/scenes', f'{base_dir}/scenes')
-        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/main.py', f'{base_dir}/main.py')
-        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/icon.ico', f'{base_dir}/icon.ico')
-        copyfile(f'{base_dir}/tmp/Space-Way-{remote_version}/config/config.json', f'{base_dir}/config/config.json')
-
-        quit(window)
-
-
-if __name__ == '__main__':
-    freeze_support()
-    _, remote_version, base_dir = argv
-    window = Process(target=gui, args=(base_dir,))
-    window.start()
-    install_software_updates(remote_version, base_dir, window)
+    # Open information dialog if new version available
+    if parse(version) < parse(remote_version):
+        dialog(base_dir)
