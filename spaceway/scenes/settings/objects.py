@@ -1,8 +1,8 @@
-import pygame
-import sys
-sys.path.append('../../')
 from json import dump
-from spaceway.mixins import ButtonMixin
+
+import pygame
+
+from ...mixins import ButtonMixin
 
 
 class EffectsButton(ButtonMixin, pygame.sprite.Sprite):

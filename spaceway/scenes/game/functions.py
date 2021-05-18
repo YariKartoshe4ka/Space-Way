@@ -1,6 +1,7 @@
-import pygame
 from sys import exit
 from random import choice, randint
+
+import pygame
 
 from .objects import *
 

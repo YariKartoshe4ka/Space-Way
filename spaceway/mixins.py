@@ -1,5 +1,6 @@
-import pygame
 from json import dump
+
+import pygame
 
 
 class ButtonMixin:

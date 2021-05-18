@@ -1,11 +1,11 @@
 """ Module responsible for the Space Way updates """
 
 import os
-from packaging.version import parse
 from webbrowser import open
 
-from requests import get
 import pygame
+from packaging.version import parse
+from requests import get
 
 
 def dialog(base_dir) -> None:

@@ -1,5 +1,6 @@
-import pygame
 from sys import exit
+
+import pygame
 
 from .objects import *
 

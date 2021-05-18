@@ -1,9 +1,8 @@
-import pygame
-import sys
-sys.path.append('../../')
 from random import randint
 
-from spaceway.mixins import BoostMixin, CaptionMixin, ButtonMixin
+import pygame
+
+from ...mixins import BoostMixin, CaptionMixin, ButtonMixin
 
 
 pygame.font.init()

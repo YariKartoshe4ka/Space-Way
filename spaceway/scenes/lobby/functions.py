@@ -1,6 +1,7 @@
-import pygame
 from sys import exit
 from json import dump
+
+import pygame
 
 from .objects import *
 
