@@ -61,14 +61,12 @@ class SettingsButton(FloatButtonMixin):
 
 
 class Caption(CaptionMixin):
-    def __init__(self, screen, base_dir, config, caption='Space Way'):
-        CaptionMixin.__init__(self, base_dir, config, caption)
-
+    def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
+        CaptionMixin.__init__(self, base_dir, config, 'Space Way')
+
+    def locate(self):
         self.rect.centerx = self.screen_rect.centerx
         self.rect.y = 100
-
-    def blit(self):
-        self._blit()

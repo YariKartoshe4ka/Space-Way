@@ -64,21 +64,18 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
 
-                if end.buttons.sprites()[0]._rect.collidepoint((x, y)):
+                if end.buttons.sprites()[0].rect.collidepoint((x, y)):
                     print('click lobby!')
                     play.to_bottom = True
                     table.to_top = True
                     settings.to_top = True
 
-                    config['score'] = 0
                     config['sub_scene'] = 'game'
                     config['scene'] = 'lobby'
 
-                elif end.buttons.sprites()[1]._rect.collidepoint((x, y)):
+                elif end.buttons.sprites()[1].rect.collidepoint((x, y)):
                     print('click again!')
-                    config['score'] = 0
-                    config['sub_scene'] = 'game'
-                    config['scene'] = 'game'
+                    end.buttons.sprites()[1].on_press()
 
     elif config['sub_scene'] == 'pause':
         for event in pygame.event.get():
@@ -90,8 +87,10 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
+                print(pause.buttons.sprites()[0].rect)
+                print(pause.buttons.sprites()[1].rect)
 
-                if pause.buttons.sprites()[0]._rect.collidepoint((x, y)):
+                if pause.buttons.sprites()[0].rect.collidepoint((x, y)):
                     print('click lobby!')
                     play.to_bottom = True
                     table.to_top = True
@@ -105,15 +104,19 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
                     config['sub_scene'] = 'game'
                     config['scene'] = 'lobby'
 
-                elif pause.buttons.sprites()[1]._rect.collidepoint((x, y)):
+                elif pause.buttons.sprites()[1].rect.collidepoint((x, y)):
                     print('click resume!')
-                    config['sub_scene'] = 'game'
+                    pause.buttons.sprites()[1].on_press()
 
 
 def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
     # Spawn asteroid
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
-        astrs.add(Asteroid(screen, base_dir, config))
+        astr = Asteroid(screen, base_dir, config)
+        while pygame.sprite.spritecollideany(astr, boosts):
+            astr = Asteroid(screen, base_dir, config)
+        astrs.add(astr)
+        
 
     # Spawn flying asteroid if difficulty >= middle
     if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
@@ -134,13 +137,6 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
             choices['mirror'] = MirrorBoost
 
         name = choice(list(choices))
-
-        # if (len(boosts) == 3 and config['user']['difficulty'] == 2) or \
-        #    (len(boosts) == 4 and config['user']['difficulty'] == 3):
-        #    boosts.next_spawn += 1
-
-        # while name in boosts:
-        #     name = choice(list(choices))
 
         if name == 'time' or name == 'double':
             boost = choices[name](screen, base_dir, config)
@@ -209,8 +205,6 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
     elif config['sub_scene'] == 'pause':
         bg.blit()
-
-        pause.update()
         pause.blit()
 
 
@@ -237,6 +231,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             boosts.empty()
 
             config['speed'] = 2
+            config['score'] = 0
             config['sub_scene'] = 'end'
 
     elif boosts_collides:
@@ -264,4 +259,5 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             boosts.empty()
 
             config['speed'] = 2
+            config['score'] = 0
             config['sub_scene'] = 'end'

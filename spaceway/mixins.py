@@ -3,6 +3,31 @@ from json import dump
 import pygame
 
 
+class SceneButtonMixin:
+    """ Mixin of button """
+
+    def __init__(self, screen, base_dir, config, scene, sub_scene):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+
+        self.rect = self.img.get_rect()
+
+        self.scene = scene
+        self.sub_scene = sub_scene
+
+    def blit(self):
+        self.screen.blit(self.img, self.rect)
+
+    def change_scene(self):
+        self.config['scene'] = self.scene
+        self.config['sub_scene'] = self.sub_scene
+
+    def on_press(self):
+        self.change_scene()
+
+
 class ButtonMixin:
     def __init__(self, screen, base_dir, config, switch):
         self.switch = switch
@@ -122,33 +147,68 @@ class FloatButtonMixin:
 
 
 class CaptionMixin:
-    def __init__(self, base_dir, config, caption, fields=[]):
-        self.config = config
+    """ Mixin for more convenient header creation.
+        Automatically selects color of border for caption. """
 
-        self.fields = fields
+    def __init__(self, base_dir, config, caption):
+        """ Initializing the mixin. if you redefine the `__init__` function
+            call the `__init__` function of `CaptionMixin at the end of
+            your `__init__` function """
+
+        # Setting variables for later use
+        self.config = config
         self.caption = caption
 
+        # Setting color for text
         self.fg_color = (255, 255, 255)
+
+        # Setting width of border (px)
         self.border = 1
+
+        # Setting font for later generating image of text
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 72)
 
-        self._update()
+        # Calling `update` function for generating all images
+        self.update()
 
-    def _update(self):
-        self.img = self.font.render(self.caption.format(eval('list(map(eval, self.fields))')), True, self.fg_color)
+    def update(self, *fields):
+        """ Update image (text) of caption and its border. Note that
+            this function will recreate `rect` and previous position
+            will be deleted (overwritten). Define `locate` function
+            to update `rect` position. if you redefine this function,
+            it must be called inside your function anywhere """
 
-        self.colors = [self.font.render(self.caption.format(eval('list(map(eval, self.fields))')), True, (0, 153, 255)),
-                       self.font.render(self.caption.format(eval('list(map(eval, self.fields))')), True, (252, 15, 192)),
-                       self.font.render(self.caption.format(eval('list(map(eval, self.fields))')), True, (0, 255, 0))]
+        # Render text of caption
+        self.img = self.font.render(self.caption.format(*fields), True, self.fg_color)
 
+        # Render borders of different colors
+        self.colors = [self.font.render(self.caption.format(*fields), True, (0, 153, 255)),
+                       self.font.render(self.caption.format(*fields), True, (252, 15, 192)),
+                       self.font.render(self.caption.format(*fields), True, (0, 255, 0))]
+
+        # Recreate rect of text
         self.rect = self.img.get_rect()
 
-    def _blit(self):
+        # Locate rect of text
+        self.locate()
+
+    def blit(self):
+        """ Blit of caption in two steps: border, then text. """
+
+        # Creating border: text of selected color is drawn with indents
+        # (size of border) in four directions: up, right, down, and left
         self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
         self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
         self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
         self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
+
+        # Text of main color is drawn in the center (over the top) 
         self.screen.blit(self.img, self.rect)
+
+    def locate(self):
+        """ Change `rect` position. If you don't override this function caption
+            will be located in the upper corner (x: 0, y: 0) """
+        pass
 
 
 class BoostMixin:

@@ -86,3 +86,47 @@ class BoostsGroup(pygame.sprite.Group):
             with passed name. Else it will return None """
 
         return self.active.get(name)
+
+
+class CenteredButtonsGroup(pygame.sprite.Group):
+    """ Extension of pygame.sprite.Group for centering group of
+        buttons on screen. Requires an additional parameter during
+        initialization `mode` (list or tuple with sizes of screen).
+        When you add or remove buttons, the group is centered again """
+
+    def __init__(self, mode, *buttons):
+        """ Initialization of group: adding buttons and setting
+            of width and height of screen """
+
+        pygame.sprite.Group.__init__(self, buttons)
+        self.screen_width, self.screen_height = mode
+
+    def center(self):
+        """ Centering of group """
+
+        space = 7
+        buttons_width = 0
+
+        for button in self:
+            buttons_width += button.width
+
+        all_width = buttons_width + space * (len(self) - 1)
+        x = (self.screen_width - all_width) // 2
+
+        for button in self:
+            button.rect.x = x
+            button.rect.centery = self.screen_height // 2
+
+            x += button.width + space
+
+    def add_internal(self, button):
+        """ Adding button and centering of group """
+
+        pygame.sprite.Group.add_internal(self, button)
+        self.center()
+
+    def remove_internal(self, button):
+        """ Removing button and centering of group """
+
+        pygame.sprite.Group.remove_internal(self, button)
+        self.center()
