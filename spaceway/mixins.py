@@ -3,29 +3,78 @@ from json import dump
 import pygame
 
 
-class SceneButtonMixin:
-    """ Mixin of button """
+class SceneButtonMixin(pygame.sprite.Sprite):
+    """ Mixin for float buttons. Buttons can only move vertically """
 
-    def __init__(self, screen, base_dir, config, scene, sub_scene):
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
+    def __init__(self, base_dir, config, scene: str, sub_scene: str,
+                 change_scene_to: str, change_sub_scene_to: str,
+                 speed: int = 0, action: str = 'stop'):
+        """ Initialize the mixin anywhere in your `__init__` function """
+        pygame.sprite.Sprite.__init__(self)
 
+        # Set variables for next use
         self.config = config
+        self.action = action if action in ('stop', 'enter', 'leave') else 'stop'
 
-        self.rect = self.img.get_rect()
+        # If speed is positive, on `enter` event button will move up,
+        # on `leave` event - down. If speed is negative, on `enter` event
+        # button will move down, on `leave` event - up
+        self.speed = speed
 
+        # Set events callbacks
+        self.post_enter = lambda: None
+        self.post_leave = lambda: None
+
+        # Set scene during which button is displayed
         self.scene = scene
         self.sub_scene = sub_scene
 
+        # Scenes on which will be changed when button will be pressed
+        self.change_scene_to = change_scene_to
+        self.change_sub_scene_to = change_sub_scene_to
+
+    def update(self) -> None:
+        """ Update button position """
+
+        # If button must move
+        if self.action != 'stop':
+            # Check, if move can be continued
+            if self.keep_move():
+                # If can be, move button
+                self.rect.y += self.speed if self.action == 'leave' else -self.speed
+            else:
+                # Else, stop button and call action callback
+                if self.action == 'enter':
+                    self.post_enter()
+                else:
+                    self.post_leave()
+                self.action = 'stop'
+
     def blit(self):
+        """ Blit button """
         self.screen.blit(self.img, self.rect)
 
-    def change_scene(self):
-        self.config['scene'] = self.scene
-        self.config['sub_scene'] = self.sub_scene
+    def enter(self, post_enter=lambda: None) -> None:
+        """ Start `enter` action and set `post_enter` callback for next use """
+        self.action = 'enter'
+        self.post_enter = post_enter
 
-    def on_press(self):
-        self.change_scene()
+    def leave(self, post_leave=lambda: None) -> None:
+        """ Start `leave` action and set `post_leave` callback for next use """
+        self.action = 'leave'
+        self.post_leave = post_leave
+
+    def keep_move(self) -> bool:
+        """ Function to control movement of button. It contains
+            conditions due of it decides, continue move or not """
+        return False
+
+    def change_scene(self) -> None:
+        self.config['scene'] = self.change_scene_to
+        self.config['sub_scene'] = self.change_sub_scene_to
+
+    def press(self) -> None:
+        self.leave(self.change_scene)
 
 
 class ButtonMixin:
@@ -78,72 +127,6 @@ class ButtonMixin:
             self.img = self.imgs['true']
         else:
             self.img = self.imgs['false']
-
-
-class FloatButtonMixin:
-    def __init__(self, base_dir, config, direction):
-        self.config = config
-
-        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self._screen.fill((0, 0, 0, 0))
-
-        self._rect = pygame.Rect(0, 0, self.width, self.height)
-        self._rect.centerx = self.rect.centerx
-        self._rect.centery = self.rect.centery
-
-        self.direction = direction
-
-        if direction == 'top':
-            self.to_bottom = True
-            self.to_top = False
-            self.change_scene = False
-
-        elif direction == 'bottom':
-            self.to_bottom = False
-            self.to_top = True
-            self.change_scene = False
-
-    def update(self):
-        if self.direction == 'top':
-            if self.to_top:
-                if self.rect.bottom >= self.screen_rect.top:
-                    self.rect.y -= self.speed
-                else:
-                    self.to_top = False
-
-                    if self.change_scene:
-                        self.change_scene = False
-                        self.config['scene'] = self.scene
-
-            elif self.to_bottom:
-                if self.rect.centery <= self.screen_rect.centery:
-                    self.rect.y += self.speed
-                else:
-                    self.to_bottom = False
-
-        elif self.direction == 'bottom':
-            if self.to_bottom:
-                if self.rect.top <= self.screen_rect.bottom:
-                    self.rect.y += self.speed
-                else:
-                    self.to_bottom = False
-
-                    if self.change_scene:
-                        self.change_scene = False
-                        self.config['scene'] = self.scene
-
-            elif self.to_top:
-                if self.rect.bottom + 5 >= self.screen_rect.bottom:
-                    self.rect.y -= self.speed
-                else:
-                    self.to_top = False
-
-        self._rect.center = self.rect.center
-
-    def blit(self):
-        self.screen.blit(self._screen, self.rect)
-        self.screen.blit(self.img, self.rect)
-        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
 
 
 class CaptionMixin:
@@ -206,8 +189,8 @@ class CaptionMixin:
         self.screen.blit(self.img, self.rect)
 
     def locate(self):
-        """ Change `rect` position. If you don't override this function caption
-            will be located in the upper corner (x: 0, y: 0) """
+        """ Change `rect` position. If you don't override this function,
+            caption will be located in the upper corner """
         pass
 
 
@@ -268,5 +251,3 @@ class BoostMixin:
 
     def deactivate(self):
         pass
-
-

@@ -94,11 +94,11 @@ class CenteredButtonsGroup(pygame.sprite.Group):
         initialization `mode` (list or tuple with sizes of screen).
         When you add or remove buttons, the group is centered again """
 
-    def __init__(self, mode, *buttons):
+    def __init__(self, mode: list, *buttons):
         """ Initialization of group: adding buttons and setting
             of width and height of screen """
 
-        pygame.sprite.Group.__init__(self, buttons)
+        pygame.sprite.Group.__init__(self, *buttons)
         self.screen_width, self.screen_height = mode
 
     def center(self):
@@ -130,3 +130,75 @@ class CenteredButtonsGroup(pygame.sprite.Group):
 
         pygame.sprite.Group.remove_internal(self, button)
         self.center()
+
+    def draw(self):
+        for button in self:
+            button.update()
+            button.blit()
+
+    def perform_point_collides(self, point: tuple) -> bool:
+        for button in self:
+            if button.rect.collidepoint(point):
+                button.press()
+                return True
+        return False
+
+
+class SceneButtonsGroup(pygame.sprite.Group):
+    buttons: dict = {}
+
+    def __init__(self, config, *args):
+        pygame.sprite.Group.__init__(self, *args)
+
+        self.config = config
+
+    def add_internal(self, button) -> None:
+        if self.buttons.get(button.scene) is None:
+            self.buttons[button.scene] = dict()
+
+        if self.buttons[button.scene].get(button.sub_scene) is None:
+            self.buttons[button.scene][button.sub_scene] = list()
+
+        self.buttons[button.scene][button.sub_scene].append(button)
+
+        pygame.sprite.Group.add_internal(self, button)
+
+    def remove_internal(self, button) -> None:
+        self.buttons[button.scene][button.sub_scene].remove(button)
+
+        pygame.sprite.Group.remove_internal(self, button)
+
+    def perform_point_collides(self, point: tuple) -> bool:
+        for button in self.get_by_scene():
+            if button.rect.collidepoint(point):
+                self.leave_buttons(self.config['scene'], self.config['sub_scene'])
+                self.enter_buttons(button.change_scene_to, button.change_sub_scene_to)
+                button.press()
+
+                return True
+        return False
+
+    def enter_buttons(self, scene: str = '', sub_scene: str = '') -> None:
+        for button in self.get_by_scene('' or scene, '' or sub_scene):
+            button.enter()
+
+    def leave_buttons(self, scene: str = '', sub_scene: str = '') -> None:
+        for button in self.get_by_scene('' or scene, '' or sub_scene):
+            button.leave()
+
+    def draw(self) -> None:
+        for button in self.get_by_scene():
+            button.update()
+            button.blit()
+
+    def get_by_scene(self, scene: str = '', sub_scene: str = '') -> list:
+        return self.buttons \
+            .get(scene or self.config['scene'], {}) \
+            .get(sub_scene or self.config['sub_scene'], [])
+
+    def get_by_instance(self, instance) -> pygame.sprite.Sprite:
+        for button in self:
+            if isinstance(button, instance):
+                return button
+
+        return None

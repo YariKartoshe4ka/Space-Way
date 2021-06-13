@@ -33,23 +33,35 @@ def main():
     tick = 0
 
     # Headpiece init
-    text = scenes.headpiece.functions.init(screen, base_dir, config, 'YariKartoshe4ka')
+    text = scenes.headpiece.init(screen, base_dir, config)
 
     # Lobby init
-    play_button, table_button, settings_button, caption = scenes.lobby.functions.init(screen, base_dir, config)
+    play_button, table_button, settings_button, caption = scenes.lobby.init(screen, base_dir, config)
 
     # Table init
-    table, back_button = scenes.table.functions.init(screen, base_dir, config)
+    table, table_back_button = scenes.table.init(screen, base_dir, config)
 
     # Settings init
-    effects_button, full_screen_button, difficulty_button, nick_input = scenes.settings.functions.init(screen, base_dir, config)
-    settings_buttons = pygame.sprite.Group()
-    settings_buttons.add(effects_button, full_screen_button, difficulty_button)
+    effects_button, full_screen_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    settings_buttons = pygame.sprite.Group(effects_button, full_screen_button, difficulty_button)
 
     # Game init
-    bg, plate, score, end, pause = scenes.game.functions.init(screen, base_dir, config, 'Score: 0')
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
+
+    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button = scenes.game.init(screen, base_dir, config, astrs, boosts, table)
+
+    pause_buttons = collection.CenteredButtonsGroup(config['mode'])
+    pause_buttons.add(pause_lobby_button, resume_button)
+
+    end_buttons = collection.CenteredButtonsGroup(config['mode'])
+    end_buttons.add(end_lobby_button, again_button)
+
+    # Buttons linking
+    scene_buttons = collection.SceneButtonsGroup(config)
+    scene_buttons.add(play_button, table_button, settings_button,
+                      settings_back_button, table_back_button, resume_button,
+                      pause_lobby_button, again_button, end_lobby_button)
 
     while True:
         tick += 1
@@ -59,25 +71,25 @@ def main():
             scenes.headpiece.functions.update(screen, config, text, tick)
 
         elif config['scene'] == 'lobby':
-            scenes.lobby.functions.check_events(config, base_dir, play_button, table_button, back_button, settings_button, caption)
-            scenes.lobby.functions.update(bg, play_button, table_button, settings_button, caption)
+            scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
+            scenes.lobby.functions.update(bg, scene_buttons, caption)
 
         elif config['scene'] == 'table':
-            scenes.table.functions.check_events(config, back_button, play_button, table_button, settings_button)
-            scenes.table.functions.update(base_dir, bg, table, back_button)
+            scenes.table.functions.check_events(config, scene_buttons)
+            scenes.table.functions.update(base_dir, bg, table, scene_buttons)
 
         elif config['scene'] == 'settings':
-            scenes.settings.functions.check_events(config, back_button, play_button, table_button, settings_button, effects_button, full_screen_button, difficulty_button, nick_input)
-            scenes.settings.functions.update(bg, config, back_button, settings_buttons, nick_input)
+            scenes.settings.functions.check_events(config, scene_buttons, effects_button, full_screen_button, difficulty_button, nick_input)
+            scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
             
             if full_screen_button.changed != config['user'][full_screen_button.index]:
                 screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * config['user'][full_screen_button.index])
                 full_screen_button.changed = config['user'][full_screen_button.index]
 
         elif config['scene'] == 'game':
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick)
-            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, play_button, table_button, settings_button, table)
-            scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, play_button, table_button, settings_button)
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
+            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, table)
+            scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
 
 
         if tick >= config['FPS'] * 10:

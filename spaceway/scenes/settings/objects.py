@@ -2,7 +2,7 @@ from json import dump
 
 import pygame
 
-from ...mixins import ButtonMixin
+from ...mixins import ButtonMixin, SceneButtonMixin
 
 
 class EffectsButton(ButtonMixin, pygame.sprite.Sprite):
@@ -59,6 +59,29 @@ class DifficultyButton(ButtonMixin, pygame.sprite.Sprite):
             self.img = self.imgs['hard']
         elif self.state == 3:
             self.img = self.imgs['insanse']
+
+
+class SettingsBackButton(SceneButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
+        self.rect = self.img.get_rect()
+
+        self.rect.left = self.screen_rect.left + 5
+        self.rect.top = self.screen_rect.bottom - 5
+
+        SceneButtonMixin.__init__(self, base_dir, config, 'settings', 'settings', 'lobby', 'lobby', 4)
+
+    def keep_move(self):
+        if self.action == 'enter':
+            return self.rect.bottom > self.screen_rect.bottom - 5
+        if self.action == 'leave':
+            return self.rect.top < self.screen_rect.bottom
+        return False
 
 
 class NickInput:

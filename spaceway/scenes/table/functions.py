@@ -2,45 +2,29 @@ from sys import exit
 
 import pygame
 
-from .objects import *
+from .objects import TableBackButton
 
 
-def init(screen, base_dir, config):
-    score = TableScore(screen, base_dir)
-    back = BackButton(screen, base_dir, config)
-
-    return score, back
-
-
-def check_events(config, back, play, table, settings): 
+def check_events(config, scene_buttons):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            back.change_scene = True
-            back.to_bottom = True
-            play.to_bottom = True
-            table.to_top = True
-            settings.to_top = True
+            scene_buttons.leave_buttons('table', 'table')
+            scene_buttons.enter_buttons('lobby', 'lobby')
+            scene_buttons.get_by_instance(TableBackButton).press()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
 
-            if back._rect.collidepoint((x, y)):
-                print('click back!')
-                back.change_scene = True
-                back.to_bottom = True
-                play.to_bottom = True
-                table.to_top = True
-                settings.to_top = True
+            scene_buttons.perform_point_collides((x, y))
 
 
-def update(base_dir, bg, score, back):
+def update(base_dir, bg, score, scene_buttons):
     bg.blit()
 
     score.update()
     score.blit()
 
-    back.update()
-    back.blit()
+    scene_buttons.draw()

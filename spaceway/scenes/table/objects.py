@@ -1,6 +1,6 @@
 import pygame
 
-from ...mixins import FloatButtonMixin
+from ...mixins import SceneButtonMixin
 
 
 pygame.font.init()
@@ -12,7 +12,7 @@ class TableScore:
         self.screen_rect = self.screen.get_rect()
 
         self.base_dir = base_dir
-        
+
         self.width = 250
         self.height = 100
         self.fg_color = (255, 255, 255)
@@ -37,7 +37,7 @@ class TableScore:
             self.imgs = []
             self.rects = []
 
-            data = sorted(list(map(lambda x: [int(x.split(',')[0]), x.split(',')[1]], data[1:len(data) - 1])))
+            data = sorted(list(set(map(lambda x: (int(x.split(',')[0]), x.split(',')[1]), data[1:-1]))))
             data.reverse()
 
             with open(f'{self.base_dir}/config/score.csv', 'w') as file:
@@ -66,7 +66,6 @@ class TableScore:
 
             self.is_update = False
 
-
     def blit(self):
         for i in range(len(self.msg)):
             self.screen.blit(self.imgs[i][1], (self.rects[i].x + self.border, self.rects[i].y))
@@ -76,15 +75,12 @@ class TableScore:
             self.screen.blit(self.imgs[i][0], self.rects[i])
 
 
-class BackButton(FloatButtonMixin):
+class TableBackButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
         self.width = self.height = 63
-
-        self.scene = 'lobby'
-        self.speed = 4
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
         self.rect = self.img.get_rect()
@@ -92,4 +88,11 @@ class BackButton(FloatButtonMixin):
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom - 5
 
-        FloatButtonMixin.__init__(self, base_dir, config, 'bottom')
+        SceneButtonMixin.__init__(self, base_dir, config, 'table', 'table', 'lobby', 'lobby', 4)
+
+    def keep_move(self):
+        if self.action == 'enter':
+            return self.rect.bottom > self.screen_rect.bottom - 5
+        if self.action == 'leave':
+            return self.rect.top < self.screen_rect.bottom
+        return False

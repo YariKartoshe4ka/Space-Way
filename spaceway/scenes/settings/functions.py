@@ -2,40 +2,22 @@ from sys import exit
 
 import pygame
 
-from .objects import *
+from .objects import SettingsBackButton
 
 
-def init(screen, base_dir, config):
-    effects = EffectsButton(screen, base_dir, config)
-    full_screen = FullScreenButton(screen, base_dir, config)
-    difficulty = DifficultyButton(screen, base_dir, config)
-    nick = NickInput(screen, base_dir, config)
-
-    return effects, full_screen, difficulty, nick
-
-
-def check_events(config, back, play, table, settings, effects, full_screen, difficulty, nick):
+def check_events(config, scene_buttons, effects, full_screen, difficulty, nick):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            back.change_scene = True
-            back.to_bottom = True
-            play.to_bottom = True
-            table.to_top = True
-            settings.to_top = True
+            scene_buttons.get_by_instance(SettingsBackButton).press()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
             x, y = pygame.mouse.get_pos()
 
-            if back._rect.collidepoint((x, y)):
-                print('click back!')
-                back.change_scene = True
-                back.to_bottom = True
-                play.to_bottom = True
-                table.to_top = True
-                settings.to_top = True
+            if scene_buttons.perform_point_collides((x, y)):
+                pass
 
             elif effects._rect.collidepoint((x, y)):
                 print('click effects!')
@@ -69,11 +51,10 @@ def check_events(config, back, play, table, settings, effects, full_screen, diff
             nick.save()
 
 
-def update(bg, config, back, settings, nick):
+def update(bg, config, scene_buttons, settings, nick):
     bg.blit()
 
-    back.update()
-    back.blit()
+    scene_buttons.draw()
 
     width = 63
     space = 7

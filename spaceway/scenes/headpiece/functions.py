@@ -2,14 +2,6 @@ from sys import exit
 
 import pygame
 
-from .objects import *
-
-
-def init(screen, base_dir, config, msg):
-    text = Text(screen, base_dir, msg)
-
-    return text
-
 
 def check_events(config, base_dir):
     for event in pygame.event.get():
@@ -21,7 +13,7 @@ def update(screen, config, text, tick):
     screen.fill((0, 0, 0))
 
     if tick % (config['FPS'] * 4) == 0:
-        config['scene'] = 'lobby'
+        config['scene'] = config['sub_scene'] = 'lobby'
 
     if tick % (config['FPS'] * 2) == 0:
         text.msg = 'With love'

@@ -289,7 +289,7 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
         self.screen_rect = self.screen.get_rect()
 
         self.life = life
-        
+
         self.config = config
 
         self.plate = plate
@@ -341,65 +341,27 @@ class Score:
         self.screen.blit(self.img, self.rect)
 
 
-class End(CaptionMixin):
+class EndCaption(CaptionMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.buttons = CenteredButtonsGroup(config['mode'])
-        self.buttons.add(LobbyButton(screen, base_dir), AgainButton(screen, base_dir, config))
 
         CaptionMixin.__init__(self, base_dir, config, 'Your score: {0}')
 
     def update(self):
         CaptionMixin.update(self, self.config['score'])
+
+    def locate(self):
         self.rect.centerx = self.screen_rect.centerx
         self.rect.y = 125
 
-    def blit(self):
-        CaptionMixin.blit(self)
 
-        for button in self.buttons:
-            button.blit()
-
-
-class LobbyButton(ButtonMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir):
-        pygame.sprite.Sprite.__init__(self) 
-
-        self.width = self.height = 63
-
-        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
-
-        ButtonMixin.__init__(self, screen, base_dir, [], False)
-
-
-class AgainButton(SceneButtonMixin, pygame.sprite.Sprite):
-    def __init__(self, screen, base_dir, config):
-        pygame.sprite.Sprite.__init__(self)
-
-        self.width = self.height = 63
-
-        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
-
-        SceneButtonMixin.__init__(self, screen, base_dir, config, 'game', 'game')
-
-
-class Pause(CaptionMixin):
+class PauseCaption(CaptionMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.buttons = CenteredButtonsGroup(config['mode'])
-        self.buttons.add(LobbyButton(screen, base_dir), ResumeButton(screen, base_dir, config))
-
         CaptionMixin.__init__(self, base_dir, config, 'Pause')
-
-    def blit(self):
-        CaptionMixin.blit(self)
-
-        for button in self.buttons.sprites():
-            button.blit()
 
     def locate(self):
         self.rect.centerx = self.screen_rect.centerx
@@ -408,10 +370,60 @@ class Pause(CaptionMixin):
 
 class ResumeButton(SceneButtonMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config):
-        pygame.sprite.Sprite.__init__(self)
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
 
         self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
+        self.rect = self.img.get_rect()
 
-        SceneButtonMixin.__init__(self, screen, base_dir, config, 'game', 'game')
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'game', 'game', 0)
+
+
+class PauseLobbyButton(SceneButtonMixin):
+    def __init__(self, screen, base_dir, config, defeat, *defeat_args):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
+        self.rect = self.img.get_rect()
+
+        self.defeat = defeat
+        self.defeat_args = defeat_args
+
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'lobby', 'lobby', 0)
+
+    def press(self):
+        self.defeat(*self.defeat_args)
+        self.config['scene'] = 'game'
+        self.config['sub_scene'] = 'pause'
+        self.leave(self.change_scene)
+
+
+class AgainButton(SceneButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
+        self.rect = self.img.get_rect()
+
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'game', 'game', 0)
+
+
+class EndLobbyButton(SceneButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.width = self.height = 63
+
+        self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
+        self.rect = self.img.get_rect()
+
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'lobby', 'lobby', 0)

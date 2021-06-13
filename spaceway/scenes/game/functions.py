@@ -10,17 +10,7 @@ pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.mixer.init()
 
 
-def init(screen, base_dir, config, msg):
-    bg = Background(screen, base_dir, 0, 0)
-    plate = SpacePlate(screen, base_dir, config)
-    score = Score(screen, base_dir, msg)
-    end = End(screen, base_dir, config)
-    pause = Pause(screen, base_dir, config)
-
-    return bg, plate, score, end, pause
-
-
-def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table, settings):
+def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons):
     if config['sub_scene'] == 'game':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -55,27 +45,14 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
                 exit()
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                play.to_bottom = True
-                table.to_top = True
-                settings.to_top = True
-                config['sub_scene'] = 'game'
-                config['scene'] = 'lobby'
+                scene_buttons.leave_buttons()
+                scene_buttons.enter_buttons('lobby', 'lobby')
+                scene_buttons.get_by_instance(EndLobbyButton).press()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
 
-                if end.buttons.sprites()[0].rect.collidepoint((x, y)):
-                    print('click lobby!')
-                    play.to_bottom = True
-                    table.to_top = True
-                    settings.to_top = True
-
-                    config['sub_scene'] = 'game'
-                    config['scene'] = 'lobby'
-
-                elif end.buttons.sprites()[1].rect.collidepoint((x, y)):
-                    print('click again!')
-                    end.buttons.sprites()[1].on_press()
+                scene_buttons.perform_point_collides((x, y))
 
     elif config['sub_scene'] == 'pause':
         for event in pygame.event.get():
@@ -83,30 +60,12 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, play, table
                 exit()
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                config['sub_scene'] = 'game'
+                scene_buttons.get_by_instance(ResumeButton).press()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
-                print(pause.buttons.sprites()[0].rect)
-                print(pause.buttons.sprites()[1].rect)
 
-                if pause.buttons.sprites()[0].rect.collidepoint((x, y)):
-                    print('click lobby!')
-                    play.to_bottom = True
-                    table.to_top = True
-                    settings.to_top = True
-
-                    plate.reset()
-                    astrs.empty()
-                    boosts.empty()
-                    config['speed'] = 2
-                    config['score'] = 0
-                    config['sub_scene'] = 'game'
-                    config['scene'] = 'lobby'
-
-                elif pause.buttons.sprites()[1].rect.collidepoint((x, y)):
-                    print('click resume!')
-                    pause.buttons.sprites()[1].on_press()
+                scene_buttons.perform_point_collides((x, y))
 
 
 def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
@@ -116,7 +75,6 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         while pygame.sprite.spritecollideany(astr, boosts):
             astr = Asteroid(screen, base_dir, config)
         astrs.add(astr)
-        
 
     # Spawn flying asteroid if difficulty >= middle
     if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
@@ -153,7 +111,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         boosts.add(boost)
 
 
-def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick):
+def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
         if tick % 2 == 0:
             bg.update()
@@ -203,36 +161,28 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         end.update()
         end.blit()
 
+        end_buttons.draw()
+
     elif config['sub_scene'] == 'pause':
         bg.blit()
         pause.blit()
 
+        pause_buttons.draw()
 
-def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings, score):
+
+def check_collides(config, base_dir, astrs, boosts, plate, table):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
     if astrs_collides:
         if config['user']['effects']:
             pygame.mixer.Sound(plate.sounds['bang']).play()
-    
+
         if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
 
         else:
-            with open(f'{base_dir}/config/score.csv', 'a') as file:
-                line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
-                file.write(line)
-
-            score.is_update = True
-
-            plate.reset()
-            astrs.empty()
-            boosts.empty()
-
-            config['speed'] = 2
-            config['score'] = 0
-            config['sub_scene'] = 'end'
+            defeat(plate, astrs, boosts, table, config, base_dir)
 
     elif boosts_collides:
         for boost in boosts_collides:
@@ -248,16 +198,21 @@ def check_collides(config, base_dir, astrs, boosts, plate, play, table, settings
             plate.is_jump = True
 
         else:
-            with open(f'{base_dir}/config/score.csv', 'a') as file:
-                line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
-                file.write(line)
+            defeat(plate, astrs, boosts, table, config, base_dir)
 
-            score.is_update = True
 
-            plate.reset()
-            astrs.empty()
-            boosts.empty()
+def defeat(plate, astrs, boosts, table, config, base_dir):
+    with open(f'{base_dir}/config/score.csv', 'a') as file:
+        line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
+        file.write(line)
 
-            config['speed'] = 2
-            config['score'] = 0
-            config['sub_scene'] = 'end'
+    table.is_update = True
+
+    plate.reset()
+    astrs.empty()
+    boosts.empty()
+
+    config['speed'] = 2
+    config['score'] = 0
+    config['scene'] = 'game'
+    config['sub_scene'] = 'end'
