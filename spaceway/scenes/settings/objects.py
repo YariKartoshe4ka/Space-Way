@@ -2,63 +2,48 @@ from json import dump
 
 import pygame
 
-from ...mixins import ButtonMixin, SceneButtonMixin
+from ...mixins import SettingsButtonMixin, SceneButtonMixin
 
 
-class EffectsButton(ButtonMixin, pygame.sprite.Sprite):
+class EffectsButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        pygame.sprite.Sprite.__init__(self)
-
         self.width = self.height = 63
 
-        self.index = 'effects'
+        self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
+                     False: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
 
-        self.imgs = {'true':  pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
-                     'false': pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
-
-        ButtonMixin.__init__(self, screen, base_dir, config, True)
+        SettingsButtonMixin.__init__(self, screen, config, 'effects')
 
 
-class FullScreenButton(ButtonMixin, pygame.sprite.Sprite):
+class FullScreenButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        pygame.sprite.Sprite.__init__(self)
-
         self.width = self.height = 63
 
-        self.index = 'full_screen'
+        self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
+                     False: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
 
-        self.imgs = {'true':  pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
-                     'false': pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
+        self.changed = False
 
-        ButtonMixin.__init__(self, screen, base_dir, config, True)
+        SettingsButtonMixin.__init__(self, screen, config, 'full_screen')
 
-        self.changed = self.config['user'][self.index]
+    def change_state(self):
+        SettingsButtonMixin.change_state(self)
+        self.changed = True
 
 
-class DifficultyButton(ButtonMixin, pygame.sprite.Sprite):
+class DifficultyButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        pygame.sprite.Sprite.__init__(self)
-
         self.width = self.height = 63
 
-        self.index = 'difficulty'
+        self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
+                     1: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
+                     2: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
+                     3: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_insanse.bmp')}
 
-        self.imgs = {'easy': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
-                     'middle': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
-                     'hard': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
-                     'insanse': pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_insanse.bmp')}
+        SettingsButtonMixin.__init__(self, screen, config, 'difficulty')
 
-        ButtonMixin.__init__(self, screen, base_dir, config, True)
-
-    def change_image(self):
-        if self.state == 0:
-            self.img = self.imgs['easy']
-        elif self.state == 1:
-            self.img = self.imgs['middle']
-        elif self.state == 2:
-            self.img = self.imgs['hard']
-        elif self.state == 3:
-            self.img = self.imgs['insanse']
+    def change_state(self):
+        self.state = (self.state + 1) % 4
 
 
 class SettingsBackButton(SceneButtonMixin):
@@ -86,7 +71,6 @@ class SettingsBackButton(SceneButtonMixin):
 
 class NickInput:
     def __init__(self, screen, base_dir, config):
-        
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 

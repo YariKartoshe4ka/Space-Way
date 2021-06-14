@@ -43,7 +43,9 @@ def main():
 
     # Settings init
     effects_button, full_screen_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
-    settings_buttons = pygame.sprite.Group(effects_button, full_screen_button, difficulty_button)
+
+    settings_buttons = collection.CenteredButtonsGroup(config['mode'])
+    settings_buttons.add(effects_button, full_screen_button, difficulty_button)
 
     # Game init
     astrs = pygame.sprite.Group()
@@ -79,12 +81,12 @@ def main():
             scenes.table.functions.update(base_dir, bg, table, scene_buttons)
 
         elif config['scene'] == 'settings':
-            scenes.settings.functions.check_events(config, scene_buttons, effects_button, full_screen_button, difficulty_button, nick_input)
+            scenes.settings.functions.check_events(config, scene_buttons, settings_buttons, nick_input)
             scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
             
-            if full_screen_button.changed != config['user'][full_screen_button.index]:
-                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * config['user'][full_screen_button.index])
-                full_screen_button.changed = config['user'][full_screen_button.index]
+            if full_screen_button.changed:
+                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * int(full_screen_button.state))
+                full_screen_button.changed = False
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)

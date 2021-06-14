@@ -119,6 +119,13 @@ class CenteredButtonsGroup(pygame.sprite.Group):
 
             x += button.width + space
 
+    def perform_point_collides(self, point: tuple) -> bool:
+        for button in self:
+            if button.rect.collidepoint(point):
+                button.press()
+                return True
+        return False
+
     def add_internal(self, button):
         """ Adding button and centering of group """
 
@@ -135,13 +142,6 @@ class CenteredButtonsGroup(pygame.sprite.Group):
         for button in self:
             button.update()
             button.blit()
-
-    def perform_point_collides(self, point: tuple) -> bool:
-        for button in self:
-            if button.rect.collidepoint(point):
-                button.press()
-                return True
-        return False
 
 
 class SceneButtonsGroup(pygame.sprite.Group):
@@ -196,7 +196,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
             .get(scene or self.config['scene'], {}) \
             .get(sub_scene or self.config['sub_scene'], [])
 
-    def get_by_instance(self, instance) -> pygame.sprite.Sprite:
+    def get_by_instance(self, instance: any) -> pygame.sprite.Sprite:
         for button in self:
             if isinstance(button, instance):
                 return button

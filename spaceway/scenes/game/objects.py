@@ -2,8 +2,7 @@ from random import randint
 
 import pygame
 
-from ...mixins import BoostMixin, CaptionMixin, ButtonMixin, SceneButtonMixin
-from ...collection import CenteredButtonsGroup
+from ...mixins import BoostMixin, CaptionMixin, SceneButtonMixin
 
 
 pygame.font.init()

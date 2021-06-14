@@ -194,6 +194,36 @@ class CaptionMixin:
         pass
 
 
+class SettingsButtonMixin(pygame.sprite.Sprite):
+    def __init__(self, screen, config, config_index):
+        pygame.sprite.Sprite.__init__(self)
+
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+        self.config_index = config_index
+
+        self.state = self.config['user'][self.config_index]
+
+        self.img = self.imgs[self.state]
+        self.rect = self.img.get_rect()
+
+    def change_state(self) -> None:
+        self.state = not self.state
+
+    def update(self) -> None:
+        self.img = self.imgs[self.state]
+        self.config['user'][self.config_index] = self.state
+
+    def blit(self) -> None:
+        self.screen.blit(self.img, self.rect)
+
+    def press(self) -> None:
+        self.change_state()
+        self.update()
+
+
 class BoostMixin:
     def __init__(self, base_dir, config):
         self.config = config
