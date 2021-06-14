@@ -19,8 +19,8 @@ def check_events(config, scene_buttons, settings_buttons, nick):
             if scene_buttons.perform_point_collides((x, y)):
                 pass
 
-            if settings_buttons.perform_point_collides((x, y)):
-                pass
+            elif settings_buttons.perform_point_collides((x, y)):
+                config.save()
 
             if nick._rect.collidepoint((x, y)):
                 print('click nick!')

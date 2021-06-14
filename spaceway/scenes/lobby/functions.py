@@ -18,8 +18,7 @@ def check_events(config, base_dir, scene_buttons, caption):
                 else:
                     config['user']['color'] += 1
 
-                with open(f'{base_dir}/config/user.json', 'w') as file:
-                    dump(config['user'], file, indent=4)
+                config.save()
 
 
 def update(bg, scene_buttons, caption):

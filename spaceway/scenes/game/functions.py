@@ -202,9 +202,9 @@ def check_collides(config, base_dir, astrs, boosts, plate, table):
 
 
 def defeat(plate, astrs, boosts, table, config, base_dir):
-    with open(f'{base_dir}/config/score.csv', 'a') as file:
-        line = ','.join([str(config['score']), config['user']['nick']]) + '\n'
-        file.write(line)
+    config['score_list'].append((config['score'], config['user']['nick']))
+    config.filter_score()
+    config.save()
 
     table.is_update = True
 

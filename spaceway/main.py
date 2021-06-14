@@ -4,6 +4,7 @@ from json import load
 import pygame
 
 from . import scenes, collection, updater
+from .config import ConfigManager
 
 
 def main():
@@ -12,13 +13,9 @@ def main():
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
-    with open(f'{base_dir}/config/config.json', 'r') as file:
-        config = load(file)
+    config = ConfigManager(base_dir)
 
     updater.check_software_updates(config['version'], base_dir)
-
-    with open(f'{base_dir}/config/user.json', 'r') as file:
-        config['user'] = load(file)
 
     if config['user']['full_screen']:
         screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
@@ -96,9 +93,6 @@ def main():
 
         if tick >= config['FPS'] * 10:
             tick = 0
-
-        if config.get('debug'):
-            print(f'FPS: {clock.get_fps()}', end='\r')
 
         pygame.display.update()
         clock.tick(config['FPS'])

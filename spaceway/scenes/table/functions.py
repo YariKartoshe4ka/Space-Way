@@ -21,10 +21,10 @@ def check_events(config, scene_buttons):
             scene_buttons.perform_point_collides((x, y))
 
 
-def update(base_dir, bg, score, scene_buttons):
+def update(base_dir, bg, table, scene_buttons):
     bg.blit()
 
-    score.update()
-    score.blit()
+    table.update()
+    table.blit()
 
     scene_buttons.draw()
