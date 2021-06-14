@@ -345,10 +345,12 @@ class EndCaption(CaptionMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
+        self.score = 0
+
         CaptionMixin.__init__(self, base_dir, config, 'Your score: {0}')
 
     def update(self):
-        CaptionMixin.update(self, self.config['score'])
+        CaptionMixin.update(self, self.score)
 
     def locate(self):
         self.rect.centerx = self.screen_rect.centerx

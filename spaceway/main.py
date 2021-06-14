@@ -87,7 +87,7 @@ def main():
 
         elif config['scene'] == 'game':
             scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
-            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, table)
+            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, table, end)
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
 
 

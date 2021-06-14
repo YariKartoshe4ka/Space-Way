@@ -170,7 +170,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pause_buttons.draw()
 
 
-def check_collides(config, base_dir, astrs, boosts, plate, table):
+def check_collides(config, base_dir, astrs, boosts, plate, table, end):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
@@ -182,7 +182,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, table):
             boosts.remove(boosts.get('shield'))
 
         else:
-            defeat(plate, astrs, boosts, table, config, base_dir)
+            defeat(plate, astrs, boosts, table, end, config, base_dir)
 
     elif boosts_collides:
         for boost in boosts_collides:
@@ -198,16 +198,15 @@ def check_collides(config, base_dir, astrs, boosts, plate, table):
             plate.is_jump = True
 
         else:
-            defeat(plate, astrs, boosts, table, config, base_dir)
+            defeat(plate, astrs, boosts, table, end, config, base_dir)
 
 
-def defeat(plate, astrs, boosts, table, config, base_dir):
+def defeat(plate, astrs, boosts, table, end, config, base_dir):
     config['score_list'].append((config['score'], config['user']['nick']))
     config.filter_score()
     config.save()
 
-    table.is_update = True
-
+    end.score = config['score']
     plate.reset()
     astrs.empty()
     boosts.empty()
