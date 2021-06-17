@@ -1,5 +1,6 @@
 import os
 from json import load
+from sys import argv
 
 import pygame
 
@@ -26,6 +27,12 @@ def main():
     pygame.display.set_icon(pygame.image.load(f'{base_dir}/icon.ico'))
 
     clock = pygame.time.Clock()
+
+    if '--debug' in argv:
+        from . import debug
+        debugger = debug.Debugger(config['FPS'])
+        debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
+        debugger.enable_module(debug.DebugHitbox)
 
     tick = 0
 
@@ -93,6 +100,9 @@ def main():
 
         if tick >= config['FPS'] * 10:
             tick = 0
+
+        if '--debug' in argv:
+            debugger.update()
 
         pygame.display.update()
         clock.tick(config['FPS'])
