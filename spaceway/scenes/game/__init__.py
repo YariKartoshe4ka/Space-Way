@@ -11,7 +11,7 @@ def init(screen, base_dir, config, astrs, boosts, table):
 
     resume_button = ResumeButton(screen, base_dir, config)
     pause_lobby_button = PauseLobbyButton(screen, base_dir, config, defeat,
-                                          plate, astrs, boosts, table, config, base_dir)
+                                          plate, astrs, boosts, table, end, config, base_dir)
 
     again_button = AgainButton(screen, base_dir, config)
     end_lobby_button = EndLobbyButton(screen, base_dir, config)

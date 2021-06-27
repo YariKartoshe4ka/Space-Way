@@ -28,7 +28,7 @@ def main():
 
     clock = pygame.time.Clock()
 
-    if '--debug' in argv:
+    if config['debug']:
         from . import debug
         debugger = debug.Debugger(config['FPS'])
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
@@ -101,7 +101,7 @@ def main():
         if tick >= config['FPS'] * 10:
             tick = 0
 
-        if '--debug' in argv:
+        if config['debug']:
             debugger.update()
 
         pygame.display.update()

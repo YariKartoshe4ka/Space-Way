@@ -119,10 +119,8 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         bg.blit()
 
         if tick % (config['FPS'] * 7) == 0:
-            for boost in boosts.sprites():
-                if boost.name == 'time' and boost.is_active:
-                    boost.speed += 1
-                    break
+            if 'time' in boosts:
+                boosts.get('time').speed += 1
             else:
                 config['speed'] += 1
 

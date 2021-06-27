@@ -22,7 +22,7 @@ def check_events(config, scene_buttons, settings_buttons, nick):
             elif settings_buttons.perform_point_collides((x, y)):
                 config.save()
 
-            if nick._rect.collidepoint((x, y)):
+            if nick.rect.collidepoint((x, y)):
                 print('click nick!')
                 nick.is_enable = True
             else:
@@ -36,7 +36,7 @@ def check_events(config, scene_buttons, settings_buttons, nick):
             elif event.unicode.encode('ascii', errors='ignore') != b'':
                 nick.config['user']['nick'] += event.unicode
 
-            nick.save()
+            config.save()
 
 
 def update(bg, config, scene_buttons, settings_buttons, nick):

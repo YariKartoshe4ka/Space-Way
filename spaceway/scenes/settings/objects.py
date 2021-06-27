@@ -92,21 +92,7 @@ class NickInput:
         self.rect.centerx = self.screen_rect.centerx
         self.rect.centery = self.screen_rect.centery - 74
 
-        self._screen = pygame.Surface((self.width, self.height), pygame.SRCALPHA)
-        self._screen.fill((0, 0, 0, 0))
-
-        self._rect = pygame.Rect(0, 0, self.width, self.height)
-        self._rect.center = self.rect.center
-
-        self.is_save = False
         self.is_enable = False
-
-    def save(self):
-        if self.is_save:
-            with open(self.settings_path, 'w') as file:
-                dump(self.config['user'], file, indent=4)
-
-            self.is_save = False
 
     def update(self):
         if self.is_enable:
@@ -115,13 +101,9 @@ class NickInput:
             self.img = self.img_disable
 
         self._img = self.font.render(self.config['user']['nick'][-17:], True, self.fg_color, self.bg_color)
-        self._img_rect = self._img.get_rect()
-        self._img_rect.center = self.rect.center
-
+        self._rect = self._img.get_rect()
         self._rect.center = self.rect.center
 
     def blit(self):
-        self.screen.blit(self._screen, self.rect)
         self.screen.blit(self.img, self.rect)
-        self.screen.blit(self._img, self._img_rect)
-        self._screen.fill((0, 0, 0, 0), self._rect, pygame.BLEND_RGBA_ADD)
+        self.screen.blit(self._img, self._rect)

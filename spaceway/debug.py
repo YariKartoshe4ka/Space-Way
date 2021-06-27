@@ -137,7 +137,7 @@ class Debugger:
         self.__FPS = FPS
 
     def enable_module(self, module: DebugModule, *args, **kwargs) -> None:
-        """ Enables a debug module, which must be an instance of `DebugModule`
+        """ Enables a debug module, which must be inherited from `DebugModule`
             Passes all arguments to the module for it configuring """
 
         self.__modules.append(module(*args, **kwargs))

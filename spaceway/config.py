@@ -30,6 +30,9 @@ class ConfigManager(dict):
     def __init__(self, base_dir) -> None:
         """ Initializing of ConfigManager """
 
+        # Setting BASE_DIR const for the further use
+        self.BASE_DIR = base_dir
+
         # Defining of original (package directory) paths to configurations
         self.__ORIGINAL_PATH_USER_CONFIG = f'{base_dir}/config/user.json'
         self.__ORIGINAL_PATH_SCORE_CONFIG = f'{base_dir}/config/score.csv'
@@ -105,6 +108,27 @@ class ConfigManager(dict):
             for line in self['score_list']:
                 score, nick = line
                 file.write(','.join((str(score), nick)) + '\n')
+
+    def reset(self) -> None:
+        """ Resets user configurations, replacing them with default configurations """
+
+        if self.USE_USER_CONFIGS:
+            # Loading default configurations
+            ConfigManager.USE_USER_CONFIGS = False
+            self.__init__(self.BASE_DIR)
+
+            # Getting copy of default configurations for the further use
+            default_config = self.copy()
+
+            # Loading user configurations
+            ConfigManager.USE_USER_CONFIGS = True
+            self.__init__(self.BASE_DIR)
+
+            # Replacing user configurations with default configurations
+            dict.__init__(self, default_config)
+
+            # Saving new (default) user configurations
+            self.save()
 
     def filter_score(self) -> None:
         """ Fiters scores of attempts. Attempts are sorted by best
