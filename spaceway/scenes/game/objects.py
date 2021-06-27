@@ -174,33 +174,16 @@ class FlyingAsteroid(pygame.sprite.Sprite):
         self.rect.y += self.config['speed']
 
 
-
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
-        self.name = 'time'
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
-
-        self.life = life
-
-        self.config = config
-
         self.speed = 2
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/time_idle.bmp')
-        self.img = self.img_idle
-
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/time_small.bmp')
-        self.img_3 = self.img_small
 
-        self.rect = self.img.get_rect()
-        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
-        self.rect.left = self.screen_rect.right
-
-        BoostMixin.__init__(self, base_dir, config)
+        BoostMixin.__init__(self, screen, base_dir, config, 'time', life)
 
     def activate(self):
         self.is_active = True
@@ -215,95 +198,49 @@ class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, life=5):
         pygame.sprite.Sprite.__init__(self)
 
-        self.name = 'double'
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
-
-        self.life = life
-
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
-        self.img = self.img_idle
-
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/double_small.bmp')
-        self.img_3 = self.img_small
 
-        self.rect = self.img.get_rect()
-        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
-        self.rect.left = self.screen_rect.right
-
-        BoostMixin.__init__(self, base_dir, config)
+        BoostMixin.__init__(self, screen, base_dir, config, 'double', life)
 
 
 class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
-        self.name = 'shield'
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
-
-        self.life = life
-
         self.plate = plate
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_idle.bmp')
-        self.img = self.img_idle
-
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_small.bmp')
-        self.img_3 = self.img_small
+        self.img_active = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
 
-        self.img_activate = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
-        self.img_4 = self.img_activate
+        self.rect_active = self.img_active.get_rect()
 
-        self.rect = self.img.get_rect()
-        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
-        self.rect.left = self.screen_rect.right
-
-        self.rect_4 = self.img_4.get_rect()
-
-        BoostMixin.__init__(self, base_dir, config)
+        BoostMixin.__init__(self, screen, base_dir, config, 'shield', life)
 
     def update(self):
-        self._update()
+        BoostMixin.update(self)
 
         if self.is_active:
-            self.rect_4.center = self.plate.rect.center
+            self.rect_active.center = self.plate.rect.center
 
     def blit(self):
-        self._blit()
+        BoostMixin.blit(self)
 
         if self.is_active:
-            self.screen.blit(self.img_4, self.rect_4)
+            self.screen.blit(self.img_active, self.rect_active)
 
 
 class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
     def __init__(self, screen, base_dir, config, plate, life=5):
         pygame.sprite.Sprite.__init__(self)
 
-        self.name = 'mirror'
-
-        self.screen = screen
-        self.screen_rect = self.screen.get_rect()
-
-        self.life = life
-
-        self.config = config
-
         self.plate = plate
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_idle.bmp')
-        self.img = self.img_idle
-
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_small.bmp')
-        self.img_3 = self.img_small
 
-        self.rect = self.img.get_rect()
-        self.rect.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect.height - 2)
-        self.rect.left = self.screen_rect.right
-
-        BoostMixin.__init__(self, base_dir, config)
+        BoostMixin.__init__(self, screen, base_dir, config, 'mirror', life)
 
     def activate(self):
         self.is_active = True

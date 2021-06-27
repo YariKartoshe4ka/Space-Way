@@ -19,7 +19,7 @@ class BoostsGroup(pygame.sprite.Group):
 
     active = {}
     passive = {}
-    next_spawn = 3
+    next_spawn = 1
 
     def add_internal(self, boost):
         """ Adds boost to passive group """

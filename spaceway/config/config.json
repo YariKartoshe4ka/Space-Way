@@ -4,7 +4,7 @@
     "FPS": 30,
     "scene": "lobby",
     "sub_scene": "lobby",
-    "speed": 2,
+    "speed": 8,
     "score": 0,
     "version": "2.0.0",
     "debug": true

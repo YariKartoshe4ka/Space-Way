@@ -86,7 +86,8 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
 
     # Spawn boost
     if config['score'] >= boosts.next_spawn:
-        boosts.next_spawn += randint(4, 8)
+        # boosts.next_spawn += randint(4, 8)
+        boosts.next_spawn += 1
 
         choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
 
