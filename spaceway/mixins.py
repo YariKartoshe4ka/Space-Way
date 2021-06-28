@@ -1,3 +1,6 @@
+""" File with implementations of various mixins for easier creation of
+    objects and following the DRY principle  """
+
 from typing import Union
 from random import randint
 

@@ -95,7 +95,8 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         if config['user']['difficulty'] >= 2:
             choices['mirror'] = MirrorBoost
 
-        name = choice(list(choices))
+        # name = choice(list(choices))
+        name = 'time'
 
         if name == 'time' or name == 'double':
             boost = choices[name](screen, base_dir, config)
