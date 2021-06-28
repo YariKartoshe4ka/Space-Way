@@ -3,9 +3,6 @@ import pygame
 from ...mixins import SceneButtonMixin
 
 
-pygame.font.init()
-
-
 class TableScore:
     def __init__(self, screen, base_dir, config):
         self.screen = screen

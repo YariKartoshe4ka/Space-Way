@@ -6,10 +6,6 @@ import pygame
 from .objects import *
 
 
-pygame.mixer.pre_init(44100, -16, 1, 512)
-pygame.mixer.init()
-
-
 def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons):
     if config['sub_scene'] == 'game':
         for event in pygame.event.get():

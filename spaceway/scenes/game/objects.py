@@ -5,9 +5,6 @@ import pygame
 from ...mixins import BoostMixin, CaptionMixin, SceneButtonMixin
 
 
-pygame.font.init()
-
-
 class Background:
     def __init__(self, screen, base_dir, x, y):
         self.screen = screen

@@ -1,6 +1,7 @@
+""" Root file with main entrypoint """
+
 import os
 from json import load
-from sys import argv
 
 import pygame
 
@@ -8,50 +9,62 @@ from . import scenes, collection, updater
 from .config import ConfigManager
 
 
-def main():
+def main() -> None:
+    # Set environment variable for centering window
     os.environ['SDL_VIDEO_CENTERED'] = '1'
+
+    # Initialization of pygame
+    pygame.mixer.pre_init(44100, -16, 1, 512)
     pygame.init()
 
+    # Get base directory to create absolute paths
     base_dir = os.path.dirname(os.path.abspath(__file__))
 
+    # Initialization of configuration manager
     config = ConfigManager(base_dir)
 
+    # Check software updates and view information dialog if update is available
     updater.check_software_updates(config['version'], base_dir)
 
+    # Сreate screen with accounting for user settings
     if config['user']['full_screen']:
         screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
     else:
         screen = pygame.display.set_mode(config['mode'])
 
+    # Configure screen
     pygame.display.set_caption(config['caption'])
     pygame.display.set_icon(pygame.image.load(f'{base_dir}/icon.ico'))
 
+    # Get clock onject for the further use
     clock = pygame.time.Clock()
 
+    # Initialize debug modules if configuration allows it
     if config['debug']:
         from . import debug
         debugger = debug.Debugger(config['FPS'])
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
         debugger.enable_module(debug.DebugHitbox)
 
+    # Set tick for calculating the past time in seconds
     tick = 0
 
-    # Headpiece init
+    # Initialization of headpiece scene
     text = scenes.headpiece.init(screen, base_dir, config)
 
-    # Lobby init
+    # Initialization of lobby scene
     play_button, table_button, settings_button, caption = scenes.lobby.init(screen, base_dir, config)
 
-    # Table init
+    # Initialization of table scene
     table, table_back_button = scenes.table.init(screen, base_dir, config)
 
-    # Settings init
+    #Initialization of settings scene
     effects_button, full_screen_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
     settings_buttons.add(effects_button, full_screen_button, difficulty_button)
 
-    # Game init
+    # Initialization of game scene
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
@@ -63,15 +76,17 @@ def main():
     end_buttons = collection.CenteredButtonsGroup(config['mode'])
     end_buttons.add(end_lobby_button, again_button)
 
-    # Buttons linking
+    # Scene buttons linking
     scene_buttons = collection.SceneButtonsGroup(config)
     scene_buttons.add(play_button, table_button, settings_button,
                       settings_back_button, table_back_button, resume_button,
                       pause_lobby_button, again_button, end_lobby_button)
 
     while True:
+        # Update tick
         tick += 1
 
+        # Showing a specific scene
         if config['scene'] == 'headpiece':
             scenes.headpiece.functions.check_events(config, base_dir)
             scenes.headpiece.functions.update(screen, config, text, tick)
@@ -88,6 +103,7 @@ def main():
             scenes.settings.functions.check_events(config, scene_buttons, settings_buttons, nick_input)
             scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
             
+            # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
                 screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * int(full_screen_button.state))
                 full_screen_button.changed = False
@@ -98,15 +114,14 @@ def main():
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
 
 
+        # Zeroize tick from overflow
         if tick >= config['FPS'] * 10:
             tick = 0
 
+        # Update debugger if debug mode enabled
         if config['debug']:
             debugger.update()
 
+        # Update screen and adjust speed to FPS
         pygame.display.update()
         clock.tick(config['FPS'])
-
-
-if __name__ == '__main__':
-    main()
