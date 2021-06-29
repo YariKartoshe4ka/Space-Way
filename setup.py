@@ -29,6 +29,7 @@ if platform.startswith('linux'):
 setup(
     name='spaceway',
     version=version,
+    python_requires='>=3.6.0',
 
     author='YariKartoshe4ka',
     author_email='yaroslav.kikel.06@inbox.ru',

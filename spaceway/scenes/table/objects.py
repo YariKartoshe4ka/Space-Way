@@ -12,11 +12,9 @@ class TableScore:
 
         self.config = config
 
-        self.width = 250
-        self.height = 100
         self.fg_color = (255, 255, 255)
         self.bg_color = (0, 0, 0)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36) 
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36)
 
         self.border = 1
 
