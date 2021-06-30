@@ -1,5 +1,3 @@
-from json import dump
-
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
@@ -29,6 +27,16 @@ class FullScreenButton(SettingsButtonMixin):
     def change_state(self):
         SettingsButtonMixin.change_state(self)
         self.changed = True
+
+
+class UpdatesButton(SettingsButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.width = self.height = 63
+
+        self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_true.bmp'),
+                     False: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_false.bmp')}
+
+        SettingsButtonMixin.__init__(self, screen, config, 'updates')
 
 
 class DifficultyButton(SettingsButtonMixin):

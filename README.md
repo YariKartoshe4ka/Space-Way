@@ -6,7 +6,7 @@ Arcade game about space, in which you must overcome the space path by flying aro
 
 ![](https://img.shields.io/pypi/v/spaceway) ![](https://img.shields.io/github/release-date/YariKartoshe4ka/Space-Way) ![](https://img.shields.io/pypi/dm/spaceway)
 
-<img src="docs/icon_fit.svg" width=128 />
+<img src="docs/icons/icon_fit.svg" width=128 />
 
 </div>
 
@@ -47,3 +47,11 @@ I am not a professional game developer (this is my first game), and I do not kno
 If you want to contribute to this repo, check out [TODO.md](docs/TODO.md) and check out what you can do<br>
 I am currently looking for artists to evaluate and rework sprites<br>
 I welcome information about bugs, ideas and suggestions, always open for issue and pull requests<br>
+
+
+### Screenshots
+
+|                               |                               |
+|-------------------------------|-------------------------------|
+|![](docs/screenshots/lobby.png)|![](docs/screenshots/jump.png) |
+|![](docs/screenshots/boost.png)|![](docs/screenshots/end.png)  |

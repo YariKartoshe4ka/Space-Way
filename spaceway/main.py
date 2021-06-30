@@ -24,7 +24,8 @@ def main() -> None:
     config = ConfigManager(base_dir)
 
     # Check software updates and view information dialog if update is available
-    updater.check_software_updates(config['version'], base_dir)
+    if config['user']['updates']:
+        updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
     if config['user']['full_screen']:
@@ -59,10 +60,10 @@ def main() -> None:
     table, table_back_button = scenes.table.init(screen, base_dir, config)
 
     #Initialization of settings scene
-    effects_button, full_screen_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    effects_button, full_screen_button, updates_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
-    settings_buttons.add(effects_button, full_screen_button, difficulty_button)
+    settings_buttons.add(effects_button, full_screen_button, updates_button, difficulty_button)
 
     # Initialization of game scene
     astrs = pygame.sprite.Group()
