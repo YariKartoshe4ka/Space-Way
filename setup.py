@@ -1,8 +1,6 @@
 from setuptools import setup, find_packages
 from json import load
-from sys import platform, prefix
-from shutil import copyfile
-import os
+from sys import platform
 
 
 data_files = []
@@ -19,11 +17,10 @@ with open('requirements.txt', 'r') as file:
 
 # Setup icon and link if platform is linux
 if platform.startswith('linux'):
-    data_files.append(('share/applications', ['setupfiles/Space Way.desktop']))
-    icons_path = os.path.expanduser('~/.icons/')
-    if not os.path.exists(icons_path + 'spaceway.png'):
-        os.makedirs(icons_path)
-        copyfile('setupfiles/spaceway.png', icons_path + 'spaceway.png')
+    data_files.extend((
+        ('share/applications', ['setupfiles/Space Way.desktop']),
+        ('share/icons', ['setupfiles/spaceway.svg'])
+    ))
 
 
 setup(
