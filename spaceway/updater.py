@@ -86,7 +86,7 @@ def check_software_updates(version, base_dir) -> None:
 
     # Get remote vesrion of `config.json` if network connection available
     try:
-        r = get('https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/config/config.json')
+        r = get('https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/develop/spaceway/config/config.json')
     except:
         return
 
