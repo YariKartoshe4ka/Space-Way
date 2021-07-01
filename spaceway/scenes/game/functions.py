@@ -82,8 +82,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
 
     # Spawn boost
     if config['score'] >= boosts.next_spawn:
-        # boosts.next_spawn += randint(4, 8)
-        boosts.next_spawn += 1
+        boosts.next_spawn += randint(4, 8)
 
         choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
 
@@ -91,8 +90,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         if config['user']['difficulty'] >= 2:
             choices['mirror'] = MirrorBoost
 
-        # name = choice(list(choices))
-        name = 'time'
+        name = choice(list(choices))
 
         if name == 'time' or name == 'double':
             boost = choices[name](screen, base_dir, config)
@@ -151,6 +149,8 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
         plate.blit()
 
+        check_collides(config, base_dir, astrs, boosts, plate, end_buttons)
+
     elif config['sub_scene'] == 'end':
         bg.blit()
 
@@ -166,7 +166,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pause_buttons.draw()
 
 
-def check_collides(config, base_dir, astrs, boosts, plate, table, end):
+def check_collides(config, base_dir, astrs, boosts, plate, end):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
@@ -178,7 +178,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, table, end):
             boosts.remove(boosts.get('shield'))
 
         else:
-            defeat(plate, astrs, boosts, table, end, config, base_dir)
+            defeat(plate, astrs, boosts, end, config, base_dir)
 
     elif boosts_collides:
         for boost in boosts_collides:
@@ -194,10 +194,10 @@ def check_collides(config, base_dir, astrs, boosts, plate, table, end):
             plate.is_jump = True
 
         else:
-            defeat(plate, astrs, boosts, table, end, config, base_dir)
+            defeat(plate, astrs, boosts, end, config, base_dir)
 
 
-def defeat(plate, astrs, boosts, table, end, config, base_dir):
+def defeat(plate, astrs, boosts, end, config, base_dir):
     config['score_list'].append((config['score'], config['user']['nick']))
     config.filter_score()
     config.save()

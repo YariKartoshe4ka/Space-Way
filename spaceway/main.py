@@ -1,7 +1,6 @@
 """ Root file with main entrypoint """
 
 import os
-from json import load
 
 import pygame
 
@@ -59,7 +58,7 @@ def main() -> None:
     # Initialization of table scene
     table, table_back_button = scenes.table.init(screen, base_dir, config)
 
-    #Initialization of settings scene
+    # Initialization of settings scene
     effects_button, full_screen_button, updates_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
@@ -69,7 +68,7 @@ def main() -> None:
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
-    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button = scenes.game.init(screen, base_dir, config, astrs, boosts, table)
+    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button = scenes.game.init(screen, base_dir, config, astrs, boosts)
 
     pause_buttons = collection.CenteredButtonsGroup(config['mode'])
     pause_buttons.add(pause_lobby_button, resume_button)
@@ -103,17 +102,15 @@ def main() -> None:
         elif config['scene'] == 'settings':
             scenes.settings.functions.check_events(config, scene_buttons, settings_buttons, nick_input)
             scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
-            
+
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
                 screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * int(full_screen_button.state))
                 full_screen_button.changed = False
 
         elif config['scene'] == 'game':
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
-            scenes.game.functions.check_collides(config, base_dir, astrs, boosts, plate, table, end)
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
-
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
 
         # Zeroize tick from overflow
         if tick >= config['FPS'] * 10:
