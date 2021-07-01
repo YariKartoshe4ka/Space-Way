@@ -30,7 +30,6 @@ python -m pip install spaceway
 spaceway
 ```
 
-
 ### Future
 
 I am not a professional game developer (this is my first game), and I do not know if it makes sense to develop it, but if there is activity on the repository, then I'm going to do:
@@ -39,12 +38,12 @@ I am not a professional game developer (this is my first game), and I do not kno
 2. Add more obstacles for different levels of difficulty
 3. Add support of Android (very far future, >100 stars on this repo)
 
-[and many other things...](docs/TODO.md)
+[and many other things...](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md)
 
 
 ### Contribution
 
-If you want to contribute to this repo, check out [TODO.md](docs/TODO.md) and check out what you can do<br>
+If you want to contribute to this repo, check out [TODO.md](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md) and check out what you can do<br>
 I am currently looking for artists to evaluate and rework sprites<br>
 I welcome information about bugs, ideas and suggestions, always open for issue and pull requests<br>
 
@@ -53,5 +52,5 @@ I welcome information about bugs, ideas and suggestions, always open for issue a
 
 |                               |                               |
 |-------------------------------|-------------------------------|
-|![](docs/screenshots/lobby.png)|![](docs/screenshots/jump.png) |
-|![](docs/screenshots/boost.png)|![](docs/screenshots/end.png)  |
+|![](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/screenshots/lobby.png)|![](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/screenshots/jump.png) |
+|![](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/screenshots/boost.png)|![](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/screenshots/end.png)  |

@@ -5,8 +5,8 @@
 
 ###### Windows
 
-1. Download Space Way installer from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (installer ends on **.exe**)
-2. Launch installer and follow its instructions
+1. Download new Space Way binary from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (installer ends on **.exe**)
+2. Launch program and play!
 
 ###### Other
 
@@ -20,9 +20,9 @@ python -m pip install --upgrade spaceway
 
 ###### Windows
 
-1. Remove your old Space Way by clicking shortcut in menu *Space Way -> Remove Space Way*
-1. Download Space Way installer from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (installer ends on **.exe**)
-3. Launch installer and follow its instructions
+1. Remove your old Space Way by clicking shortcut in menu *Space Way -> Uninstall Space Way*
+1. Download new Space Way binary from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (installer ends on **.exe**)
+3. Launch program and play!
 
 ###### Other
 
