@@ -6,3 +6,6 @@ __pycache__
 other
 tmp
 build
+dist
+*.egg-info
+aliases

@@ -1,0 +1,5 @@
+recursive-include spaceway/config *
+recursive-include spaceway/assets *
+recursive-include setupfiles *
+include spaceway/icon.ico
+include requirements.txt

@@ -1,88 +1,56 @@
-# Space Way
-<img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/icon.ico" width="256px" />
+<div align="center">
+
+## Space Way
+
+Arcade game about space, in which you must overcome the space path by flying around obstacles 
+
+![](https://img.shields.io/pypi/v/spaceway) ![](https://img.shields.io/github/release-date/YariKartoshe4ka/Space-Way) ![](https://img.shields.io/pypi/dm/spaceway)
+
+<img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/icons/icon_fit.svg" width=128 />
+
+</div>
 
 
-### About
-Space Way is arcade game about space, in which you must overcome the space path by flying around obstacles
+### Installation
 
+###### Compiled (Only Windows)
 
-### Review
-
-###### Headpiece
-
-If you run a space path, you will see a headpiece that lasts 4 seconds. After that, the lobby will be loaded automatically. There you will see several buttons
-
-###### Lobby
-
-Play button starts the game <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/play.bmp" alt="Play button" width="32px">  
-
-Table button views your score table <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/table.bmp" alt="Table button" width="32px">  
-
-Settings button starts settings menu <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/settings.bmp" alt="Settings button" width="32px">  
-
-To quit from game click _ESCAPE_
-
-###### Score table
-
-Here you can see the top of your results  
-To return to lobby click back button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
-
-###### Settings
-
-Here you can change your settings  
-To change your nickname, click on the input field and enter your nickname  
-
-To disable/enable effects, click the effects button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/effects_false.bmp" alt="Effects button" width="32px">  
-
-To disable/enable full-screen mode, click the full-screen button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/full_screen_false.bmp" alt="Full-screen button" width="32px">
-
-To change difficulty, click the emoticon button (green - easy, yellow - middle, red - hard, purple - insanse)  
-
-**Note:** The green color of the button indicates that the option is enabled, and the red color indicates that it is disabled  
-
-To return to lobby click back button <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/buttons/back.bmp" alt="Back button" width="32px">
-
-###### Gameplay
-
-The goal of the game is to fly as long as possible without colliding with asteroids. To jump click _SPACE_ or _LEFT/RIGHT MOUSE BUTTON_. You will be awarded one point for each obstacle you pass  
-Along the way you can meet various boosts:  
-
-- Time boost - slows down obstacles for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/time_idle.bmp" alt="Time boost" width="30px">
-- Double boost - doubling the points you get for a while <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/double_idle.bmp" alt="Double boost" width="30px">
-- Shield boost - one-time collision protection <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/shield_idle.bmp" alt="Shield boost" width="30px">
-- Mirror boost - vertical flipping of the space plate <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/assets/images/boosts/mirror_idle.bmp" alt="Mirror boost" width="30px">
-
-**Note:** To pause/resume the game click _ESCAPE_
-
-
-### Supported Operating Systems
-- Linux
-- Mac OS
-- Windows
-
-
-### Requirements (Linux / Mac OS)
-- Python3
-- Pygame (Python3 module)
-- Requests (Python3 module)
-- Packaging (Python3 module)
-
-
-### Installing
-
-###### Windows
 1. Download Space Way installer from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest)
 2. Launch the installer and install Space Way
 3. Launch the program with a shortcut
 
-###### Linux / Mac OS
-For installing Space Way on Linux/Mac OS run this command in terminal
+###### Via pip (All platforms)
 
-```bash
-cd ~
-wget https://github.com/YariKartoshe4ka/Space-Way/archive/1.3.0.zip
-unzip 1.3.0.zip
-cd Space-Way-1.3.0
-pip3 install -r requirements.txt
-python3 main.py
+1. Install Space Way from PyPI packages
+```sh
+python -m pip install spaceway
 ```
+2. Run it with shortcut or from terminal
+```sh
+spaceway
+```
+
+### Future
+
+I am not a professional game developer (this is my first game), and I do not know if it makes sense to develop it, but if there is activity on the repository, then I'm going to do:
+
+1. Music and sprites update 
+2. Add more obstacles for different levels of difficulty
+3. Add support of Android (very far future, >100 stars on this repo)
+
+[and many other things...](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md)
+
+
+### Contribution
+
+If you want to contribute to this repo, check out [TODO.md](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md) and check out what you can do<br>
+I am currently looking for artists to evaluate and rework sprites<br>
+I welcome information about bugs, ideas and suggestions, always open for issue and pull requests<br>
+
+
+### Screenshots
+
+|                               |                               |
+|-------------------------------|-------------------------------|
+|![](https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/screenshots/lobby.png)|![](https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/screenshots/jump.png) |
+|![](https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/screenshots/boost.png)|![](https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/screenshots/end.png)  |

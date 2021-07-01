@@ -1,0 +1,8 @@
+[Desktop Entry]
+Version=2.0.0
+Type=Application
+Name=Space Way
+Comment=Arcade game about space, in which you must overcome the space path by flying around obstacles
+Categories=Game;
+Exec=spaceway
+Icon=spaceway
