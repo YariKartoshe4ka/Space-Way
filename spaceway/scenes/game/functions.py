@@ -149,7 +149,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
         plate.blit()
 
-        check_collides(config, base_dir, astrs, boosts, plate, end_buttons)
+        check_collides(config, base_dir, astrs, boosts, plate, end)
 
     elif config['sub_scene'] == 'end':
         bg.blit()
