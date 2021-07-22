@@ -8,13 +8,16 @@ from . import scenes, collection, updater
 from .config import ConfigManager
 
 
-def main() -> None:
-    # Set environment variable for centering window
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
+# Set environment variable for centering window
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-    # Initialization of pygame
-    pygame.mixer.pre_init(44100, -16, 1, 512)
-    pygame.init()
+# Initialization of pygame
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.init()
+
+
+def main() -> None:
+    """ Main entrypoint of Space Way. Execute this to run game """
 
     # Get base directory to create absolute paths
     base_dir = os.path.dirname(os.path.abspath(__file__))

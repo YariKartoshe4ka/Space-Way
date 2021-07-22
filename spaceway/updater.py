@@ -11,10 +11,6 @@ from requests import get
 def dialog(base_dir) -> None:
     """ Creator of information dialog """
 
-    # Preinitialization and initialization
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
-    pygame.init()
-
     # Setup screen
     MODE = (WIDTH, HEIGHT) = (300, 200)
     screen = pygame.display.set_mode(MODE)
