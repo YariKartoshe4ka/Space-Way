@@ -85,6 +85,7 @@ class SpacePlate(pygame.sprite.Sprite):
 
             if self.jump >= -5:
                 if self.jump < 0:
+                    self.is_flame = False
                     if self.flip:
                         self.rect.y -= (self.jump ** 2) // 3
                     else:
@@ -97,7 +98,6 @@ class SpacePlate(pygame.sprite.Sprite):
                         self.rect.y -= (self.jump ** 2) // 3
                 self.jump -= 1
             else:
-                self.is_flame = False
                 self.is_jump = False
                 self.jump = 10
 
