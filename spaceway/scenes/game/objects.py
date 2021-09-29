@@ -140,7 +140,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['speed']
+        self.rect.x -= self.config['namespace'].speed
 
 
 class FlyingAsteroid(pygame.sprite.Sprite):
@@ -167,8 +167,8 @@ class FlyingAsteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['speed'] * 1.5
-        self.rect.y += self.config['speed']
+        self.rect.x -= self.config['namespace'].speed * 1.5
+        self.rect.y += self.config['namespace'].speed
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
@@ -184,11 +184,11 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
     def activate(self):
         self.is_active = True
-        self.speed = self.config['speed']
-        self.config['speed'] = 2
+        self.speed = self.config['namespace'].speed
+        self.config['namespace'].speed = 2
 
     def deactivate(self):
-        self.config['speed'] = self.speed
+        self.config['namespace'].speed = self.speed
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):

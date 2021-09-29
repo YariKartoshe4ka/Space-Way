@@ -4,8 +4,6 @@
     "FPS": 30,
     "scene": "headpiece",
     "sub_scene": "headpiece",
-    "speed": 2,
-    "score": 0,
     "version": "2.0.1",
     "debug": false
 }

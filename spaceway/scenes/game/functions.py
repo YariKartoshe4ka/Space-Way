@@ -71,7 +71,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         astrs.add(astr)
 
     # Spawn flying asteroid if difficulty >= middle
-    if config['score'] >= 10 and config['score'] % 5 == 0 and config['user']['difficulty'] >= 1:
+    if config['namespace'].score >= 10 and config['namespace'].score % 5 == 0 and config['user']['difficulty'] >= 1:
         for sprite in astrs:
             if sprite.name == 'flying':
                 break
@@ -79,7 +79,7 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
             astrs.add(FlyingAsteroid(screen, base_dir, config))
 
     # Spawn boost
-    if config['score'] >= boosts.next_spawn:
+    if config['namespace'].score >= boosts.next_spawn:
         boosts.next_spawn += randint(4, 8)
 
         choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
@@ -116,7 +116,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
             if 'time' in boosts:
                 boosts.get('time').speed += 1
             else:
-                config['speed'] += 1
+                config['namespace'].speed += 1
 
         spawn(screen, base_dir, config, tick, plate, astrs, boosts)
 
@@ -127,9 +127,9 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
                     pygame.mixer.Sound(plate.sounds['score']).play()
 
                 if 'double' in boosts:
-                    config['score'] += 2
+                    config['namespace'].score += 2
                 else:
-                    config['score'] += 1
+                    config['namespace'].score += 1
 
         for astr in astrs:
             astr.update()
@@ -141,7 +141,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
             boost.update()
             boost.blit()
 
-        score.msg = f"score: {config['score']}"
+        score.msg = f"score: {config['namespace'].score}"
         score.update()
         score.blit()
 
@@ -196,16 +196,16 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
 
 
 def defeat(plate, astrs, boosts, end, config, base_dir):
-    config['score_list'].append((config['score'], config['user']['nick']))
+    config['score_list'].append((config['namespace'].score, config['user']['nick']))
     config.filter_score()
     config.save()
 
-    end.score = config['score']
+    end.score = config['namespace'].score
     plate.reset()
     astrs.empty()
     boosts.empty()
 
-    config['speed'] = 2
-    config['score'] = 0
+    config['namespace'].speed = 2
+    config['namespace'].score = 0
     config['scene'] = 'game'
     config['sub_scene'] = 'end'

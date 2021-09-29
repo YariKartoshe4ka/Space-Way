@@ -287,7 +287,7 @@ class BoostMixin:
                 self.tick += 1
         else:
             # Continue movement of boost if it has not activated yet
-            self.rect_idle.x -= self.config['speed']
+            self.rect_idle.x -= self.config['namespace'].speed
 
         # Kill boost if it has left the screen
         if self.rect_idle.right < 0:
