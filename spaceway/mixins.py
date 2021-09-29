@@ -6,6 +6,8 @@ from random import randint
 
 import pygame
 
+from .collection import SceneButtonsGroup
+
 
 class SceneButtonMixin(pygame.sprite.Sprite):
     """ Mixin for scene buttons, which can change current scene """
@@ -85,6 +87,15 @@ class SceneButtonMixin(pygame.sprite.Sprite):
 
     def press(self) -> None:
         """ Сallback of button that is performed when it is pressed """
+
+        # Find `SceneButtonsGroup` button belongs to
+        for group in self.groups():
+            if isinstance(group, SceneButtonsGroup):
+                # Leave buttons of current scene, and enter of next
+                group.leave_buttons()
+                group.enter_buttons(self.change_scene_to, self.change_sub_scene_to)
+                break
+
         self.leave(self.change_scene)
 
 

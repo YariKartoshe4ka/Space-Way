@@ -41,8 +41,6 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
                 exit()
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                scene_buttons.leave_buttons()
-                scene_buttons.enter_buttons('lobby', 'lobby')
                 scene_buttons.get_by_instance(EndLobbyButton).press()
 
             elif event.type == pygame.MOUSEBUTTONDOWN:

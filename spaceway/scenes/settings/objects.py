@@ -86,7 +86,7 @@ class NickInput:
         self.height = 42
         self.fg_color = (0, 0, 0)
         self.bg_color = (255, 255, 255)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36) 
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36)
 
         self.config = config
 

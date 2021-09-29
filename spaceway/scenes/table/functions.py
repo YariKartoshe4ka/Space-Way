@@ -11,8 +11,6 @@ def check_events(config, scene_buttons):
             exit()
 
         elif event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-            scene_buttons.leave_buttons('table', 'table')
-            scene_buttons.enter_buttons('lobby', 'lobby')
             scene_buttons.get_by_instance(TableBackButton).press()
 
         elif event.type == pygame.MOUSEBUTTONDOWN:
