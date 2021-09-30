@@ -52,6 +52,9 @@ def main() -> None:
     # Set delta-time for the further use
     config['namespace'].dt = 0
 
+    # Set tick for calculating the past time in seconds
+    tick = 0
+
     # Initialization of headpiece scene
     text = scenes.headpiece.init(screen, base_dir, config)
 
@@ -86,10 +89,13 @@ def main() -> None:
                       pause_lobby_button, again_button, end_lobby_button)
 
     while True:
+        # Update tick
+        tick += 1
+
         # Showing a specific scene
         if config['scene'] == 'headpiece':
             scenes.headpiece.functions.check_events(config, base_dir)
-            scenes.headpiece.functions.update(screen, config, text)
+            scenes.headpiece.functions.update(screen, config, text, tick)
 
         elif config['scene'] == 'lobby':
             scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
@@ -110,7 +116,11 @@ def main() -> None:
 
         elif config['scene'] == 'game':
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons)
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
+
+        # Zeroize tick from overflow
+        if tick >= config['FPS'] * 10:
+            tick = 0
 
         # Update debugger if debug mode enabled
         if config['debug']:

@@ -185,14 +185,11 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         BoostMixin.__init__(self, screen, base_dir, config, 'time', life)
 
     def activate(self):
-        BoostMixin.activate(self)
-
+        self.is_active = True
         self.speed = self.config['namespace'].speed
         self.config['namespace'].speed = 2
 
     def deactivate(self):
-        BoostMixin.deactivate(self)
-
         self.config['namespace'].speed = self.speed
 
 
@@ -245,14 +242,11 @@ class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
         BoostMixin.__init__(self, screen, base_dir, config, 'mirror', life)
 
     def activate(self):
-        BoostMixin.activate(self)
-
+        self.is_active = True
         self.plate.rect.y += 24
         self.plate.flip = True
 
     def deactivate(self):
-        BoostMixin.deactivate(self)
-
         self.plate.flip = False
 
 
