@@ -1,7 +1,7 @@
 {
     "caption": "Space Way",
     "mode": [700, 450],
-    "FPS": 30,
+    "FPS": 60,
     "scene": "headpiece",
     "sub_scene": "headpiece",
     "version": "2.0.1",

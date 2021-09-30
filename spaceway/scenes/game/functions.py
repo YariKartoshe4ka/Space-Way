@@ -107,7 +107,7 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
 
 def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
-        #bg.update()
+        bg.update()
         bg.blit()
 
         if config['namespace'].ticks_speed + 10000 < pygame.time.get_ticks():

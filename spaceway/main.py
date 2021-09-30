@@ -49,6 +49,9 @@ def main() -> None:
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
         debugger.enable_module(debug.DebugHitbox)
 
+    # Set delta-time for the further use
+    config['namespace'].dt = 0
+
     # Initialization of headpiece scene
     text = scenes.headpiece.init(screen, base_dir, config)
 
@@ -115,4 +118,4 @@ def main() -> None:
 
         # Update screen and adjust speed to FPS
         pygame.display.update()
-        clock.tick(config['FPS'])
+        config['namespace'].dt = clock.tick(config['FPS']) * 0.03

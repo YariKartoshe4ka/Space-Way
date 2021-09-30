@@ -7,6 +7,7 @@ from random import randint
 import pygame
 
 from .collection import SceneButtonsGroup
+from .rect import FloatRect
 
 
 class SceneButtonMixin(pygame.sprite.Sprite):
@@ -52,7 +53,7 @@ class SceneButtonMixin(pygame.sprite.Sprite):
             # Check, if move can be continued
             if self.keep_move():
                 # If can be, move button
-                self.rect.y += self.speed if self.action == 'leave' else -self.speed
+                self.rect.y += (self.speed if self.action == 'leave' else -self.speed) * self.config['namespace'].dt
             else:
                 # Else, stop button and call action callback
                 if self.action == 'enter':
@@ -246,7 +247,7 @@ class BoostMixin:
         self.tick = 0
 
         # Generating a rectangle of `img_idle` and randomly positioning it
-        self.rect_idle = self.img_idle.get_rect()
+        self.rect_idle = FloatRect(self.img_idle.get_rect())
         self.rect_idle.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect_idle.height - 2)
         self.rect_idle.left = self.screen_rect.right
 
@@ -287,7 +288,7 @@ class BoostMixin:
                 self.rect_life.left = self.screen_rect.left + 24
         else:
             # Continue movement of boost if it has not activated yet
-            self.rect_idle.x -= self.config['namespace'].speed
+            self.rect_idle.x -= self.config['namespace'].speed * self.config['namespace'].dt
 
         # Kill boost if it has left the screen
         if self.rect_idle.right < 0:

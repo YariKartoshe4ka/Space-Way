@@ -3,20 +3,20 @@ from random import randint
 import pygame
 
 from ...mixins import BoostMixin, CaptionMixin, SceneButtonMixin
+from ...rect import FloatRect
 
 
 class Background:
-    def __init__(self, screen, base_dir, x, y):
+    def __init__(self, screen, base_dir, config):
         self.screen = screen
 
-        self.img = pygame.image.load(f'{base_dir}/assets/images/bg/background.bmp')
-        self.rect = self.img.get_rect()
+        self.config = config
 
-        self.rect.x = x
-        self.rect.y = y
+        self.img = pygame.image.load(f'{base_dir}/assets/images/bg/background.bmp')
+        self.rect = FloatRect(self.img.get_rect())
 
     def update(self):
-        self.rect.x -= 1
+        self.rect.x -= 0.5 * self.config['namespace'].dt
 
         if self.rect.x <= -840:
             self.rect.x = 0
@@ -45,10 +45,11 @@ class SpacePlate(pygame.sprite.Sprite):
         self.rect_flame = self.img_flame.get_rect()
 
         self.img = self.imgs[self.config['user']['color']]
-        self.rect = self.img.get_rect()
+        self.rect = FloatRect(self.img.get_rect())
 
         self.rect.x = 5
-        self.rect.centery = self.screen_rect.centery
+        # self.rect.centery = self.screen_rect.centery
+        self.rect.top = self.screen_rect.top
 
         self.rect_flame.centerx = self.rect.centerx + 1
 
@@ -75,28 +76,29 @@ class SpacePlate(pygame.sprite.Sprite):
             self.img = self.imgs[self.config['user']['color']]
 
         if not self.is_jump:
-            self.gravity += self.gravity_scale
+            self.gravity += self.gravity_scale * self.config['namespace'].dt
             if self.flip:
-                self.rect.y -= self.gravity
+                self.rect.y -= self.gravity * self.config['namespace'].dt
             else:
-                self.rect.y += self.gravity
+                self.rect.y += self.gravity * self.config['namespace'].dt
         else:
             self.gravity = self.gravity_default
 
             if self.jump >= -5:
+                inc = self.jump ** 2 // 3 * self.config['namespace'].dt
                 if self.jump < 0:
                     self.is_flame = False
                     if self.flip:
-                        self.rect.y -= (self.jump ** 2) // 3
+                        self.rect.y -= inc
                     else:
-                        self.rect.y += (self.jump ** 2) // 3
+                        self.rect.y += inc
                 else:
                     self.is_flame = True
                     if self.flip:
-                        self.rect.y += (self.jump ** 2) // 3
+                        self.rect.y += inc
                     else:
-                        self.rect.y -= (self.jump ** 2) // 3
-                self.jump -= 1
+                        self.rect.y -= inc
+                self.jump -= 1 * self.config['namespace'].dt
             else:
                 self.is_jump = False
                 self.jump = 10
@@ -131,7 +133,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/gray_idle.bmp')
         self.img = self.img_idle
 
-        self.rect = self.img.get_rect()
+        self.rect = FloatRect(self.img.get_rect())
         self.rect.y = randint(1, self.screen_rect.height - self.rect.height - 2)
 
         self.rect.left = self.screen_rect.right
@@ -140,7 +142,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['namespace'].speed
+        self.rect.x -= self.config['namespace'].speed * self.config['namespace'].dt
 
 
 class FlyingAsteroid(pygame.sprite.Sprite):
@@ -159,7 +161,7 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
         self.img = self.imgs[randint(0, 1)]
 
-        self.rect = self.img.get_rect()
+        self.rect = FloatRect(self.img.get_rect())
         self.rect.bottom = self.screen_rect.top
         self.rect.left = self.screen_rect.right
 
@@ -167,8 +169,8 @@ class FlyingAsteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['namespace'].speed * 1.5
-        self.rect.y += self.config['namespace'].speed
+        self.rect.x -= self.config['namespace'].speed * 1.5 * self.config['namespace'].dt
+        self.rect.y += self.config['namespace'].speed * self.config['namespace'].dt
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
@@ -214,7 +216,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_small.bmp')
         self.img_active = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
 
-        self.rect_active = self.img_active.get_rect()
+        self.rect_active = FloatRect(self.img_active.get_rect())
 
         BoostMixin.__init__(self, screen, base_dir, config, 'shield', life)
 
