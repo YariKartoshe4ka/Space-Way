@@ -264,27 +264,27 @@ class BoostMixin:
             # Vertical positioning of boost, taking into account the number in the boost queue
             self.rect_small.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
 
+            life = self.life - (pygame.time.get_ticks() - self.tick) // 1000
+
+            # Deactivate and kill the boost if there is no time left
+            if life == 0:
+                self.deactivate()
+                self.kill()
+                return
+
             # Generating text with the remaining lifetime
-            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
+            if life <= 3:
                 # Rendering text using `bg_border`, if there is little time left
-                self.img_life = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.bg_color)
+                self.img_life = self.font.render(f"{life}S", True, self.bg_color)
                 self.rect_life = self.img_life.get_rect()
                 self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_life.left = self.screen_rect.left + 24
             else:
                 # Rendering text using `fg_border`, if there is a lot of time left
-                self.img_life = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.fg_color)
+                self.img_life = self.font.render(f"{life}S", True, self.fg_color)
                 self.rect_life = self.img_life.get_rect()
                 self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_life.left = self.screen_rect.left + 24
-
-            if self.life * self.config['FPS'] - self.tick <= 0:
-                # Deactivate and kill the boost if there is no time left
-                self.deactivate()
-                self.kill()
-            else:
-                # Continue count life time if there is a lot of time left
-                self.tick += 1
         else:
             # Continue movement of boost if it has not activated yet
             self.rect_idle.x -= self.config['namespace'].speed
@@ -309,6 +309,9 @@ class BoostMixin:
 
         # Activate boost
         self.is_active = True
+
+        # Update tick
+        self.tick = pygame.time.get_ticks()
 
     def deactivate(self) -> None:
         """ Callback that is called when the boost is deactivated """

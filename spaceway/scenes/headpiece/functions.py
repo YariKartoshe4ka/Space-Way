@@ -9,13 +9,13 @@ def check_events(config, base_dir):
             exit()
 
 
-def update(screen, config, text, tick):
+def update(screen, config, text):
     screen.fill((0, 0, 0))
 
-    if tick % (config['FPS'] * 4) == 0:
+    if config['namespace'].ticks_headpiece1 + 4000 < pygame.time.get_ticks():
         config['scene'] = config['sub_scene'] = 'lobby'
 
-    elif tick % (config['FPS'] * 2) == 0:
+    elif config['namespace'].ticks_headpiece2 + 2000 < pygame.time.get_ticks():
         text.msg = 'With love'
 
     text.update()

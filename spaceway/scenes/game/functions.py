@@ -62,7 +62,7 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
                 scene_buttons.perform_point_collides((x, y))
 
 
-def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
+def spawn(screen, base_dir, config, plate, astrs, boosts):
     # Spawn asteroid
     if len(astrs) == 0 or astrs.sprites()[-1].rect.x < config['mode'][0] - 200:
         astr = Asteroid(screen, base_dir, config)
@@ -105,20 +105,19 @@ def spawn(screen, base_dir, config, tick, plate, astrs, boosts):
         boosts.add(boost)
 
 
-def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons):
+def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
-        if tick % 2 == 0:
-            bg.update()
-
+        #bg.update()
         bg.blit()
 
-        if tick % (config['FPS'] * 7) == 0:
+        if config['namespace'].ticks_speed + 10000 < pygame.time.get_ticks():
+            config['namespace'].ticks_speed = pygame.time.get_ticks()
             if 'time' in boosts:
                 boosts.get('time').speed += 1
             else:
                 config['namespace'].speed += 1
 
-        spawn(screen, base_dir, config, tick, plate, astrs, boosts)
+        spawn(screen, base_dir, config, plate, astrs, boosts)
 
         for astr in astrs:
             if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
