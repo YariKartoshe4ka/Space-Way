@@ -53,7 +53,7 @@ class SceneButtonMixin(pygame.sprite.Sprite):
             # Check, if move can be continued
             if self.keep_move():
                 # If can be, move button
-                self.rect.y += (self.speed if self.action == 'leave' else -self.speed) * self.config['namespace'].dt
+                self.rect.y += (self.speed if self.action == 'leave' else -self.speed) * self.config['ns'].dt
             else:
                 # Else, stop button and call action callback
                 if self.action == 'enter':
@@ -288,7 +288,7 @@ class BoostMixin:
                 self.tick += 1
         else:
             # Continue movement of boost if it has not activated yet
-            self.rect_idle.x -= self.config['namespace'].speed * self.config['namespace'].dt
+            self.rect_idle.x -= self.config['ns'].speed * self.config['ns'].dt
 
         # Kill boost if it has left the screen
         if self.rect_idle.right < 0:

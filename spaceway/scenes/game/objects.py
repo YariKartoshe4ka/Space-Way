@@ -16,7 +16,7 @@ class Background:
         self.rect = FloatRect(self.img.get_rect())
 
     def update(self):
-        self.rect.x -= 0.5 * self.config['namespace'].dt
+        self.rect.x -= 0.5 * self.config['ns'].dt
 
         if self.rect.x <= -840:
             self.rect.x = 0
@@ -76,16 +76,16 @@ class SpacePlate(pygame.sprite.Sprite):
             self.img = self.imgs[self.config['user']['color']]
 
         if not self.is_jump:
-            self.gravity += self.gravity_scale * self.config['namespace'].dt
+            self.gravity += self.gravity_scale * self.config['ns'].dt
             if self.flip:
-                self.rect.y -= self.gravity * self.config['namespace'].dt
+                self.rect.y -= self.gravity * self.config['ns'].dt
             else:
-                self.rect.y += self.gravity * self.config['namespace'].dt
+                self.rect.y += self.gravity * self.config['ns'].dt
         else:
             self.gravity = self.gravity_default
 
             if self.jump >= -5:
-                inc = self.jump ** 2 // 3 * self.config['namespace'].dt
+                inc = self.jump ** 2 // 3 * self.config['ns'].dt
                 if self.jump < 0:
                     self.is_flame = False
                     if self.flip:
@@ -98,7 +98,7 @@ class SpacePlate(pygame.sprite.Sprite):
                         self.rect.y += inc
                     else:
                         self.rect.y -= inc
-                self.jump -= 1 * self.config['namespace'].dt
+                self.jump -= 1 * self.config['ns'].dt
             else:
                 self.is_jump = False
                 self.jump = 10
@@ -142,7 +142,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['namespace'].speed * self.config['namespace'].dt
+        self.rect.x -= self.config['ns'].speed * self.config['ns'].dt
 
 
 class FlyingAsteroid(pygame.sprite.Sprite):
@@ -169,8 +169,8 @@ class FlyingAsteroid(pygame.sprite.Sprite):
         self.screen.blit(self.img, self.rect)
 
     def update(self):
-        self.rect.x -= self.config['namespace'].speed * 1.5 * self.config['namespace'].dt
-        self.rect.y += self.config['namespace'].speed * self.config['namespace'].dt
+        self.rect.x -= self.config['ns'].speed * 1.5 * self.config['ns'].dt
+        self.rect.y += self.config['ns'].speed * self.config['ns'].dt
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
@@ -186,11 +186,11 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
 
     def activate(self):
         self.is_active = True
-        self.speed = self.config['namespace'].speed
-        self.config['namespace'].speed = 2
+        self.speed = self.config['ns'].speed
+        self.config['ns'].speed = 2
 
     def deactivate(self):
-        self.config['namespace'].speed = self.speed
+        self.config['ns'].speed = self.speed
 
 
 class DoubleBoost(BoostMixin, pygame.sprite.Sprite):

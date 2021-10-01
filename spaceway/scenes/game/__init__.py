@@ -3,8 +3,8 @@ from .functions import defeat
 
 
 def init(screen, base_dir, config, astrs, boosts):
-    config['namespace'].speed = 2
-    config['namespace'].score = 0
+    config['ns'].speed = 2
+    config['ns'].score = 0
 
     bg = Background(screen, base_dir, config)
     plate = SpacePlate(screen, base_dir, config)

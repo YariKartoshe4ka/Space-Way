@@ -49,11 +49,9 @@ def main() -> None:
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
         debugger.enable_module(debug.DebugHitbox)
 
-    # Set delta-time for the further use
-    config['namespace'].dt = 0
-
-    # Set tick for calculating the past time in seconds
-    tick = 0
+    # Define variables in namespace
+    config['ns'].dt = 0     # Set delta-time for the further use
+    config['ns'].tick = 0   # Set tick for calculating the past time in seconds
 
     # Initialization of headpiece scene
     text = scenes.headpiece.init(screen, base_dir, config)
@@ -90,12 +88,12 @@ def main() -> None:
 
     while True:
         # Update tick
-        tick += 1
+        config['ns'].tick += 1
 
         # Showing a specific scene
         if config['scene'] == 'headpiece':
             scenes.headpiece.functions.check_events(config, base_dir)
-            scenes.headpiece.functions.update(screen, config, text, tick)
+            scenes.headpiece.functions.update(screen, config, text)
 
         elif config['scene'] == 'lobby':
             scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
@@ -116,11 +114,7 @@ def main() -> None:
 
         elif config['scene'] == 'game':
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
-
-        # Zeroize tick from overflow
-        if tick >= config['FPS'] * 10:
-            tick = 0
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons)
 
         # Update debugger if debug mode enabled
         if config['debug']:
@@ -128,4 +122,4 @@ def main() -> None:
 
         # Update screen and adjust speed to FPS
         pygame.display.update()
-        config['namespace'].dt = clock.tick(config['FPS']) * 0.03
+        config['ns'].dt = clock.tick(config['FPS']) * 0.03

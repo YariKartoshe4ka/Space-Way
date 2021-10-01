@@ -100,7 +100,7 @@ class ConfigManager(dict):
                 config['score_list'].append((int(score), nick[:-1]))
 
         # Creating namespace for temporary variables
-        config['namespace'] = Namespace()
+        config['ns'] = Namespace()
 
         # Initializing ConfigManager as dictionary
         dict.__init__(self, config)
