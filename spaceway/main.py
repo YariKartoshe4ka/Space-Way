@@ -1,6 +1,7 @@
 """ Root file with main entrypoint """
 
 import os
+from sys import platform
 
 import pygame
 
@@ -30,10 +31,8 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    if config['user']['full_screen']:
-        screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
-    else:
-        screen = pygame.display.set_mode(config['mode'])
+    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+    screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
     pygame.display.set_caption(config['caption'])
@@ -109,7 +108,8 @@ def main() -> None:
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
-                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * int(full_screen_button.state))
+                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+                screen = pygame.display.set_mode(config['mode'], flags=flags)
                 full_screen_button.changed = False
 
         elif config['scene'] == 'game':
