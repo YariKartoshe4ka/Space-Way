@@ -1,6 +1,7 @@
 """ Root file with main entrypoint """
 
 import os
+from sys import platform
 
 import pygame
 
@@ -8,13 +9,16 @@ from . import scenes, collection, updater
 from .config import ConfigManager
 
 
-def main() -> None:
-    # Set environment variable for centering window
-    os.environ['SDL_VIDEO_CENTERED'] = '1'
+# Set environment variable for centering window
+os.environ['SDL_VIDEO_CENTERED'] = '1'
 
-    # Initialization of pygame
-    pygame.mixer.pre_init(44100, -16, 1, 512)
-    pygame.init()
+# Initialization of pygame
+pygame.mixer.pre_init(44100, -16, 1, 512)
+pygame.init()
+
+
+def main() -> None:
+    """ Main entrypoint of Space Way. Execute this to run game """
 
     # Get base directory to create absolute paths
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -27,10 +31,8 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    if config['user']['full_screen']:
-        screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN)
-    else:
-        screen = pygame.display.set_mode(config['mode'])
+    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+    screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
     pygame.display.set_caption(config['caption'])
@@ -46,8 +48,9 @@ def main() -> None:
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
         debugger.enable_module(debug.DebugHitbox)
 
-    # Set tick for calculating the past time in seconds
-    tick = 0
+    # Define variables in namespace
+    config['ns'].dt = 0     # Set delta-time for the further use
+    config['ns'].tick = 0   # Set tick for calculating the past time in seconds
 
     # Initialization of headpiece scene
     text = scenes.headpiece.init(screen, base_dir, config)
@@ -84,12 +87,12 @@ def main() -> None:
 
     while True:
         # Update tick
-        tick += 1
+        config['ns'].tick += 1
 
         # Showing a specific scene
         if config['scene'] == 'headpiece':
             scenes.headpiece.functions.check_events(config, base_dir)
-            scenes.headpiece.functions.update(screen, config, text, tick)
+            scenes.headpiece.functions.update(screen, config, text)
 
         elif config['scene'] == 'lobby':
             scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
@@ -105,16 +108,13 @@ def main() -> None:
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
-                screen = pygame.display.set_mode(config['mode'], pygame.FULLSCREEN * int(full_screen_button.state))
+                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+                screen = pygame.display.set_mode(config['mode'], flags=flags)
                 full_screen_button.changed = False
 
         elif config['scene'] == 'game':
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, tick, pause_buttons, end_buttons, scene_buttons)
-
-        # Zeroize tick from overflow
-        if tick >= config['FPS'] * 10:
-            tick = 0
+            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons)
 
         # Update debugger if debug mode enabled
         if config['debug']:
@@ -122,4 +122,4 @@ def main() -> None:
 
         # Update screen and adjust speed to FPS
         pygame.display.update()
-        clock.tick(config['FPS'])
+        config['ns'].dt = clock.tick(config['FPS']) * 0.03

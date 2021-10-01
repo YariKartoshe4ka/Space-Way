@@ -3,7 +3,10 @@ from .functions import defeat
 
 
 def init(screen, base_dir, config, astrs, boosts):
-    bg = Background(screen, base_dir, 0, 0)
+    config['ns'].speed = 2
+    config['ns'].score = 0
+
+    bg = Background(screen, base_dir, config)
     plate = SpacePlate(screen, base_dir, config)
     score = Score(screen, base_dir, 'Score: 0')
     end = EndCaption(screen, base_dir, config)

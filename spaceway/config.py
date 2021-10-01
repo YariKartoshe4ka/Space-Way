@@ -7,6 +7,14 @@ from json import load, dump
 from appdirs import user_config_dir
 
 
+class Namespace:
+    """ Stores variables that do not need to be imported or exported
+        Since `ConfigManager` is passed everywhere, it allows you to
+        safely exchange variables from different functions and even
+        scenes """
+    pass
+
+
 class ConfigManager(dict):
     """ Configuration manager. Inherited from `dict` class and can be
         used as default dictionary. Different configuration files are
@@ -90,6 +98,9 @@ class ConfigManager(dict):
                 score, nick = line.split(',')
 
                 config['score_list'].append((int(score), nick[:-1]))
+
+        # Creating namespace for temporary variables
+        config['ns'] = Namespace()
 
         # Initializing ConfigManager as dictionary
         dict.__init__(self, config)

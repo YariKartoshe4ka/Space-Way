@@ -12,6 +12,7 @@ Now project has this structure:
 |____ debug.py
 |____ main.py
 |____ mixins.py
+|____ rect.py
 |____ updater.py
 |____ assets
 | |____ <fonts, sprites, sounds and other binary files...>
@@ -34,6 +35,7 @@ General files:
 - *debug.py* - file with some objects for easier debugging game
 - *main.py* - main file, import all modules, contains the entrypoint of game and connects all the scenes together
 - *mixins.py* - file with mixins which are needed for simple creation of the same type of objects (DRY principle)
+- *rect.py* - file with implementation of a `pygame.Rect` for working with float values
 - *updater.py* - file responsible for updating Space Way
 
 Assets:

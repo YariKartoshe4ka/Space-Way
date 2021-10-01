@@ -4,8 +4,6 @@ from typing import Union, List, Tuple, Dict
 
 import pygame
 
-from .mixins import BoostMixin, SceneButtonMixin
-
 
 class BoostsGroup(pygame.sprite.Group):
     """ Extension of default pygame.sprite.Group for more easier control
@@ -22,19 +20,19 @@ class BoostsGroup(pygame.sprite.Group):
             {<ShieldBoost sprite(in 1 groups)>: 0} """
 
     # Define additional groups
-    active: Dict[str, BoostMixin] = {}
-    passive: Dict[BoostMixin, int] = {}
+    active: Dict[str, 'BoostMixin'] = {}
+    passive: Dict['BoostMixin', int] = {}
 
     # Define interval for next boost spawn (in score)
     next_spawn = 3
 
-    def add_internal(self, boost: BoostMixin) -> None:
+    def add_internal(self, boost: 'BoostMixin') -> None:
         """ Adds boost to passive group """
 
         self.passive[boost] = 0
         pygame.sprite.Group.add_internal(self, boost)
 
-    def remove_internal(self, boost: BoostMixin) -> None:
+    def remove_internal(self, boost: 'BoostMixin') -> None:
         """ Removes boost. If boost is located in passive group,
             it simply will remove it from group. If boost is located
             in active group, it will update number in queue of other
@@ -75,7 +73,7 @@ class BoostsGroup(pygame.sprite.Group):
         # Reset `next_spawn`
         self.next_spawn = 3
 
-    def __contains__(self, item: Union[str, BoostMixin]) -> bool:
+    def __contains__(self, item: Union[str, 'BoostMixin']) -> bool:
         """ Will return True, if group contains activated
             boost with passed name, else - False """
 
@@ -83,7 +81,7 @@ class BoostsGroup(pygame.sprite.Group):
             return bool(self.get(item))
         return self.has(item)
 
-    def activate(self, boost: BoostMixin) -> None:
+    def activate(self, boost: 'BoostMixin') -> None:
         """ Activates passed boost and move boost from passive group
             to active. If boost with boost's name have already activated,
             it will nullify tick (boost timer will start again) """
@@ -102,7 +100,7 @@ class BoostsGroup(pygame.sprite.Group):
             self.active[boost.name] = boost
             boost.activate()
 
-    def get(self, name: str) -> Union[BoostMixin, None]:
+    def get(self, name: str) -> Union['BoostMixin', None]:
         """ Will return boost if active group contains boost
             with passed name. Else it will return `None` """
 
@@ -203,9 +201,9 @@ class SceneButtonsGroup(pygame.sprite.Group):
                 } """
 
     # Define an additional dictionary for structuring buttons by scenes
-    buttons: Dict[str, Dict[str, List[SceneButtonMixin]]] = {}
+    buttons: Dict[str, Dict[str, List['SceneButtonMixin']]] = {}
 
-    def __init__(self, config, *buttons: List[SceneButtonMixin]) -> None:
+    def __init__(self, config, *buttons: List['SceneButtonMixin']) -> None:
         """ Initialization of group. Pass `config` argument and list of buttons
             `buttons` to add them to group """
 
@@ -215,7 +213,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
         # Set `config` for the further use
         self.config = config
 
-    def add_internal(self, button: SceneButtonMixin) -> None:
+    def add_internal(self, button: 'SceneButtonMixin') -> None:
         """ Adding button to group and structuring by scene """
 
         # If there were not buttons with scene of current button yet
@@ -231,7 +229,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
 
         pygame.sprite.Group.add_internal(self, button)
 
-    def remove_internal(self, button: SceneButtonMixin) -> None:
+    def remove_internal(self, button: 'SceneButtonMixin') -> None:
         """ Remove button from group. It is assumed that button has already been added """
 
         # Remove button from group
@@ -281,7 +279,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
             button.update()
             button.blit()
 
-    def get_by_scene(self, scene: str = '', sub_scene: str = '') -> List[SceneButtonMixin]:
+    def get_by_scene(self, scene: str = '', sub_scene: str = '') -> List['SceneButtonMixin']:
         """ Returns all buttons of selected scene. If no scene was selected,
             buttons of current scene will be returned """
 
@@ -289,7 +287,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
             .get(scene or self.config['scene'], {}) \
             .get(sub_scene or self.config['sub_scene'], [])
 
-    def get_by_instance(self, instance: any) -> Union[SceneButtonMixin, None]:
+    def get_by_instance(self, instance: any) -> Union['SceneButtonMixin', None]:
         """ Returns only one button or `None` which is an instance of passed class """
 
         for button in self:

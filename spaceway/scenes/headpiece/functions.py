@@ -9,13 +9,13 @@ def check_events(config, base_dir):
             exit()
 
 
-def update(screen, config, text, tick):
+def update(screen, config, text):
     screen.fill((0, 0, 0))
 
-    if tick % (config['FPS'] * 4) == 0:
+    if config['ns'].tick % (config['FPS'] * 4) == 0:
         config['scene'] = config['sub_scene'] = 'lobby'
 
-    if tick % (config['FPS'] * 2) == 0:
+    elif config['ns'].tick % (config['FPS'] * 2) == 0:
         text.msg = 'With love'
 
     text.update()
