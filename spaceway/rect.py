@@ -424,23 +424,3 @@ class FloatRect:
                 out.append((key, rects_dict[key]))
 
         return out
-
-
-__pygame_image_load = pygame.image.load
-
-
-def __image_load(*args, **kwargs) -> FloatRect:
-    surface: pygame.Surface = __pygame_image_load(*args, **kwargs)
-
-    class FloatSurface(pygame.Surface):
-        def get_rect(self, **kwargs):
-            return FloatRect(0, 0, *self.get_size(), **kwargs)
-
-    float_surface: FloatSurface = FloatSurface(surface.get_size(), surface.get_flags(), surface)
-    float_surface.blit(surface, surface.get_rect())
-
-    return float_surface
-
-
-# Replacing functions, which returns `pygame.Rect` object
-pygame.image.load = __image_load

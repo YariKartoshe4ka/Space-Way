@@ -42,14 +42,15 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.is_flame = False
         self.img_flame = pygame.image.load(f'{base_dir}/assets/images/plate/flame.bmp')
+        self.img_flame_flip = pygame.transform.flip(self.img_flame, False, True)
         self.rect_flame = self.img_flame.get_rect()
 
         self.img = self.imgs[self.config['user']['color']]
+        self.img_flip = pygame.transform.flip(self.img, False, True)
         self.rect = FloatRect(self.img.get_rect())
 
         self.rect.x = 5
-        # self.rect.centery = self.screen_rect.centery
-        self.rect.top = self.screen_rect.top
+        self.rect.centery = self.screen_rect.centery
 
         self.rect_flame.centerx = self.rect.centerx + 1
 
@@ -74,6 +75,7 @@ class SpacePlate(pygame.sprite.Sprite):
     def update(self):
         if self.img != self.imgs[self.config['user']['color']]:
             self.img = self.imgs[self.config['user']['color']]
+            self.img_flip = pygame.transform.flip(self.img, False, True)
 
         if not self.is_jump:
             self.gravity += self.gravity_scale * self.config['ns'].dt
@@ -88,16 +90,10 @@ class SpacePlate(pygame.sprite.Sprite):
                 inc = self.jump ** 2 // 3 * self.config['ns'].dt
                 if self.jump < 0:
                     self.is_flame = False
-                    if self.flip:
-                        self.rect.y -= inc
-                    else:
-                        self.rect.y += inc
+                    self.rect.y += -inc if self.flip else inc
                 else:
                     self.is_flame = True
-                    if self.flip:
-                        self.rect.y += inc
-                    else:
-                        self.rect.y -= inc
+                    self.rect.y += inc if self.flip else -inc
                 self.jump -= 1 * self.config['ns'].dt
             else:
                 self.is_jump = False
@@ -110,9 +106,9 @@ class SpacePlate(pygame.sprite.Sprite):
 
     def blit(self):
         if self.flip:
-            self.screen.blit(pygame.transform.flip(self.img, False, True), self.rect)
+            self.screen.blit(self.img_flip, self.rect)
             if self.is_flame:
-                self.screen.blit(pygame.transform.flip(self.img_flame, False, True), self.rect_flame)
+                self.screen.blit(self.img_flame_flip, self.rect_flame)
         else:
             self.screen.blit(self.img, self.rect)
             if self.is_flame:

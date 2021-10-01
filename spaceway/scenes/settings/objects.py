@@ -1,6 +1,7 @@
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
+from ...rect import FloatRect
 
 
 class EffectsButton(SettingsButtonMixin):
@@ -62,7 +63,7 @@ class SettingsBackButton(SceneButtonMixin):
         self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
-        self.rect = self.img.get_rect()
+        self.rect = FloatRect(self.img.get_rect())
 
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom - 5
