@@ -6,7 +6,7 @@ Arcade game about space, in which you must overcome the space path by flying aro
 
 ![](https://img.shields.io/pypi/v/spaceway) ![](https://img.shields.io/github/release-date/YariKartoshe4ka/Space-Way) ![](https://img.shields.io/pypi/dm/spaceway)
 
-<img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/icons/icon_fit.svg" width=128 />
+<img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/icons/icon.svg" width=128 />
 
 </div>
 
