@@ -4,7 +4,7 @@ import os
 from shutil import copyfile
 from json import load, dump
 
-from appdirs import user_config_dir
+from platformdirs import user_config_dir
 
 
 class Namespace:

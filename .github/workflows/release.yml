@@ -47,7 +47,7 @@ jobs:
       - name: Install Space Way
         run: pip install .
       - name: Build binary
-        run: pyinstaller --onefile --noconsole --icon=spaceway/icon.ico --collect-all spaceway "Space Way.py"
+        run: pyinstaller -Fw -i spaceway/icon.ico --collect-all spaceway --hidden-import platformdirs.windows "Space Way.py"
       - name: Upload binary
         uses: actions/upload-release-asset@v1
         env:
