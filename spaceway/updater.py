@@ -1,6 +1,5 @@
 """ Module responsible for the Space Way updates """
 
-import os
 from webbrowser import open
 
 import pygame
@@ -23,7 +22,7 @@ def dialog(base_dir) -> None:
     font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 28)
 
     # Setup other drawable objects
-    bg = pygame.image.load(f'{base_dir}/assets/updater/background.bmp')
+    bg = pygame.image.load(f'{base_dir}/assets/images/background/updater.bmp')
     bg_rect = bg.get_rect()
 
     title_top = font.render('New version', True, (0, 255, 255))
@@ -83,7 +82,7 @@ def check_software_updates(version, base_dir) -> None:
     # Get remote vesrion of `config.json` if network connection available
     try:
         r = get('https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/spaceway/config/config.json')
-    except:
+    except Exception:
         return
 
     # Get value of `version` in remote version of `config.json`

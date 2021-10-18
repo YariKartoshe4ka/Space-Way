@@ -1,26 +1,65 @@
 import pygame
 
+from ...mixins import CaptionMixin
+from ...rect import FloatRect
 
-class Text:
-    def __init__(self, screen, base_dir, msg):
+
+class Text(CaptionMixin):
+    def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.msg = msg
-        self.color = (255, 255, 255)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 70)
+        self.img_bg = pygame.image.load(f'{base_dir}/assets/images/background/headpiece.bmp')
+        self.rect_bg = self.img_bg.get_rect()
 
-        self.img = self.font.render(self.msg, True, self.color)
-        self.rect = self.img.get_rect()
+        self.base_dir = base_dir
 
-        self.rect.center = self.screen_rect.center
+        CaptionMixin.__init__(self, base_dir, config, 'YariKartoshe4ka')
 
     def update(self):
-        self.img = self.font.render(self.msg, True, self.color)
-        self.rect = self.img.get_rect()
+        if self.config['ns'].tick % (self.config['FPS'] * 4) == 0:
+            self.config['scene'] = self.config['sub_scene'] = 'lobby'
 
-        self.rect.centerx = self.screen_rect.centerx
-        self.rect.centery = self.screen_rect.centery
+        elif self.config['ns'].tick % (self.config['FPS'] * 2) == 0:
+            self.caption = 'With love'
+
+        CaptionMixin.update(self)
 
     def blit(self):
+        self.screen.blit(self.img_bg, self.rect_bg)
+        CaptionMixin.blit(self)
+
+    def locate(self):
+        self.rect.centerx = self.screen_rect.centerx
+        self.rect.y = 50
+
+
+class ProgressBar:
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.config = config
+        self.color = (
+            (0, 153, 255),
+            (252, 15, 192),
+            (0, 255, 0)
+        )[self.config['user']['color']]
+
+        self.line = FloatRect(0, self.config['mode'][1] - 5, 0, 5)
+        self.inc = self.config['mode'][0] / (self.config['FPS'] * 4)
+
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 22)
+
+    def update(self):
+        self.line.width += self.inc
+
+        self.img = self.font.render(f"{round(self.line.width * 100 / self.config['mode'][0])}%", True, self.color)
+        self.rect = self.img.get_rect()
+
+        self.rect.centerx = min(self.line.right, self.config['mode'][0] - self.rect.width // 2 - 5)
+        self.rect.bottom = self.line.top - 5
+
+    def blit(self):
+        pygame.draw.rect(self.screen, self.color, self.line)
         self.screen.blit(self.img, self.rect)

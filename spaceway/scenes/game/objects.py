@@ -12,7 +12,7 @@ class Background:
 
         self.config = config
 
-        self.img = pygame.image.load(f'{base_dir}/assets/images/bg/background.bmp')
+        self.img = pygame.image.load(f'{base_dir}/assets/images/background/game.bmp')
         self.rect = FloatRect(self.img.get_rect())
 
     def update(self):
