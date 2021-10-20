@@ -1,7 +1,5 @@
 """ File with extension of default `pygame.Rect` to use it with float values """
 
-import pygame
-
 
 class FloatRect:
     def __init__(self, *args):

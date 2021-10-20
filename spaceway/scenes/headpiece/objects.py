@@ -12,6 +12,10 @@ class Text(CaptionMixin):
         self.img_bg = pygame.image.load(f'{base_dir}/assets/images/background/headpiece.bmp')
         self.rect_bg = self.img_bg.get_rect()
 
+        self.img_heart = pygame.image.load(f'{base_dir}/assets/images/heart/heart.bmp')
+        self.rect_heart = self.img_heart.get_rect()
+        self.is_heart = False
+
         self.base_dir = base_dir
 
         CaptionMixin.__init__(self, base_dir, config, 'YariKartoshe4ka')
@@ -22,16 +26,27 @@ class Text(CaptionMixin):
 
         elif self.config['ns'].tick % (self.config['FPS'] * 2) == 0:
             self.caption = 'With love'
+            self.is_heart = True
 
         CaptionMixin.update(self)
 
     def blit(self):
         self.screen.blit(self.img_bg, self.rect_bg)
+
+        if self.is_heart:
+            self.screen.blit(self.img_heart, self.rect_heart)
+
         CaptionMixin.blit(self)
 
     def locate(self):
-        self.rect.centerx = self.screen_rect.centerx
         self.rect.y = 50
+        self.rect.centerx = self.screen_rect.centerx
+
+        if self.is_heart:
+            self.rect_heart.centery = self.rect.centery
+
+            self.rect.centerx -= self.rect_heart.width - 5
+            self.rect_heart.left = self.rect.right + 5
 
 
 class ProgressBar:
@@ -57,7 +72,10 @@ class ProgressBar:
         self.img = self.font.render(f"{round(self.line.width * 100 / self.config['mode'][0])}%", True, self.color)
         self.rect = self.img.get_rect()
 
-        self.rect.centerx = min(self.line.right, self.config['mode'][0] - self.rect.width // 2 - 5)
+        self.rect.centerx = max(
+            self.line.left + self.rect.width // 2 + 5,
+            min(self.line.right, self.config['mode'][0] - self.rect.width // 2 - 5)
+        )
         self.rect.bottom = self.line.top - 5
 
     def blit(self):
