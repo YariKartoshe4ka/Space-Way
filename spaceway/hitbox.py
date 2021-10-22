@@ -1,7 +1,7 @@
 """ File with extension of default `pygame.Rect` to use it with float values """
 
 
-class FloatRect:
+class Rect:
     def __init__(self, *args):
         if len(args) == 2:
             if len(args[0]) == 2 and len(args[1]) == 2:
@@ -359,7 +359,7 @@ class FloatRect:
         else:
             raise TypeError("argument must contain two numbers")
 
-        # conforms with no collision on right / bottom edge behavior of pygame FloatRects
+        # conforms with no collision on right / bottom edge behavior of pygame Rects
         if self._rect[0] <= point[0] < self.right:
             if self._rect[1] <= point[1] < self.bottom:
                 return True

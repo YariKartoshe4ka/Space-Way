@@ -1,7 +1,7 @@
 import pygame
 
 from ...mixins import CaptionMixin, SceneButtonMixin
-from ...rect import FloatRect
+from ...hitbox import Rect
 
 
 class PlayButton(SceneButtonMixin):
@@ -12,7 +12,7 @@ class PlayButton(SceneButtonMixin):
         self.width = self.height = 90
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/play.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
 
         self.rect.centerx = self.screen_rect.centerx
         self.rect.bottom = self.screen_rect.top
@@ -36,7 +36,7 @@ class TableButton(SceneButtonMixin):
         self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/table.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
 
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom
@@ -60,7 +60,7 @@ class SettingsButton(SceneButtonMixin):
         self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/settings.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
 
         self.rect.right = self.screen_rect.right - 5
         self.rect.top = self.screen_rect.bottom

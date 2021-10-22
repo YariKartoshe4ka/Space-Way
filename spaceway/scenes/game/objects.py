@@ -3,7 +3,7 @@ from random import randint
 import pygame
 
 from ...mixins import BoostMixin, CaptionMixin, SceneButtonMixin
-from ...rect import FloatRect
+from ...hitbox import Rect
 
 
 class Background:
@@ -13,7 +13,7 @@ class Background:
         self.config = config
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/background/game.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
 
     def update(self):
         self.rect.x -= 0.5 * self.config['ns'].dt
@@ -47,7 +47,7 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.img = self.imgs[self.config['user']['color']]
         self.img_flip = pygame.transform.flip(self.img, False, True)
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
 
         self.rect.x = 5
         self.rect.centery = self.screen_rect.centery
@@ -129,7 +129,7 @@ class Asteroid(pygame.sprite.Sprite):
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/asteroid/gray_idle.bmp')
         self.img = self.img_idle
 
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
         self.rect.y = randint(1, self.screen_rect.height - self.rect.height - 2)
 
         self.rect.left = self.screen_rect.right
@@ -157,7 +157,7 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
         self.img = self.imgs[randint(0, 1)]
 
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Rect(self.img.get_rect())
         self.rect.bottom = self.screen_rect.top
         self.rect.left = self.screen_rect.right
 
@@ -209,7 +209,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_small.bmp')
         self.img_active = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
 
-        self.rect_active = FloatRect(self.img_active.get_rect())
+        self.rect_active = Rect(self.img_active.get_rect())
 
         BoostMixin.__init__(self, screen, base_dir, config, 'shield', life)
 

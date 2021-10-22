@@ -7,7 +7,7 @@ from random import randint
 import pygame
 
 from .collection import SceneButtonsGroup
-from .rect import FloatRect
+from .hitbox import Rect
 
 
 class SceneButtonMixin(pygame.sprite.Sprite):
@@ -247,7 +247,7 @@ class BoostMixin:
         self.tick = 0
 
         # Generating a rectangle of `img_idle` and randomly positioning it
-        self.rect_idle = FloatRect(self.img_idle.get_rect())
+        self.rect_idle = Rect(self.img_idle.get_rect())
         self.rect_idle.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect_idle.height - 2)
         self.rect_idle.left = self.screen_rect.right
 

@@ -1,7 +1,7 @@
 import pygame
 
 from ...mixins import CaptionMixin
-from ...rect import FloatRect
+from ...hitbox import Rect
 
 
 class Text(CaptionMixin):
@@ -61,7 +61,7 @@ class ProgressBar:
             (0, 255, 0)
         )[self.config['user']['color']]
 
-        self.line = FloatRect(0, self.config['mode'][1] - 5, 0, 5)
+        self.line = Rect(0, self.config['mode'][1] - 5, 0, 5)
         self.inc = self.config['mode'][0] / (self.config['FPS'] * 4)
 
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 22)
