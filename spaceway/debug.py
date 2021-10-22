@@ -95,7 +95,8 @@ class DebugHitbox(DebugModule):
     """ Debug module for drawing hitbox of every image """
 
     # Color of hitbox
-    COLOR = (0, 255, 0, 255)
+    COLOR_RECT = (0, 255, 0)
+    COLOR_ELLIPSE = (0, 255, 255)
 
     def __init__(self) -> None:
         """ Initializes the module. Replaces the default image
@@ -117,7 +118,8 @@ class DebugHitbox(DebugModule):
         image_surface_rect = image_surface.get_rect()
 
         # Drawing hitbox on this image
-        pygame.draw.rect(image_surface, (0, 255, 0, 255), image_surface_rect, 1)
+        pygame.draw.rect(image_surface, DebugHitbox.COLOR_RECT, image_surface_rect, 1)
+        pygame.draw.ellipse(image_surface, DebugHitbox.COLOR_ELLIPSE, image_surface_rect, 1)
 
         return image_surface
 
