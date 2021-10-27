@@ -1,13 +1,15 @@
 """ File with extension of default `pygame.Rect` to use it with float values """
 
+from math import sqrt, atan2, pi, sin, cos
 
-class Rect:
+
+class Hitbox:
     def __init__(self, *args):
         if len(args) == 2:
             if len(args[0]) == 2 and len(args[1]) == 2:
                 l = [*args[0], *args[1]]
             else:
-                raise TypeError("Argument must be rect style object")
+                raise TypeError("Argument must be hitbox style object")
         elif len(args) == 4:
             l = [*args]
         elif len(args) == 1:
@@ -21,7 +23,7 @@ class Rect:
                 )
 
         else:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
         self.__dict__["_rect"] = l
 
@@ -55,7 +57,7 @@ class Rect:
             return self.__class__.getattr_dict[name](self)
         except KeyError:
             raise AttributeError(
-                f"'{self.__class__.__name__}' object has no attribute 'name'"
+                f"'{self.__class__.__name__}' object has no attribute '{name}'"
             )
 
     def __setattr__(self, name, value):
@@ -159,7 +161,7 @@ class Rect:
         return 4
 
     def __str__(self):
-        return f"<pgx_rect{tuple(self._rect)}>"
+        return f"<hitbox{tuple(self._rect)}>"
 
     def __repr__(self):
         return self.__str__()
@@ -200,136 +202,93 @@ class Rect:
     def update(self, *args):
         self.__init__(*args)
 
-    def clamp(self, argrect):
+    def clamp(self, arg):
         c = self.copy()
-        c.clamp_ip(argrect)
+        c.clamp_ip(arg)
         return c
 
-    def clamp_ip(self, argrect):
+    def clamp_ip(self, arg):
         try:
-            argrect = self.__class__(argrect)
+            self.__class__(arg)
         except:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
-        if self._rect[2] >= argrect.w:
-            x = argrect.x + argrect.w / 2 - self._rect[2] / 2
-        elif self._rect[0] < argrect.x:
-            x = argrect.x
-        elif self._rect[0] + self._rect[2] > argrect.x + argrect.w:
-            x = argrect.x + argrect.w - self._rect[2]
-        else:
-            x = self._rect[0]
+        if isinstance(arg, Ellipse):
+            return self._clamp_ip_ellipse(Ellipse(arg))
+        return self._clamp_ip_rect(Rect(arg))
 
-        if self._rect[3] >= argrect.h:
-            y = argrect.y + argrect.h / 2 - self._rect[3] / 2
-        elif self._rect[1] < argrect.y:
-            y = argrect.y
-        elif self._rect[1] + self._rect[3] > argrect.y + argrect.h:
-            y = argrect.y + argrect.h - self._rect[3]
-        else:
-            y = self._rect[1]
+    def _clamp_ip_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-        self._rect[0] = x
-        self._rect[1] = y
+    def _clamp_ip_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-    def clip(self, argrect):
+    def clip(self, arg):
         try:
-            argrect = self.__class__(argrect)
+            self.__class__(arg)
         except:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
-        # left
-        if self.x >= argrect.x and self.x < argrect.x + argrect.w:
-            x = self.x
-        elif argrect.x >= self.x and argrect.x < self.x + self.w:
-            x = argrect.x
-        else:
-            return self.__class__(self.x, self.y, 0, 0)
+        if isinstance(arg, Ellipse):
+            return self.__clip_ellipse(Ellpse(arg))
+        return self._clip_rect(Rect(arg))
 
-        # right
-        if self.x + self.w > argrect.x and self.x + self.w <= argrect.x + argrect.w:
-            w = self.x + self.w - x
-        elif (
-            argrect.x + argrect.w > self.x and argrect.x + argrect.w <= self.x + self.w
-        ):
-            w = argrect.x + argrect.w - x
-        else:
-            return self.__class__(self.x, self.y, 0, 0)
+    def _clip_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-        # top
-        if self.y >= argrect.y and self.y < argrect.y + argrect.h:
-            y = self.y
-        elif argrect.y >= self.y and argrect.y < self.y + self.h:
-            y = argrect.y
-        else:
-            return self.__class__(self.x, self.y, 0, 0)
+    def _clip_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-        # bottom
-        if self.y + self.h > argrect.y and self.y + self.h <= argrect.y + argrect.h:
-            h = self.y + self.h - y
-        elif (
-            argrect.y + argrect.h > self.y and argrect.y + argrect.h <= self.y + self.h
-        ):
-            h = argrect.y + argrect.h - y
-        else:
-            return self.__class__(self.x, self.y, 0, 0)
-
-        return self.__class__(x, y, w, h)
-
-    def union(self, argrect):
+    def union(self, arg):
         c = self.copy()
-        c.union_ip(argrect)
+        c.union_ip(arg)
         return c
 
-    def union_ip(self, argrect):
+    def union_ip(self, arg):
         try:
-            argrect = self.__class__(argrect)
+            self.__class__(arg)
         except:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
-        x = min(self.x, argrect.x)
-        y = min(self.y, argrect.y)
-        w = max(self.x + self.w, argrect.x + argrect.w) - x
-        h = max(self.y + self.h, argrect.y + argrect.h) - y
+        if isinstance(arg, Ellipse):
+            return self._union_ip_ellipse(Ellipse(arg))
+        return self._union_ip_rect(arg)
 
-        self._rect = [x, y, w, h]
+    def _union_ip_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-    def unionall(self, argrects):
+    def _union_ip_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
+
+    def unionall(self, args):
         c = self.copy()
-        c.unionall_ip(argrects)
+        c.unionall_ip(args)
         return c
 
-    def unionall_ip(self, argrects):
-        for i, argrect in enumerate(argrects):
+    def unionall_ip(self, args):
+        for arg in args:
             try:
-                argrects[i] = self.__class__(argrect)
+                self.__class__(arg)
             except:
-                raise TypeError("Argument must be rect style object")
+                raise TypeError("Argument must be hitbox style object")
 
-        x = min([self.x] + [r.x for r in argrects])
-        y = min([self.y] + [r.y for r in argrects])
-        w = max([self.right] + [r.right for r in argrects]) - x
-        h = max([self.bottom] + [r.bottom for r in argrects]) - y
+            self.union_ip(arg)
 
-        self._rect = [x, y, w, h]
-
-    def fit(self, argrect):
+    def fit(self, arg):
         try:
-            argrect = self.__class__(argrect)
+            self.__class__(arg)
         except:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
-        xratio = self.w / argrect.w
-        yratio = self.h / argrect.h
-        maxratio = max(xratio, yratio)
+        if isinstance(arg, Ellipse):
+            return self._fit_ellipse(Ellipse(arg))
+        return self._fit_rect(Rect(arg))
 
-        w = self.w / maxratio
-        h = self.h / maxratio
+    def _fit_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
-        x = argrect.x + (argrect.w - w) / 2
-        y = argrect.y + (argrect.h - h) / 2
-
-        return self.__class__(x, y, w, h)
+    def _fit_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
     def normalize(self):
         if self._rect[2] < 0:
@@ -340,16 +299,21 @@ class Rect:
             self._rect[1] += self._rect[3]
             self._rect[3] = -self._rect[3]
 
-    def contains(self, argrect):
+    def contains(self, arg):
         try:
-            argrect = self.__class__(argrect)
+            self.__class__(arg)
         except:
-            raise TypeError("Argument must be rect style object")
+            raise TypeError("Argument must be hitbox style object")
 
-        if self._rect[0] <= argrect[0] and argrect[0] + argrect[2] <= self.right:
-            if self._rect[1] <= argrect[1] and argrect[1] + argrect[3] <= self.bottom:
-                return True
-        return False
+        if isinstance(arg, Ellipse):
+            return self._contains_ellipse(Ellipse(arg))
+        return self._contains_rect(Rect(arg))
+
+    def _contains_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
+
+    def _contains_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
 
     def collidepoint(self, *args):
         if len(args) == 1:
@@ -359,66 +323,272 @@ class Rect:
         else:
             raise TypeError("argument must contain two numbers")
 
+        return self._collidepoint(point)
+
+    def _collidepoint(self, point):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
+
+    def colliderect(self, arg):
+        try:
+            self.__class__(arg)
+        except:
+            raise TypeError("Argument must be hitbox style object")
+
+        if 0 in [self.w, self.h, arg.w, arg.h]:
+            return False
+
+        if isinstance(arg, Ellipse):
+            return self._colliderect_ellipse(Ellipse(arg))
+        return self._colliderect_rect(Rect(arg))
+
+    def _colliderect_rect(self, rect):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
+
+    def _colliderect_ellipse(self, ellipse):
+        raise NotImplementedError('Method hasn\'t been implemented yet')
+
+    def collidelist(self, args):
+        for i, arg in enumerate(args):
+            if self.collide(arg):
+                return i
+
+        return -1
+
+    def collidelistall(self, args):
+        out = []
+
+        for i, arg in enumerate(args):
+            if self.collide(arg):
+                out.append(i)
+
+        return out
+
+    def collidedict(self, args_dict, use_values=0):
+        for key in args_dict:
+            if use_values == 0:
+                arg = key
+            else:
+                arg = args_dict[key]
+
+            if self.collide(arg):
+                return (key, args_dict[key])
+
+        return None  # explicit rather than implicit
+
+    def collidedictall(self, args_dict, use_values=0):
+        out = []
+
+        for key in args_dict:
+            if use_values == 0:
+                arg = key
+            else:
+                arg = args_dict[key]
+
+            if self.collide(arg):
+                out.append((key, args_dict[key]))
+
+        return out
+
+
+class Rect(Hitbox):
+    def __str__(self):
+        return f"<rect{tuple(self._rect)}>"
+
+    def _clamp_ip_rect(self, rect):
+        if self._rect[2] >= rect.w:
+            x = rect.x + rect.w / 2 - self._rect[2] / 2
+        elif self._rect[0] < rect.x:
+            x = rect.x
+        elif self._rect[0] + self._rect[2] > rect.x + rect.w:
+            x = rect.x + rect.w - self._rect[2]
+        else:
+            x = self._rect[0]
+
+        if self._rect[3] >= rect.h:
+            y = rect.y + rect.h / 2 - self._rect[3] / 2
+        elif self._rect[1] < rect.y:
+            y = rect.y
+        elif self._rect[1] + self._rect[3] > rect.y + rect.h:
+            y = rect.y + rect.h - self._rect[3]
+        else:
+            y = self._rect[1]
+
+        self._rect[0] = x
+        self._rect[1] = y
+
+    def _clip_rect(self, rect):
+        # left
+        if self.x >= rect.x and self.x < rect.x + rect.w:
+            x = self.x
+        elif rect.x >= self.x and rect.x < self.x + self.w:
+            x = rect.x
+        else:
+            return self.__class__(self.x, self.y, 0, 0)
+
+        # right
+        if self.x + self.w > rect.x and self.x + self.w <= rect.x + rect.w:
+            w = self.x + self.w - x
+        elif (
+            rect.x + rect.w > self.x and rect.x + rect.w <= self.x + self.w
+        ):
+            w = rect.x + rect.w - x
+        else:
+            return self.__class__(self.x, self.y, 0, 0)
+
+        # top
+        if self.y >= rect.y and self.y < rect.y + rect.h:
+            y = self.y
+        elif rect.y >= self.y and rect.y < self.y + self.h:
+            y = rect.y
+        else:
+            return self.__class__(self.x, self.y, 0, 0)
+
+        # bottom
+        if self.y + self.h > rect.y and self.y + self.h <= rect.y + rect.h:
+            h = self.y + self.h - y
+        elif (
+            rect.y + rect.h > self.y and rect.y + rect.h <= self.y + self.h
+        ):
+            h = rect.y + rect.h - y
+        else:
+            return self.__class__(self.x, self.y, 0, 0)
+
+        return self.__class__(x, y, w, h)
+
+    def _union_ip_rect(self, rect):
+        x = min(self.x, rect.x)
+        y = min(self.y, rect.y)
+        w = max(self.x + self.w, rect.x + rect.w) - x
+        h = max(self.y + self.h, rect.y + rect.h) - y
+
+        self._rect = [x, y, w, h]
+
+    def _fit_rect(self, rect):
+        xratio = self.w / rect.w
+        yratio = self.h / rect.h
+        maxratio = max(xratio, yratio)
+
+        w = self.w / maxratio
+        h = self.h / maxratio
+
+        x = rect.x + (rect.w - w) / 2
+        y = rect.y + (rect.h - h) / 2
+
+        return self.__class__(x, y, w, h)
+
+    def _contains_rect(self, rect):
+        if self._rect[0] <= rect[0] and rect[0] + rect[2] <= self.right:
+            if self._rect[1] <= rect[1] and rect[1] + rect[3] <= self.bottom:
+                return True
+        return False
+
+    def _contains_ellipse(self, ellipse):
+        return self._contains_rect(ellipse)
+
+    def _collidepoint(self, point):
         # conforms with no collision on right / bottom edge behavior of pygame Rects
         if self._rect[0] <= point[0] < self.right:
             if self._rect[1] <= point[1] < self.bottom:
                 return True
         return False
 
-    def colliderect(self, argrect):
-        try:
-            argrect = self.__class__(argrect)
-        except:
-            raise TypeError("Argument must be rect style object")
-
-        if any(0 == d for d in [self.w, self.h, argrect.w, argrect.h]):
-            return False
-
+    def _colliderect_rect(self, rect):
         return (
-            min(self.x, self.x + self.w) < max(argrect.x, argrect.x + argrect.w)
-            and min(self.y, self.y + self.h) < max(argrect.y, argrect.y + argrect.h)
-            and max(self.x, self.x + self.w) > min(argrect.x, argrect.x + argrect.w)
-            and max(self.y, self.y + self.h) > min(argrect.y, argrect.y + argrect.h)
+            min(self.x, self.x + self.w) < max(rect.x, rect.x + rect.w)
+            and min(self.y, self.y + self.h) < max(rect.y, rect.y + rect.h)
+            and max(self.x, self.x + self.w) > min(rect.x, rect.x + rect.w)
+            and max(self.y, self.y + self.h) > min(rect.y, rect.y + rect.h)
         )
 
-    def collidelist(self, argrects):
-        for i, argrect in enumerate(argrects):
-            if self.colliderect(argrect):
-                return i
+    def _colliderect_ellipse(self, ellipse):
+        def f_y(ellipse, x):
+            d = 1 - (x - ellipse.centerx)**2 / ellipse.a**2
+            return (ellipse.centery - ellipse.b * sqrt(d), ellipse.centery + ellipse.b * sqrt(d)) if d > 0 else ()
 
-        return -1
+        def f_x(ellipse, y):
+            d = 1 - (y - ellipse.centery)**2 / ellipse.b**2
+            return (ellipse.centerx - ellipse.a * sqrt(d), ellipse.centerx + ellipse.a * sqrt(d)) if d > 0 else ()
 
-    def collidelistall(self, argrects):
-        out = []
+        for i in f_x(ellipse, self.top) + f_x(ellipse, self.bottom):
+            if self.left <= i < self.right:
+                return True
 
-        for i, argrect in enumerate(argrects):
-            if self.colliderect(argrect):
-                out.append(i)
+        for i in f_y(ellipse, self.left) + f_y(ellipse, self.right):
+            if self.top <= i < self.bottom:
+                return True
 
-        return out
+        return False
 
-    def collidedict(self, rects_dict, use_values=0):
-        for key in rects_dict:
-            if use_values == 0:
-                argrect = key
-            else:
-                argrect = rects_dict[key]
 
-            if self.colliderect(argrect):
-                return (key, rects_dict[key])
+class Ellipse(Hitbox):
+    def __init__(self, *args):
+        Hitbox.__init__(self, *args)
 
-        return None  # explicit rather than implicit
+        self.getattr_dict.update({
+            "a": lambda x: x._rect[2] / 2,
+            "b": lambda x: x._rect[3] / 2,
+        })
 
-    def collidedictall(self, rects_dict, use_values=0):
-        out = []
+    def __setattr__(self, name, value):
+        if name == "a":
+            self._rect[2] = value * 2
+            return
 
-        for key in rects_dict:
-            if use_values == 0:
-                argrect = key
-            else:
-                argrect = rects_dict[key]
+        if name == "b":
+            self._rect[3] = value * 2
+            return
 
-            if self.colliderect(argrect):
-                out.append((key, rects_dict[key]))
+        Hitbox.__setattr__(self, name, value)
 
-        return out
+    def __str__(self):
+        return f"<ellipse{tuple(self._rect)}>"
+
+    def radius(self, alpha):
+        return self.a * sin(alpha)**2 + self.b * cos(alpha)**2
+
+    def _contains_rect(self, rect):
+        return self.collidepoint(rect.topleft) and self.collidepoint(rect.bottomright)
+
+    def _contains_ellipse(self, ellipse):
+        alpha = atan2(ellipse.centery - self.centery, ellipse.centerx - self.centerx)
+        beta = pi / 2 - alpha
+
+        return (
+            self.collidepoint(ellipse.left, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.top)
+            and self.collidepoint(ellipse.right, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.bottom)
+            and sqrt((ellipse.centerx - self.centerx)**2 + (ellipse.centery - self.centery)**2) + ellipse.radius(beta)
+            < self.radius(beta)
+        )
+
+    def _collidepoint(self, point):
+        if (point[0] - self.centerx)**2 / self.a**2 + (point[1] - self.centery)**2 / self.b**2 <= 1:
+            return True
+        return False
+
+    def _colliderect_rect(self, rect):
+        def f_y(ellipse, x):
+            d = 1 - (x - ellipse.centerx)**2 / ellipse.a**2
+            return (ellipse.centery - ellipse.b * sqrt(d), ellipse.centery + ellipse.b * sqrt(d)) if d > 0 else ()
+
+        def f_x(ellipse, y):
+            d = 1 - (y - ellipse.centery)**2 / ellipse.b**2
+            return (ellipse.centerx - ellipse.a * sqrt(d), ellipse.centerx + ellipse.a * sqrt(d)) if d > 0 else ()
+
+        for i in f_x(self, rect.top) + f_x(self, rect.bottom):
+            if rect.left <= i < rect.right:
+                return True
+
+        for i in f_y(self, rect.left) + f_y(self, rect.right):
+            if rect.top <= i < rect.bottom:
+                return True
+
+        return False
+
+    def _colliderect_ellipse(self, ellipse):
+        alpha = atan2(ellipse.centery - self.centery, ellipse.centerx - self.centerx)
+        beta = pi / 2 - alpha
+
+        return (
+            sqrt((ellipse.centerx - self.centerx)**2 + (ellipse.centery - self.centery)**2)
+            < self.radius(beta) + ellipse.radius(beta)
+        )
