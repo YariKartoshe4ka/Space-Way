@@ -1,7 +1,7 @@
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
-from ...hitbox import Rect
+from ...hitbox import Ellipse
 
 
 class EffectsButton(SettingsButtonMixin):
@@ -63,7 +63,7 @@ class SettingsBackButton(SceneButtonMixin):
         self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
-        self.rect = Rect(self.img.get_rect())
+        self.rect = Ellipse(self.img.get_rect())
 
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom - 5

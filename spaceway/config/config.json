@@ -5,5 +5,5 @@
     "scene": "headpiece",
     "sub_scene": "headpiece",
     "version": "2.1.0",
-    "debug": true
+    "debug": false
 }

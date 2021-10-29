@@ -7,7 +7,7 @@ from random import randint
 import pygame
 
 from .collection import SceneButtonsGroup
-from .hitbox import Rect
+from .hitbox import Rect, Ellipse
 
 
 class SceneButtonMixin(pygame.sprite.Sprite):
@@ -193,7 +193,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
 
         # Setting image by current state and getting its rectangle
         self.img = self.imgs[self.state]
-        self.rect = self.img.get_rect()
+        self.rect = Ellipse(self.img.get_rect())
 
     def change_state(self) -> None:
         """ Changes state of button. By default it has on-off behaviour """
@@ -247,7 +247,7 @@ class BoostMixin:
         self.tick = 0
 
         # Generating a rectangle of `img_idle` and randomly positioning it
-        self.rect_idle = Rect(self.img_idle.get_rect())
+        self.rect_idle = Ellipse(self.img_idle.get_rect())
         self.rect_idle.y = randint(self.screen_rect.top, self.screen_rect.bottom - self.rect_idle.height - 2)
         self.rect_idle.left = self.screen_rect.right
 
