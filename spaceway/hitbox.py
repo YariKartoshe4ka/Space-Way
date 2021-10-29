@@ -178,6 +178,15 @@ class Hitbox:
     def copy(self):
         return self.__class__(self._rect)
 
+    def trunc(self):
+        c = self.copy()
+        c.trunc_ip()
+        return c
+
+    def trunc_ip(self):
+        for i in range(len(self._rect)):
+            self._rect[i] = int(self._rect[i])
+
     def move(self, x, y):
         c = self.copy()
         c.move_ip(x, y)
@@ -349,7 +358,7 @@ class Hitbox:
 
     def collidelist(self, args):
         for i, arg in enumerate(args):
-            if self.collide(arg):
+            if self.colliderect(arg):
                 return i
 
         return -1
@@ -358,7 +367,7 @@ class Hitbox:
         out = []
 
         for i, arg in enumerate(args):
-            if self.collide(arg):
+            if self.colliderect(arg):
                 out.append(i)
 
         return out
@@ -370,7 +379,7 @@ class Hitbox:
             else:
                 arg = args_dict[key]
 
-            if self.collide(arg):
+            if self.colliderect(arg):
                 return (key, args_dict[key])
 
         return None  # explicit rather than implicit
@@ -384,7 +393,7 @@ class Hitbox:
             else:
                 arg = args_dict[key]
 
-            if self.collide(arg):
+            if self.colliderect(arg):
                 out.append((key, args_dict[key]))
 
         return out
@@ -464,8 +473,8 @@ class Rect(Hitbox):
         self._rect = [x, y, w, h]
 
     def _fit_rect(self, rect):
-        xratio = self.w / rect.w
-        yratio = self.h / rect.h
+        xratio = (self.w / rect.w) if rect.w != 0 else float('inf')
+        yratio = (self.h / rect.h) if rect.h != 0 else float('inf')
         maxratio = max(xratio, yratio)
 
         w = self.w / maxratio
@@ -517,7 +526,7 @@ class Rect(Hitbox):
             if self.top <= i < self.bottom:
                 return True
 
-        return False
+        return self._contains_ellipse(ellipse)
 
 
 class Ellipse(Hitbox):
@@ -540,6 +549,18 @@ class Ellipse(Hitbox):
 
         Hitbox.__setattr__(self, name, value)
 
+    @property
+    def f1(self):
+        if self.a > self.b:
+            return (self.centerx - sqrt(self.a**2 - self.b**2), self.centery)
+        return (self.centerx, self.centery - sqrt(self.b**2 - self.a**2))
+
+    @property
+    def f2(self):
+        if self.a > self.b:
+            return (self.centerx + sqrt(self.a**2 - self.b**2), self.centery)
+        return (self.centerx, self.centery + sqrt(self.b**2 - self.a**2))
+
     def __str__(self):
         return f"<ellipse{tuple(self._rect)}>"
 
@@ -557,7 +578,7 @@ class Ellipse(Hitbox):
             self.collidepoint(ellipse.left, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.top)
             and self.collidepoint(ellipse.right, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.bottom)
             and sqrt((ellipse.centerx - self.centerx)**2 + (ellipse.centery - self.centery)**2) + ellipse.radius(beta)
-            < self.radius(beta)
+            <= self.radius(beta)
         )
 
     def _collidepoint(self, point):
@@ -582,13 +603,48 @@ class Ellipse(Hitbox):
             if rect.top <= i < rect.bottom:
                 return True
 
-        return False
+        return self._contains_rect(rect)
 
     def _colliderect_ellipse(self, ellipse):
-        alpha = atan2(ellipse.centery - self.centery, ellipse.centerx - self.centerx)
-        beta = pi / 2 - alpha
+        f1, f2 = self.f1, self.f2
 
-        return (
-            sqrt((ellipse.centerx - self.centerx)**2 + (ellipse.centery - self.centery)**2)
-            < self.radius(beta) + ellipse.radius(beta)
-        )
+        alpha = atan2(ellipse.centery - f1[1], f1[0] - ellipse.centerx)
+        beta = pi / 2 - alpha
+        r1 = ellipse.radius(beta)
+        rx1, ry1 = (ellipse.centerx - -r1 * sin(beta), ellipse.centery + -r1 * cos(beta))
+        
+        alpha = atan2(ellipse.centery - f2[1], ellipse.centerx - f2[0])
+        beta = pi / 2 - alpha
+        r2 = ellipse.radius(beta)
+        rx2, ry2 = (ellipse.centerx + -r2 * sin(beta), ellipse.centery + -r2 * cos(beta))
+
+        mhaxis = max(self.a, self.b)
+
+        if (
+            sqrt((rx1 - f1[0])**2 + (ry1 - f1[1])**2) + sqrt((rx1 - f2[0])**2 + (ry1 - f2[1])**2) <= 2 * mhaxis or
+            sqrt((rx2 - f1[0])**2 + (ry2 - f1[1])**2) + sqrt((rx2 - f2[0])**2 + (ry2 - f2[1])**2) <= 2 * mhaxis
+        ):
+            return True
+
+        f1, f2 = ellipse.f1, ellipse.f2
+
+        alpha = atan2(self.centery - f1[1], f1[0] - self.centerx)
+        beta = pi / 2 - alpha
+        r1 = self.radius(beta)
+        rx1, ry1 = (self.centerx - -r1 * sin(beta), self.centery + -r1 * cos(beta))
+
+        alpha = atan2(self.centery - f2[1], self.centerx - f2[0])
+        beta = pi / 2 - alpha
+        r2 = self.radius(beta)
+        rx2, ry2 = (self.centerx + -r2 * sin(beta), self.centery + -r2 * cos(beta))
+
+        mhaxis = max(ellipse.a, ellipse.b)
+
+        if (
+            sqrt((rx1 - f1[0])**2 + (ry1 - f1[1])**2) + sqrt((rx1 - f2[0])**2 + (ry1 - f2[1])**2) <= 2 * mhaxis or
+            sqrt((rx2 - f1[0])**2 + (ry2 - f1[1])**2) + sqrt((rx2 - f2[0])**2 + (ry2 - f2[1])**2) <= 2 * mhaxis
+        ):
+            return True
+
+        return False
+
