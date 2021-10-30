@@ -1,4 +1,5 @@
-""" File with extension of default `pygame.Rect` to use it with float values """
+""" File with implementation of hitboxes for calculating collisions,
+    position and other. Based on `pygame.Rect` """
 
 from math import sqrt, atan2, pi, sin, cos
 
