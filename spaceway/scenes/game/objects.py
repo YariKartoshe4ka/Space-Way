@@ -157,16 +157,21 @@ class FlyingAsteroid(pygame.sprite.Sprite):
 
         self.img = self.imgs[randint(0, 1)]
 
-        self.rect = Ellipse(self.img.get_rect())
-        self.rect.bottom = self.screen_rect.top
-        self.rect.left = self.screen_rect.right
+        self.rect_blit = Rect(self.img.get_rect())
+        self.rect_blit.bottom = self.screen_rect.top
+        self.rect_blit.left = self.screen_rect.right
+
+        self.rect = Ellipse(0, 0, 60, 60)
+        self.rect.bottomleft = self.rect_blit.bottomleft
 
     def blit(self):
-        self.screen.blit(self.img, self.rect)
+        self.screen.blit(self.img, self.rect_blit)
 
     def update(self):
-        self.rect.x -= self.config['ns'].speed * 1.5 * self.config['ns'].dt
-        self.rect.y += self.config['ns'].speed * self.config['ns'].dt
+        self.rect_blit.x -= self.config['ns'].speed * 1.5 * self.config['ns'].dt
+        self.rect_blit.y += self.config['ns'].speed * self.config['ns'].dt
+
+        self.rect.bottomleft = self.rect_blit.bottomleft
 
 
 class TimeBoost(BoostMixin, pygame.sprite.Sprite):
@@ -209,7 +214,7 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_small.bmp')
         self.img_active = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_activate.bmp')
 
-        self.rect_active = Rect(self.img_active.get_rect())
+        self.rect_active = Ellipse(self.img_active.get_rect())
 
         BoostMixin.__init__(self, screen, base_dir, config, 'shield', life)
 

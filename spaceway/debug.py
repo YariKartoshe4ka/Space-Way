@@ -1,7 +1,11 @@
 """ File with some objects for easier debugging of game """
 
+from weakref import ref
+
 import pygame
 from psutil import Process, cpu_count
+
+from .hitbox import Hitbox, Ellipse
 
 
 class DebugModule:
@@ -98,30 +102,40 @@ class DebugHitbox(DebugModule):
     COLOR_RECT = (0, 255, 0)
     COLOR_ELLIPSE = (0, 255, 255)
 
-    def __init__(self) -> None:
-        """ Initializes the module. Replaces the default image
-            loading function with an custom """
+    def __init__(self, screen) -> None:
+        """ Initializes the module. Replaces the default `__init__`
+            function of `Hitbox` to track its instances """
 
-        # Saving default function
-        globals()['pygame_image_load'] = pygame.image.load
+        # Saving screen for the further use
+        self.screen = screen
 
-        # Replacing default function with custom function
-        pygame.image.load = self.__load_image_with_hitbox
+        # Creating list of hiboxes
+        self.hitboxes = []
+
+        # Saving original `__init__` and list of hitboxes
+        globals()['origin_hitbox_init'] = Hitbox.__init__
+        globals()['hitboxes'] = self.hitboxes
+
+        # Replacing default `__init__` function with custom function
+        Hitbox.__init__ = self.__hitbox_init
 
     @staticmethod
-    def __load_image_with_hitbox(*args, **kwargs) -> pygame.Surface:
+    def __hitbox_init(self, *args, **kwargs):
         """ Loading image via default loading images function
             and adding to this image hitbox """
 
-        # Loading image via default pygame function and getting rect of it
-        image_surface = pygame_image_load(*args, **kwargs).convert_alpha()
-        image_surface_rect = image_surface.get_rect()
+        # Adding hitbox to list
+        hitboxes.append(ref(self, hitboxes.remove))
 
-        # Drawing hitbox on this image
-        pygame.draw.rect(image_surface, DebugHitbox.COLOR_RECT, image_surface_rect, 1)
-        pygame.draw.ellipse(image_surface, DebugHitbox.COLOR_ELLIPSE, image_surface_rect, 1)
+        # Calling original `__init__` function
+        return origin_hitbox_init(self, *args, **kwargs)
 
-        return image_surface
+    def static_update(self):
+        for hitbox in self.hitboxes:
+            if isinstance(hitbox(), Ellipse):
+                pygame.draw.ellipse(self.screen, self.COLOR_ELLIPSE, hitbox(), 1)
+            else:
+                pygame.draw.rect(self.screen, self.COLOR_RECT, hitbox(), 1)
 
 
 class Debugger:
