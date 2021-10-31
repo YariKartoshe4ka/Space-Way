@@ -6,8 +6,6 @@ from ...hitbox import Ellipse
 
 class EffectsButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
 
@@ -16,8 +14,6 @@ class EffectsButton(SettingsButtonMixin):
 
 class FullScreenButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
 
@@ -32,8 +28,6 @@ class FullScreenButton(SettingsButtonMixin):
 
 class UpdatesButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_false.bmp')}
 
@@ -42,8 +36,6 @@ class UpdatesButton(SettingsButtonMixin):
 
 class DifficultyButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
                      1: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
                      2: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
@@ -59,8 +51,6 @@ class SettingsBackButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
         self.rect = Ellipse(self.img.get_rect())

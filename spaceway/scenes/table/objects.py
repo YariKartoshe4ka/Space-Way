@@ -57,8 +57,6 @@ class TableBackButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
         self.rect = Ellipse(self.img.get_rect())
 

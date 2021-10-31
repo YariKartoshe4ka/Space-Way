@@ -137,7 +137,7 @@ class CenteredButtonsGroup(pygame.sprite.Group):
 
         # Count width of all buttons
         for button in self:
-            buttons_width += button.width
+            buttons_width += button.rect.w
 
         # Calculate the width of all buttons with spaces between them
         all_width = buttons_width + self.SPACE * (len(self) - 1)
@@ -150,7 +150,7 @@ class CenteredButtonsGroup(pygame.sprite.Group):
             button.rect.x = x
             button.rect.centery = self.screen_height // 2
 
-            x += button.width + self.SPACE
+            x += button.rect.w + self.SPACE
 
     def perform_point_collides(self, point: Tuple[int, int]) -> bool:
         """ Detects collisions of buttons with the specified point. If a

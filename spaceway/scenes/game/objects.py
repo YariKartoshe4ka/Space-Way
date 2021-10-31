@@ -311,8 +311,6 @@ class ResumeButton(SceneButtonMixin, pygame.sprite.Sprite):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
@@ -323,8 +321,6 @@ class PauseLobbyButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config, defeat, *defeat_args):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())
@@ -346,8 +342,6 @@ class AgainButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
@@ -358,8 +352,6 @@ class EndLobbyButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())

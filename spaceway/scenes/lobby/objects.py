@@ -9,8 +9,6 @@ class PlayButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 90
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/play.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
@@ -33,8 +31,6 @@ class TableButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/table.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
@@ -56,8 +52,6 @@ class SettingsButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
-
-        self.width = self.height = 63
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/settings.bmp')
         self.rect = Ellipse(self.img.get_rect())
