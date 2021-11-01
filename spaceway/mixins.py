@@ -1,32 +1,38 @@
 """ File with implementations of various mixins for easier creation of
     objects and following the DRY principle  """
 
-from typing import Union
+from typing import Literal
 from random import randint
+from math import inf
 
 import pygame
 
 from .collection import SceneButtonsGroup
-from .hitbox import Rect, Ellipse
+from .hitbox import Ellipse
 
 
 class SceneButtonMixin(pygame.sprite.Sprite):
     """ Mixin for scene buttons, which can change current scene """
 
-    def __init__(self, base_dir, config, scene: str, sub_scene: str,
-                 change_scene_to: str, change_sub_scene_to: str, speed: int = 0,
-                 action: Union['enter', 'leave', 'stop'] = 'stop') -> None:
+    def __init__(self, base_dir, config, scene: str, sub_scene: str, change_scene_to: str,
+                 change_sub_scene_to: str, speed: float = 0, top: float = inf, bottom: float = inf,
+                 action: Literal['enter', 'leave', 'stop'] = 'stop') -> None:
         """ Initialize the mixin anywhere in your `__init__` function. `scene`
             and `sub_scene` arguments determine which scene button belongs to.
             `change_scene_to` and `change_sub_scene_to` determine which scene
-            will be changed when the button is clicked. `speed` argument
-            defines speed of button movement. `action` argument defines first
-            action of button """
+            will be changed when the button is clicked. `top` and `bottom` defines
+            boundaries of button position on Y axis (top < bottom). `speed`
+            argument defines speed of button movement. `action` argument defines
+            first action of button """
         pygame.sprite.Sprite.__init__(self)
 
         # Set variables for next use
         self.config = config
         self.action = action
+
+        # Set top and bottom boundaries of button (on Y axis)
+        self.top = top
+        self.bottom = bottom
 
         # If speed is positive, on `enter` event button will move up,
         # on `leave` event - down. If speed is negative, on `enter` event
@@ -51,11 +57,13 @@ class SceneButtonMixin(pygame.sprite.Sprite):
         # If button must move
         if self.action != 'stop':
             # Check, if move can be continued
-            if self.keep_move():
+            inc = (self.speed if self.action == 'leave' else -self.speed) * self.config['ns'].dt
+            if self.top < self.rect.y + inc < self.bottom:
                 # If can be, move button
-                self.rect.y += (self.speed if self.action == 'leave' else -self.speed) * self.config['ns'].dt
+                self.rect.y += inc
             else:
                 # Else, stop button and call action callback
+                self.rect.y = min(max(self.rect.y + inc, self.top), self.bottom)
                 if self.action == 'enter':
                     self.post_enter()
                 else:
@@ -75,11 +83,6 @@ class SceneButtonMixin(pygame.sprite.Sprite):
         """ Start `leave` action and set `post_leave` callback for next use """
         self.action = 'leave'
         self.post_leave = post_leave
-
-    def keep_move(self) -> bool:
-        """ Function to control movement of button. It contains
-            conditions due of it decides, continue move or not """
-        return False
 
     def change_scene(self) -> None:
         """ Change scene to another one (that was defined in `__init__`) """
