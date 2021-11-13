@@ -1,41 +1,110 @@
 import pytest
 from random import randint
+from re import match
 
-from spaceway.hitbox import Rect, Ellipse
+from spaceway.hitbox import Hitbox, Rect, Ellipse
 from pygame import Rect as PgRect
+
+from utils import rstring
+
+
+def test_hitbox_init():
+    assert (
+        Hitbox(100, 123, 10, 29) == Hitbox((100, 123), (10, 29)) ==
+        Hitbox((100, 123, 10, 29)) == Hitbox(((100, 123), (10, 29))) ==
+        Hitbox(Hitbox(100, 123, 10, 29)) == Hitbox(Rect(100, 123, 10, 29)) ==
+        Hitbox(Ellipse(100, 123, 10, 29)) == Hitbox(PgRect(100, 123, 10, 29)) ==
+        PgRect(Hitbox(100, 123, 10, 29))
+    )
+    assert (
+        Hitbox(-100, 2, 0, -2) == Hitbox((-100, 2), (0, -2)) ==
+        Hitbox((-100, 2, 0, -2)) == Hitbox(((-100, 2), (0, -2))) ==
+        Hitbox(Hitbox(-100, 2, 0, -2)) == Hitbox(Rect(-100, 2, 0, -2)) ==
+        Hitbox(Ellipse(-100, 2, 0, -2)) == Hitbox(PgRect(-100, 2, 0, -2)) ==
+        PgRect(Hitbox(-100, 2, 0, -2))
+    )
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Hitbox((100, 123), (10,))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Hitbox((100,), (10,))
+
+    with pytest.raises(TypeError, match=r'sequence argument takes 2 or 4 items \(\d given\)'):
+        Hitbox((100, 123, 10))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Hitbox(100, 123, 10)
 
 
 def test_rect_init():
     assert (
         Rect(100, 123, 10, 29) == Rect((100, 123), (10, 29)) ==
-        Rect(Rect(100, 123, 10, 29)) == Rect(Ellipse(100, 123, 10, 29)) ==
-        Rect(PgRect(100, 123, 10, 29)) == PgRect(Rect(100, 123, 10, 29))
+        Rect((100, 123, 10, 29)) == Rect(((100, 123), (10, 29))) ==
+        Rect(Hitbox(100, 123, 10, 29)) == Rect(Rect(100, 123, 10, 29)) ==
+        Rect(Ellipse(100, 123, 10, 29)) == Rect(PgRect(100, 123, 10, 29)) ==
+        PgRect(Rect(100, 123, 10, 29))
     )
     assert (
         Rect(-100, 2, 0, -2) == Rect((-100, 2), (0, -2)) ==
-        Rect(Rect(-100, 2, 0, -2)) == Rect(Ellipse(-100, 2, 0, -2)) ==
-        Rect(PgRect(-100, 2, 0, -2)) == PgRect(Rect(-100, 2, 0, -2))
+        Rect((-100, 2, 0, -2)) == Rect(((-100, 2), (0, -2))) ==
+        Rect(Hitbox(-100, 2, 0, -2)) == Rect(Rect(-100, 2, 0, -2)) ==
+        Rect(Ellipse(-100, 2, 0, -2)) == Rect(PgRect(-100, 2, 0, -2)) ==
+        PgRect(Rect(-100, 2, 0, -2))
     )
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Rect((100, 123), (10,))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Rect((100,), (10,))
+
+    with pytest.raises(TypeError, match=r'sequence argument takes 2 or 4 items \(\d given\)'):
+        Rect((100, 123, 10))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Rect(100, 123, 10)
 
 
 def test_ellipse_init():
     assert (
         Ellipse(100, 123, 10, 29) == Ellipse((100, 123), (10, 29)) ==
-        Ellipse(Ellipse(100, 123, 10, 29)) == Ellipse(Rect(100, 123, 10, 29)) ==
-        Ellipse(PgRect(100, 123, 10, 29)) == PgRect(Ellipse(100, 123, 10, 29))
+        Ellipse((100, 123, 10, 29)) == Ellipse(((100, 123), (10, 29))) ==
+        Ellipse(Hitbox(100, 123, 10, 29)) == Ellipse(Rect(100, 123, 10, 29)) ==
+        Ellipse(Ellipse(100, 123, 10, 29)) == Ellipse(PgRect(100, 123, 10, 29)) ==
+        PgRect(Ellipse(100, 123, 10, 29))
     )
     assert (
         Ellipse(-100, 2, 0, -2) == Ellipse((-100, 2), (0, -2)) ==
-        Ellipse(Ellipse(-100, 2, 0, -2)) == Ellipse(Rect(-100, 2, 0, -2)) ==
-        Ellipse(PgRect(-100, 2, 0, -2)) == PgRect(Ellipse(-100, 2, 0, -2))
+        Ellipse((-100, 2, 0, -2)) == Ellipse(((-100, 2), (0, -2))) ==
+        Ellipse(Hitbox(-100, 2, 0, -2)) == Ellipse(Rect(-100, 2, 0, -2)) ==
+        Ellipse(Ellipse(-100, 2, 0, -2)) == Ellipse(PgRect(-100, 2, 0, -2)) ==
+        PgRect(Ellipse(-100, 2, 0, -2))
     )
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Ellipse((100, 123), (10,))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Ellipse((100,), (10,))
+
+    with pytest.raises(TypeError, match=r'sequence argument takes 2 or 4 items \(\d given\)'):
+        Ellipse((100, 123, 10))
+
+    with pytest.raises(TypeError, match='Argument must be hitbox style object'):
+        Ellipse(100, 123, 10)
 
 
 @pytest.mark.parametrize('hitbox', [
+    Hitbox(100, 123, 10, 29),
+    Hitbox(-100, 2, 0, -2),
+    Hitbox(41, -32, -25, -1),
     Rect(100, 123, 10, 29),
     Rect(-100, 2, 0, -2),
+    Rect(41, -32, -25, -1),
     Ellipse(100, 123, 10, 29),
-    Ellipse(-100, 2, 0, -2)
+    Ellipse(-100, 2, 0, -2),
+    Ellipse(41, -32, -25, -1),
 ])
 def test_generic(hitbox):
     # Test `copy` method
@@ -51,7 +120,12 @@ def test_generic(hitbox):
     )
     assert len(hitbox) == len(PgRect(hitbox))
     assert bool(hitbox) == bool(PgRect(hitbox))
+    assert (hitbox == rstring()) is False
 
+    p = r'^<\w+\(((-?\d+|-?\d+\.\d+), ){3}(-?\d+|-?\d+\.\d+)\)>$'
+    assert match(p, str(hitbox)) and match(p, repr(hitbox))
+
+    assert hash(hitbox) == hash(str(hitbox))
 
     # Test `getattr_dict` and methods which operates with it
     hitbox_copy = hitbox.copy()
@@ -95,11 +169,40 @@ def test_generic(hitbox):
     hitbox_copy.normalize()
     pgrect.normalize()
 
-    assert hitbox_copy == pgrect
+    assert hitbox_copy.trunc() == pgrect
 
     # Test `update`
     hitbox_copy.update(hitbox)
     assert hitbox_copy == hitbox
+
+
+@pytest.mark.parametrize('arg,exception', [
+    (Ellipse(150, 70, 73, 130), NotImplementedError),
+    (Ellipse(198, 190, 65, 20), NotImplementedError),
+    (Rect(100, 123, 10, 29), NotImplementedError),
+    (Rect(-100, 2, 40, -2), NotImplementedError),
+    (randint(1, 100), TypeError),
+    (rstring(), TypeError)
+])
+def test_exceptions(arg, exception):
+    hitbox = Hitbox(100, 123, 10, 29)
+
+    methods_with_arg = ('clamp', 'clip', 'union', 'fit', 'contains', 'colliderect')
+    methods_with_args = ('unionall', 'collidelist', 'collidelistall')
+
+    for method in methods_with_arg:
+        with pytest.raises(exception):
+            getattr(hitbox, method)(arg)
+
+    for method in methods_with_args:
+        with pytest.raises(exception):
+            getattr(hitbox, method)([arg])
+
+    with pytest.raises(TypeError):
+        hitbox.collidepoint(1, 2, 3)
+
+    with pytest.raises(NotImplementedError):
+        hitbox.collidepoint(1, 2)
 
 
 @pytest.mark.parametrize('rect', [
@@ -124,17 +227,24 @@ def test_rect_with_rect(rect, arg):
     # Test `unionall (_ip)`, `collidelist` and `collidelistall`
     assert rect.unionall([arg, rect]) == PgRect(rect).unionall([arg, rect])
     assert rect.collidelist([arg, rect, arg, rect]) == PgRect(rect).collidelist([arg, rect, arg, rect])
+    assert rect.collidelist([]) == PgRect(rect).collidelist([])
     assert rect.collidelistall([arg, rect, arg, rect]) == PgRect(rect).collidelistall([arg, rect, arg, rect])
+    assert rect.collidelistall([]) == PgRect(rect).collidelistall([])
 
     # Test `collidedict` and `collidedictall`
     assert (
         rect.collidedict({0: arg, 1: rect, True: arg, None: rect}, True) ==
         PgRect(rect).collidedict({0: arg, 1: rect, True: arg, None: rect}, True)
     )
+    assert rect.collidedict({rect: 0}) == PgRect(rect).collidedict({rect: 0})
+    assert rect.collidedict({}) == PgRect(rect).collidedict({})
+
     assert (
         rect.collidedictall({0: arg, 1: rect, True: arg, None: rect}, True) ==
         PgRect(rect).collidedictall({0: arg, 1: rect, True: arg, None: rect}, True)
     )
+    assert rect.collidedictall({rect: 0}) == PgRect(rect).collidedictall({rect: 0})
+    assert rect.collidedictall({}) == PgRect(rect).collidedictall({})
 
     # Test `collidepoint`
     point1 = (randint(-20, 20), randint(-20, 20))

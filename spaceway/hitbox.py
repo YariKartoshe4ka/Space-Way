@@ -176,6 +176,9 @@ class Hitbox:
     def __bool__(self):
         return self._rect[2] != 0 and self._rect[3] != 0
 
+    def __hash__(self):
+        return hash(str(self))
+
     def copy(self):
         return self.__class__(self._rect)
 
@@ -240,7 +243,7 @@ class Hitbox:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
-            return self.__clip_ellipse(Ellpse(arg))
+            return self._clip_ellipse(Ellipse(arg))
         return self._clip_rect(Rect(arg))
 
     def _clip_rect(self, rect):
