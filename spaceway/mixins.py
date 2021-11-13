@@ -36,7 +36,7 @@ class SceneButtonMixin(pygame.sprite.Sprite):
     """
 
     def __init__(self, base_dir, config, scene, sub_scene, change_scene_to,
-                 change_sub_scene_to, speed=0, top=inf, bottom=inf,
+                 change_sub_scene_to, speed=0, top=-inf, bottom=inf,
                  action='stop'):
         """Constructor method
         """
@@ -68,7 +68,7 @@ class SceneButtonMixin(pygame.sprite.Sprite):
         if self.action != 'stop':
             # Check, if move can be continued
             inc = (self.speed if self.action == 'leave' else -self.speed) * self.config['ns'].dt
-            if self.top < self.rect.y + inc < self.bottom:
+            if self.speed and self.top < self.rect.y + inc < self.bottom:
                 # If can be, move button
                 self.rect.y += inc
             else:

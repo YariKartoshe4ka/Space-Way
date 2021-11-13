@@ -298,10 +298,6 @@ class SceneButtonsGroup(pygame.sprite.Group):
         for button in self.get_by_scene():
             # If collision was found
             if button.rect.collidepoint(point):
-                # Leave buttons of current scene and enter buttons of next scene
-                self.leave_buttons(self.config['scene'], self.config['sub_scene'])
-                self.enter_buttons(button.change_scene_to, button.change_sub_scene_to)
-
                 # Press collided button
                 button.press()
 

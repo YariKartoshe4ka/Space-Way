@@ -13,7 +13,9 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
                 exit()
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
+                scene_buttons.leave_buttons()
                 config['sub_scene'] = 'pause'
+                scene_buttons.enter_buttons()
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:

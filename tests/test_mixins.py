@@ -1,4 +1,5 @@
 from random import randint
+from math import inf
 
 import pytest
 
@@ -18,7 +19,8 @@ from utils import *
     [(-14, -4, -5, -4, 32), (32, -4)],
     [(-8, 32, 6, -52, 32), (-52, 32)],
     [(30, 56, 7, 5, 60), (5, 60)],
-    [(-51, -11, -7, -35, 24), (24, -35)]
+    [(-51, -11, -7, -35, 24), (24, -35)],
+    [(13, 118, 0, -inf, inf), (118, 118)]
 ])
 def test_scene_button_mixin_actions(pygame_env, params, expected):
     screen, base_dir, config, clock = pygame_env
