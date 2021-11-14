@@ -314,27 +314,18 @@ class ResumeButton(SceneButtonMixin, pygame.sprite.Sprite):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'game', 'game', 0)
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'game', 'game')
 
 
 class PauseLobbyButton(SceneButtonMixin):
-    def __init__(self, screen, base_dir, config, defeat, *defeat_args):
+    def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        self.defeat = defeat
-        self.defeat_args = defeat_args
-
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'lobby', 'lobby', 0)
-
-    def press(self):
-        self.defeat(*self.defeat_args)
-        self.config['scene'] = 'game'
-        self.config['sub_scene'] = 'pause'
-        self.leave(self.change_scene)
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'lobby', 'lobby')
 
 
 class AgainButton(SceneButtonMixin):
@@ -345,7 +336,7 @@ class AgainButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'game', 'game', 0)
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'game', 'game')
 
 
 class EndLobbyButton(SceneButtonMixin):
@@ -356,4 +347,15 @@ class EndLobbyButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'lobby', 'lobby', 0)
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'lobby', 'lobby')
+
+
+class PauseButton(SceneButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.screen = screen
+        self.screen_rect = self.screen.get_rect()
+
+        self.img = pygame.Surface((0, 0))
+        self.rect = self.img.get_rect()
+
+        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'game', 'game', 'pause')

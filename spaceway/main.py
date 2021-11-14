@@ -71,7 +71,7 @@ def main() -> None:
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
-    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button = scenes.game.init(screen, base_dir, config, astrs, boosts)
+    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button, pause_button = scenes.game.init(screen, base_dir, config)
 
     pause_buttons = collection.CenteredButtonsGroup(config['mode'])
     pause_buttons.add(pause_lobby_button, resume_button)
@@ -83,7 +83,7 @@ def main() -> None:
     scene_buttons = collection.SceneButtonsGroup(config)
     scene_buttons.add(play_button, table_button, settings_button,
                       settings_back_button, table_back_button, resume_button,
-                      pause_lobby_button, again_button, end_lobby_button)
+                      pause_lobby_button, again_button, end_lobby_button, pause_button)
 
     while True:
         # Showing a specific scene

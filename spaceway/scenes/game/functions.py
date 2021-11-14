@@ -13,9 +13,7 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
                 exit()
 
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
-                scene_buttons.leave_buttons()
-                config['sub_scene'] = 'pause'
-                scene_buttons.enter_buttons()
+                scene_buttons.get_by_instance(PauseButton).press()
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
@@ -61,7 +59,14 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 x, y = pygame.mouse.get_pos()
 
-                scene_buttons.perform_point_collides((x, y))
+                pause_lobby_button = scene_buttons.get_by_instance(PauseLobbyButton)
+                if pause_lobby_button.rect.collidepoint((x, y)):
+                    defeat(plate, astrs, boosts, end, config, base_dir)
+                    config['scene'] = 'game'
+                    config['sub_scene'] = 'pause'
+                    pause_lobby_button.press()
+                else:
+                    scene_buttons.perform_point_collides((x, y))
 
 
 def spawn(screen, base_dir, config, plate, astrs, boosts):
@@ -111,6 +116,8 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
     if config['sub_scene'] == 'game':
         bg.update()
         bg.blit()
+
+        scene_buttons.draw()
 
         if config['ns'].tick % (config['FPS'] * 7) == 0:
             if 'time' in boosts:
