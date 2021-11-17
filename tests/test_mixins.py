@@ -327,29 +327,26 @@ def test_boost_mixin(pygame_env, life):
     test_boost.activate()
 
     _ = pygame.sprite.Group(test_boost)
-    end = int(time() + life)
+    assert test_boost.alive()
 
-    @pygame_loop(pygame_env, life + 1)
+    @pygame_loop(pygame_env, life)
     def loop2():
         test_boost.draw()
-
-        if int(time()) < end:
-            assert test_boost.alive()
 
     assert not test_boost.alive()
 
     # Test boost color of life time
     test_boost = TestBoost()
     test_boost.activate()
+    test_boost.update()
+    assert (
+        most_popular_colors(test_boost.img_life, 1, [(0, 0, 0)])[0] ==
+        (BoostMixin.COLOR_LONG if life > 2 else BoostMixin.COLOR_SHORT)
+    )
 
-    end = int(time() + life - 3)
-
-    @pygame_loop(pygame_env, life + 1)
+    @pygame_loop(pygame_env, life - 2.9)
     def loop3():
         test_boost.draw()
-
-        if int(time()) < end:
-            assert most_popular_colors(test_boost.img_life, 1, [(0, 0, 0)])[0] == BoostMixin.COLOR_LONG
 
     assert most_popular_colors(test_boost.img_life, 1, [(0, 0, 0)])[0] == BoostMixin.COLOR_SHORT
 
