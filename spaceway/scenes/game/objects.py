@@ -174,10 +174,8 @@ class FlyingAsteroid(pygame.sprite.Sprite):
         self.rect.bottomleft = self.rect_blit.bottomleft
 
 
-class TimeBoost(BoostMixin, pygame.sprite.Sprite):
+class TimeBoost(BoostMixin):
     def __init__(self, screen, base_dir, config, life=5):
-        pygame.sprite.Sprite.__init__(self)
-
         self.speed = 2
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/time_idle.bmp')
@@ -194,20 +192,16 @@ class TimeBoost(BoostMixin, pygame.sprite.Sprite):
         self.config['ns'].speed = self.speed
 
 
-class DoubleBoost(BoostMixin, pygame.sprite.Sprite):
+class DoubleBoost(BoostMixin):
     def __init__(self, screen, base_dir, config, life=5):
-        pygame.sprite.Sprite.__init__(self)
-
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/double_idle.bmp')
         self.img_small = pygame.image.load(f'{base_dir}/assets/images/boosts/double_small.bmp')
 
         BoostMixin.__init__(self, screen, base_dir, config, 'double', life)
 
 
-class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
+class ShieldBoost(BoostMixin):
     def __init__(self, screen, base_dir, config, plate, life=5):
-        pygame.sprite.Sprite.__init__(self)
-
         self.plate = plate
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/shield_idle.bmp')
@@ -231,10 +225,8 @@ class ShieldBoost(BoostMixin, pygame.sprite.Sprite):
             self.screen.blit(self.img_active, self.rect_active)
 
 
-class MirrorBoost(BoostMixin, pygame.sprite.Sprite):
+class MirrorBoost(BoostMixin):
     def __init__(self, screen, base_dir, config, plate, life=5):
-        pygame.sprite.Sprite.__init__(self)
-
         self.plate = plate
 
         self.img_idle = pygame.image.load(f'{base_dir}/assets/images/boosts/mirror_idle.bmp')

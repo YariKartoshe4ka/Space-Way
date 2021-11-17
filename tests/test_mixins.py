@@ -1,7 +1,9 @@
 from random import randint
 from math import inf
+from time import time
 
 import pytest
+import pygame
 
 from spaceway.mixins import *
 from spaceway.hitbox import Ellipse
@@ -278,3 +280,86 @@ def test_setttings_button_mixin(pygame_env, params, expected):
         test_button.press()
         assert test_button.state == state
         assert test_button.img == test_button.imgs[state]
+
+
+@pytest.mark.parametrize('life', [
+    4, 2, 6
+])
+def test_boost_mixin(pygame_env, life):
+    screen, base_dir, config, clock = pygame_env
+
+    class TestBoost(BoostMixin, pygame.sprite.Sprite):
+        def __init__(self):
+            pygame.sprite.Sprite.__init__(self)
+
+            self.img_idle = pygame_surface((30, 30))
+            self.img_small = pygame_surface((18, 18), 1)
+            self.number_in_queue = randint(1, 4)
+
+            BoostMixin.__init__(self, screen, base_dir, config, rstring(), life)
+
+        def draw(self):
+            self.update()
+            self.blit()
+
+    config['ns'].speed = 18
+
+    # Test boost alive and position
+    test_boost = TestBoost()
+    y = test_boost.rect.y
+
+    assert test_boost.rect.x == screen.get_width()
+    assert 0 <= y <= screen.get_height() - test_boost.rect.h - 2
+    assert test_boost.rect_small.topleft == (2, 0)
+
+    _ = pygame.sprite.Group(test_boost)
+
+    @pygame_loop(pygame_env, 2)
+    def loop1():
+        test_boost.draw()
+
+    assert test_boost.rect.right < 0
+    assert test_boost.rect.y == y
+    assert not test_boost.alive()
+
+    # Test boost life time after activation
+    test_boost = TestBoost()
+    test_boost.activate()
+
+    _ = pygame.sprite.Group(test_boost)
+    end = int(time() + life)
+
+    @pygame_loop(pygame_env, life + 1)
+    def loop2():
+        test_boost.draw()
+
+        if int(time()) < end:
+            assert test_boost.alive()
+
+    assert not test_boost.alive()
+
+    # Test boost color of life time
+    test_boost = TestBoost()
+    test_boost.activate()
+
+    end = int(time() + life - 3)
+
+    @pygame_loop(pygame_env, life + 1)
+    def loop3():
+        test_boost.draw()
+
+        if int(time()) < end:
+            assert most_popular_colors(test_boost.img_life, 1, [(0, 0, 0)])[0] == BoostMixin.COLOR_LONG
+
+    assert most_popular_colors(test_boost.img_life, 1, [(0, 0, 0)])[0] == BoostMixin.COLOR_SHORT
+
+    # Test custom `deactivate` method
+    TestBoost.deactivate = lambda self: 1 / 0
+
+    test_boost = TestBoost()
+    test_boost.activate()
+
+    with pytest.raises(ZeroDivisionError):
+        @pygame_loop(pygame_env, life + 1)
+        def loop4():
+            test_boost.draw()

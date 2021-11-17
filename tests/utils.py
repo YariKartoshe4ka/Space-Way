@@ -27,6 +27,7 @@ def pygame_env():
     config['ns'].dt = 0
     config['ns'].tick = 1
     config['ns'].speed = 2
+    config['ns'].score = 0
 
     clock = pygame.time.Clock()
 

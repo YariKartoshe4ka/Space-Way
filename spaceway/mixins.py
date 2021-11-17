@@ -2,7 +2,7 @@
     objects and following the DRY principle  """
 
 from random import randint
-from math import inf
+from math import inf, ceil
 
 import pygame
 
@@ -269,7 +269,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
         self.update()
 
 
-class BoostMixin:
+class BoostMixin(pygame.sprite.Sprite):
     """Mixin for creating boosts. Must be initialized at the bottom of your
     `__init__` function
 
@@ -293,6 +293,8 @@ class BoostMixin:
     def __init__(self, screen, base_dir, config, name, life):
         """Constructor method
         """
+        pygame.sprite.Sprite.__init__(self)
+
         # Setting variables for the further use
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
@@ -303,7 +305,6 @@ class BoostMixin:
         self.name = name
         self.life = life
         self.is_active = False
-        self.tick = 0
 
         # Generating a hitbox of :img_idle:`pygame.Surface` and randomly positioning it
         self.rect_idle = Ellipse(self.img_idle.get_rect())
@@ -320,30 +321,31 @@ class BoostMixin:
         """
         # If boost was activated
         if self.is_active:
+            # Count life time
+            self.life -= self.config['ns'].dt / 30
+
+            if self.life <= 0:
+                # Deactivate and kill the boost if there is no time left
+                self.deactivate()
+                self.kill()
+                return
+
             # Vertical positioning of boost, taking into account the number in the boost queue
             self.rect_small.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
 
             # Generating text with the remaining lifetime
-            if (self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1 <= 3:
+            if ceil(self.life) <= 3:
                 # Rendering text using *COLOR_SHORT*, if there is little time left
-                self.img_life = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.COLOR_SHORT)
+                self.img_life = self.font.render(f"{ceil(self.life)}S", True, self.COLOR_SHORT)
                 self.rect_life = self.img_life.get_rect()
                 self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_life.left = self.screen_rect.left + 24
             else:
                 # Rendering text using *COLOR_LONG*, if there is a lot of time left
-                self.img_life = self.font.render(f"{(self.life * self.config['FPS'] - self.tick) // self.config['FPS'] + 1}S", True, self.COLOR_LONG)
+                self.img_life = self.font.render(f"{ceil(self.life)}S", True, self.COLOR_LONG)
                 self.rect_life = self.img_life.get_rect()
                 self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
                 self.rect_life.left = self.screen_rect.left + 24
-
-            if self.life * self.config['FPS'] - self.tick <= 0:
-                # Deactivate and kill the boost if there is no time left
-                self.deactivate()
-                self.kill()
-            else:
-                # Continue count life time if there is a lot of time left
-                self.tick += 1
         else:
             # Continue movement of boost if it has not activated yet
             self.rect_idle.x -= self.config['ns'].speed * self.config['ns'].dt
