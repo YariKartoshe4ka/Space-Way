@@ -120,7 +120,7 @@ def test_generic(hitbox):
     )
     assert len(hitbox) == len(PgRect(hitbox))
     assert bool(hitbox) == bool(PgRect(hitbox))
-    assert (hitbox == rstring()) is False
+    assert not (hitbox == rstring())
 
     p = r'^<\w+\(((-?\d+|-?\d+\.\d+), ){3}(-?\d+|-?\d+\.\d+)\)>$'
     assert match(p, str(hitbox)) and match(p, repr(hitbox))
@@ -181,8 +181,8 @@ def test_generic(hitbox):
     (Ellipse(198, 190, 65, 20), NotImplementedError),
     (Rect(100, 123, 10, 29), NotImplementedError),
     (Rect(-100, 2, 40, -2), NotImplementedError),
-    (randint(1, 100), TypeError),
-    (rstring(), TypeError)
+    (154, TypeError),
+    ('qwertyasd', TypeError)
 ])
 def test_exceptions(arg, exception):
     hitbox = Hitbox(100, 123, 10, 29)

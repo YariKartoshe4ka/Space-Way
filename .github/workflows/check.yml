@@ -30,9 +30,9 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v2
       - name: Install dependencies
-        run: pip install -r requirements.txt pytest-cov
+        run: pip install -r requirements.txt pytest pytest-cov pytest-xdist[psutil]
       - name: Run tests
-        run: python -m pytest --cov spaceway --cov-report xml --color=yes tests/
+        run: python -m pytest -n auto --cov spaceway --cov-report xml --color=yes tests/
         env:
           SDL_VIDEODRIVER: dummy
       - name: Upload coverage

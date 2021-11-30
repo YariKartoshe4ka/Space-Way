@@ -149,10 +149,11 @@ def test_scene_button_mixin_scenes(pygame_env, params, expected):
 
 
 @pytest.mark.parametrize('params', [
-    (
-        rstring(15),
-        (randint(10, 120), randint(10, 120))
-    ) for _ in range(5)
+    ('abcdefzxcv', (510, 54)),
+    ('asdasdafhreh', (123, 321)),
+    ('qwertyuiodfer', (11, 223)),
+    ('apodmebzx', (34, 89)),
+    ('poiuyaaffee', (0, -10))
 ])
 def test_caption_mixin(pygame_env, params):
     screen, base_dir, config, clock = pygame_env
