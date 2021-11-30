@@ -137,7 +137,40 @@ class BoostsGroup(pygame.sprite.Group):
         return self.active.get(name)
 
 
-class CenteredButtonsGroup(pygame.sprite.Group):
+class GenericButtonGroup(pygame.sprite.Group):
+    """Group containing methods that are inherent to all groups
+    working with buttons
+    """
+
+    def perform_point_collides(self, point):
+        """Detects collisions of buttons with the specified point. If a
+        collision was found, it presses on the button
+
+        Args:
+            point (Tuple[int, int]): The point at which the collision is checked
+
+        Returns:
+            bool: Has a collision been found
+        """
+        # Check all buttons
+        for button in self:
+            if button.rect.collidepoint(point):
+                # If collision was found, press button and return `True`
+                button.press()
+                return True
+
+        # Return `False` if no collisions were found
+        return False
+
+    def draw(self) -> None:
+        """Updates and blits all buttons of group
+        """
+        for button in self:
+            button.update()
+            button.blit()
+
+
+class CenteredButtonsGroup(GenericButtonGroup):
     """Extension of default :group:`pygame.sprite.Group` for centering
     buttons of group on screen
 
@@ -158,11 +191,11 @@ class CenteredButtonsGroup(pygame.sprite.Group):
         """Constructor method. Adding buttons and setting of width and
         height of surface
         """
-        # Initialize inherited group
-        pygame.sprite.Group.__init__(self, *buttons)
-
         # Save mode of screen for the further use
         self.screen_width, self.screen_height = mode
+
+        # Initialize inherited group
+        pygame.sprite.Group.__init__(self, *buttons)
 
     def center(self) -> None:
         """Centering of group
@@ -186,26 +219,6 @@ class CenteredButtonsGroup(pygame.sprite.Group):
 
             x += button.rect.w + self.SPACE
 
-    def perform_point_collides(self, point):
-        """Detects collisions of buttons with the specified point. If a
-        collision was found, it presses on the button
-
-        Args:
-            point (Tuple[int, int]): The point at which the collision is checked
-
-        Returns:
-            bool: Has a collision been found
-        """
-        # Check all buttons
-        for button in self:
-            if button.rect.collidepoint(point):
-                # If collision was found, press button and return `True`
-                button.press()
-                return True
-
-        # Return `False` if no collisions were found
-        return False
-
     def add_internal(self, button) -> None:
         """Adding button and centering of group
 
@@ -224,15 +237,8 @@ class CenteredButtonsGroup(pygame.sprite.Group):
         pygame.sprite.Group.remove_internal(self, button)
         self.center()
 
-    def draw(self) -> None:
-        """Updates and blits all buttons of group
-        """
-        for button in self:
-            button.update()
-            button.blit()
 
-
-class SceneButtonsGroup(pygame.sprite.Group):
+class SceneButtonsGroup(GenericButtonGroup):
     """Extension of default :group:`pygame.sprite.Group` for easier control
     of scene buttons
 
@@ -283,29 +289,6 @@ class SceneButtonsGroup(pygame.sprite.Group):
 
         pygame.sprite.Group.remove_internal(self, button)
 
-    def perform_point_collides(self, point):
-        """Detects collisions of buttons with the specified point. If a collision
-        was found, presses the button, leaves buttons of current scene and enters
-        buttons of scene to which it will be changed
-
-        Args:
-            point (Tuple[int, int]): The point at which the collision is checked
-
-        Returns:
-            bool: Has a collision been found
-        """
-        # Get all buttons of current scene
-        for button in self.get_by_scene():
-            # If collision was found
-            if button.rect.collidepoint(point):
-                # Press collided button
-                button.press()
-
-                return True
-
-        # No collisions were found
-        return False
-
     def enter_buttons(self, scene='', sub_scene='') -> None:
         """Enters all buttons of passed scene. If no scene was passed,
         buttons of current scene will be entered
@@ -327,13 +310,6 @@ class SceneButtonsGroup(pygame.sprite.Group):
         """
         for button in self.get_by_scene(scene, sub_scene):
             button.leave()
-
-    def draw(self) -> None:
-        """Updates and blits all buttons of group
-        """
-        for button in self.get_by_scene():
-            button.update()
-            button.blit()
 
     def get_by_scene(self, scene='', sub_scene=''):
         """Returns all buttons of passed scene. If no scene was selected,
