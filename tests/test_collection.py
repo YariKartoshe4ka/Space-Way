@@ -3,10 +3,97 @@ from random import randint, choice
 import pytest
 
 from spaceway.collection import *
-from spaceway.mixins import SceneButtonMixin, SettingsButtonMixin
+from spaceway.mixins import BoostMixin, SceneButtonMixin, SettingsButtonMixin
 from spaceway.hitbox import Rect
 
 from utils import *
+
+
+@pytest.mark.parametrize('boosts_params', [
+    [(7, 'a'), (3, 'b'), (5, 'c'), (7, 'a')],
+    [(2, 'x'), (2, 'y'), (2, 'z')],
+    [(9, 'q'), (3, 'f'), (5, 'r'), (4, 't')]
+])
+def test_boosts_group(pygame_env, boosts_params):
+    screen, base_dir, config, clock = pygame_env
+
+    class TestBoost(BoostMixin):
+        def __init__(self, life, name):
+            pygame.sprite.Sprite.__init__(self)
+
+            self.img_idle = pygame_surface((30, 30))
+            self.img_small = pygame_surface((18, 18), 1)
+
+            BoostMixin.__init__(self, screen, base_dir, config, name, life)
+
+    def create_boosts():
+        return [TestBoost(life, name) for life, name in boosts_params]
+
+    def uniq_len(a):
+        return len(set(a))
+
+    # Test `add` and `remove` methods of group simply
+    test_boosts = create_boosts()
+    test_boost = test_boosts[0]
+    test_group = BoostsGroup()
+
+    assert len(test_group) == 0
+
+    test_group.add(test_boost)
+    assert len(test_group) == 1
+
+    test_group.remove(test_boost)
+    assert len(test_group) == 0
+
+    # Test `remove` method for activated boosts
+    test_boosts = create_boosts()
+    test_group = BoostsGroup(*test_boosts)
+
+    for test_boost in test_boosts:
+        test_group.activate(test_boost)
+
+    test_boost = min(test_boosts, key=lambda x: x.number_in_queue)
+
+    assert len(test_group) == uniq_len(boosts_params)
+
+    test_group.remove(test_boost)
+    assert len(test_group) == uniq_len(boosts_params) - 1
+
+    # Test `empty` method
+    test_boosts = create_boosts()
+    test_group = BoostsGroup(*test_boosts)
+    test_group.empty()
+
+    assert len(test_group) == len(test_group.active) == len(test_group.passive) == 0
+    assert test_group.next_spawn == 3
+
+    # Test `get` method without activated boosts
+    test_boosts = create_boosts()
+    test_boost = test_boosts[0]
+    test_group = BoostsGroup(*test_boosts)
+
+    assert test_group.get(test_boost.name) is None
+
+    # Test `get` method with activated boosts
+    test_boosts = create_boosts()
+    test_group = BoostsGroup(*test_boosts)
+
+    for test_boost in test_boosts:
+        test_group.activate(test_boost)
+
+    test_boost = test_boosts[0]
+    assert test_group.get(test_boost.name)
+
+    # Test `__contains__` method
+    test_boosts = create_boosts()
+    test_group = BoostsGroup(*test_boosts)
+    test_boost1, test_boost2 = test_boosts[:2]
+    test_group.activate(test_boost1)
+
+    assert test_boost1.name in test_group
+    assert test_boost1 in test_group
+    assert test_boost2.name not in test_group
+    assert test_boost2 in test_group
 
 
 def test_generic_buttons_group(pygame_env):
@@ -17,7 +104,7 @@ def test_generic_buttons_group(pygame_env):
             self.screen = screen
             self.img = pygame_surface((randint(20, 120), randint(20, 120)))
             self.rect = Rect(self.img.get_rect())
-            self.rect.topleft = (randint(20, 120), randint(20, 120))
+            self.rect.topleft = (randint(0, 550), randint(0, 250))
             SceneButtonMixin.__init__(self, base_dir, config, '', '', '', '')
 
     class TestSettingsButton(SettingsButtonMixin):
@@ -31,7 +118,7 @@ def test_generic_buttons_group(pygame_env):
             SettingsButtonMixin.__init__(self, screen, config, config_index)
 
             self.rect = Rect(self.img.get_rect())
-            self.rect.topleft = (randint(20, 120), randint(20, 120))
+            self.rect.topleft = (randint(0, 550), randint(0, 250))
 
     test_group = GenericButtonGroup(*[
         TestSceneButton() if i % 2 else TestSettingsButton()
@@ -49,9 +136,9 @@ def test_generic_buttons_group(pygame_env):
 
 
 @pytest.mark.parametrize('buttons_sizes', [
-    ((30, 45), (60, 60), (40, 60), (82, 48)),
-    ((120, 38), (80, 27), (30, 32), (10, 78)),
-    ((74, 52), (33, 48), (20, 12))
+    [(30, 45), (60, 60), (40, 60), (82, 48)],
+    [(120, 38), (80, 27), (30, 32), (10, 78)],
+    [(74, 52), (33, 48), (20, 12)]
 ])
 def test_centered_buttons_group(pygame_env, buttons_sizes):
     screen, base_dir, config, clock = pygame_env
@@ -61,7 +148,7 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
             self.screen = screen
             self.img = pygame_surface(size)
             self.rect = Rect(self.img.get_rect())
-            self.rect.topleft = (randint(20, 120), randint(20, 120))
+            self.rect.topleft = (randint(0, 550), randint(0, 250))
             SceneButtonMixin.__init__(self, base_dir, config, '', '', '', '')
 
     class TestSettingsButton(SettingsButtonMixin):
@@ -74,7 +161,7 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
             SettingsButtonMixin.__init__(self, screen, config, config_index)
 
             self.rect = Rect(self.img.get_rect())
-            self.rect.topleft = (randint(20, 120), randint(20, 120))
+            self.rect.topleft = (randint(0, 550), randint(0, 250))
 
     def create_buttons():
         buttons = []
@@ -86,8 +173,20 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
 
         return buttons, rects
 
-    # Test centering of buttons which passed to constructor
+    # Test `add` and `remove` methods of group
     test_buttons, buttons_rects = create_buttons()
+    test_button = test_buttons[0]
+    test_group = CenteredButtonsGroup(config['mode'])
+
+    assert len(test_group) == 0
+
+    test_group.add(test_button)
+    assert len(test_group) == 1
+
+    test_group.remove(test_button)
+    assert len(test_group) == 0
+
+    # Test centering of buttons which passed to constructor
     test_group = CenteredButtonsGroup(config['mode'], *test_buttons)
 
     unionall_rect = buttons_rects[0].unionall(buttons_rects[1:])
@@ -114,9 +213,9 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
 
 
 @pytest.mark.parametrize('buttons_scenes', [
-    ((1, 1, 2, 2), (2, 2, 1, 1)),
-    (('a', 'a', 'b', 'b'), ('b', 'b', 'c', 'c'), ('a', 'a', 'b', 'b')),
-    (('abc', 'def', 'asd', 'test'), ('abc', 'def', 'req', 'obr'))
+    [(1, 1, 2, 2), (3, 3, 1, 1), (2, 2, 1, 1)],
+    [('a', 'a', 'b', 'b'), ('b', 'b', 'c', 'c'), ('a', 'a', 'b', 'b')],
+    [('abc', 'def', 'asd', 'test'), ('abc', 'def', 'req', 'obr')]
 ])
 def test_scene_buttons_group(pygame_env, buttons_scenes):
     screen, base_dir, config, clock = pygame_env
@@ -137,6 +236,7 @@ def test_scene_buttons_group(pygame_env, buttons_scenes):
     # Test `add` and `remove` methods of group
     test_button = test_buttons[0]
     test_group = SceneButtonsGroup(config)
+
     assert len(test_group) == 0
 
     test_group.add(test_button)

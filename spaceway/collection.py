@@ -23,14 +23,21 @@ class BoostsGroup(pygame.sprite.Group):
         Passive group contains other boosts in in the following format:
         .. code:: python
 
-            {<ShieldBoost sprite(in 1 groups)>: 0} """
+            {<ShieldBoost sprite(in 1 groups)>: 0}
+    """
 
-    # Define additional groups
-    active: Dict[str, 'BoostMixin'] = {}
-    passive: Dict['BoostMixin', int] = {}
+    def __init__(self, *boosts):
+        """Constructor method
+        """
+        # Define additional groups
+        self.active: Dict[str, 'BoostMixin'] = {}
+        self.passive: Dict['BoostMixin', int] = {}
 
-    # Define interval for next boost spawn (in score)
-    next_spawn = 3
+        # Define interval for next boost spawn (in score)
+        self.next_spawn = 3
+
+        # Initialize inherited group
+        pygame.sprite.Group.__init__(self, *boosts)
 
     def add_internal(self, boost) -> None:
         """Adds boost to passive group
@@ -124,7 +131,7 @@ class BoostsGroup(pygame.sprite.Group):
             boost.activate()
 
     def get(self, name):
-        """Searche for a boost with the passed name in active group and,
+        """Search for a boost with the passed name in active group and,
         if there is one, returns it
 
         Args:

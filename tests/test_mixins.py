@@ -289,7 +289,7 @@ def test_setttings_button_mixin(pygame_env, params, expected):
 def test_boost_mixin(pygame_env, life):
     screen, base_dir, config, clock = pygame_env
 
-    class TestBoost(BoostMixin, pygame.sprite.Sprite):
+    class TestBoost(BoostMixin):
         def __init__(self):
             pygame.sprite.Sprite.__init__(self)
 
