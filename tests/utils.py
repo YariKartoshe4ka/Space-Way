@@ -140,7 +140,7 @@ def most_popular_colors(surface, amount=1, exclude=[]):
     return sorted_colors[:amount]
 
 
-def pygame_emulate_events(thread, events):
+def pygame_emulate_events(monkeypatch, thread, events):
     """Emulates pygame events (keyboard presses, mouse clicks and other)
     for testing program interface
 
@@ -154,7 +154,7 @@ def pygame_emulate_events(thread, events):
             if after thread finishing there are still some events
     """
     pos = (0, 0)
-    pygame.mouse.get_pos = lambda: pos
+    monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
 
     thread.setDaemon(True)
     thread.start()
