@@ -1,5 +1,5 @@
 import os
-from time import time
+from time import time, sleep
 from random import choices
 from string import ascii_letters
 
@@ -138,6 +138,47 @@ def most_popular_colors(surface, amount=1, exclude=[]):
 
     sorted_colors = sorted(colors, key=lambda x: colors[x], reverse=True)
     return sorted_colors[:amount]
+
+
+def pygame_emulate_events(thread, events):
+    """Emulates pygame events (keyboard presses, mouse clicks and other)
+    for testing program interface
+
+    Args:
+        thread (threading.Thread): Thread which targeted to the entry point of the program
+        events (List[Tuple[pygame.event.Event, int]]): List of tuples, where the first object
+            is emulated event, and the second is interval after previous event (milliseconds)
+
+    Raises:
+        Exception: if thread is finished before emulating all events or
+            if after thread finishing there are still some events
+    """
+    pos = (0, 0)
+    pygame.mouse.get_pos = lambda: pos
+
+    thread.setDaemon(True)
+    thread.start()
+    events.reverse()
+
+    while thread.is_alive():
+        if len(events) == 0:
+            # Waiting for the thread to finish
+            sleep(1)
+
+            if thread.is_alive():
+                raise Exception('Thread is alive but there are no events!')
+            return
+
+        event, wait = events.pop()
+        sleep(wait / 1000)
+
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            pos = event.pos
+
+        pygame.event.post(event)
+
+    if len(events):
+        raise Exception('Thread was finished, but some events ramain!')
 
 
 def rstring(k=5):

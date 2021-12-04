@@ -1,10 +1,10 @@
-import pytest
 from random import randint
 from re import match
 
-from spaceway.hitbox import Hitbox, Rect, Ellipse
+import pytest
 from pygame import Rect as PgRect
 
+from spaceway.hitbox import Hitbox, Rect, Ellipse
 from utils import rstring
 
 

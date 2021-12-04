@@ -2,7 +2,6 @@ import os
 from importlib import import_module
 
 import spaceway
-
 from utils import pygame_env
 
 

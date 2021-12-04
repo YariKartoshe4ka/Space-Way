@@ -5,7 +5,6 @@ import pytest
 from spaceway.collection import *
 from spaceway.mixins import BoostMixin, SceneButtonMixin, SettingsButtonMixin
 from spaceway.hitbox import Rect
-
 from utils import *
 
 
