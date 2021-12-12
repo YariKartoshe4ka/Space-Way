@@ -15,16 +15,19 @@ class Text(CaptionMixin):
         self.img_heart = pygame.image.load(f'{base_dir}/assets/images/heart/heart.bmp')
         self.rect_heart = self.img_heart.get_rect()
         self.is_heart = False
+        self.tick = 0
 
         self.base_dir = base_dir
 
         CaptionMixin.__init__(self, base_dir, config, 'YariKartoshe4ka')
 
     def update(self):
-        if self.config['ns'].tick % (self.config['FPS'] * 4) == 0:
+        self.tick += self.config['ns'].dt / 30
+
+        if self.tick > 4:
             self.config['scene'] = self.config['sub_scene'] = 'lobby'
 
-        elif self.config['ns'].tick % (self.config['FPS'] * 2) == 0:
+        elif self.tick > 2 and not self.is_heart:
             self.caption = 'With love'
             self.is_heart = True
 
@@ -62,14 +65,13 @@ class ProgressBar:
         )[self.config['user']['color']]
 
         self.line = Rect(0, self.config['mode'][1] - 5, 0, 5)
-        self.inc = self.config['mode'][0] / (self.config['FPS'] * 4)
 
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 22)
 
     def update(self):
-        self.line.width += self.inc
+        self.line.width += self.config['ns'].dt * self.config['mode'][0] / 120
 
-        self.img = self.font.render(f"{round(self.line.width * 100 / self.config['mode'][0])}%", True, self.color)
+        self.img = self.font.render(f"{min(100, round(self.line.width / self.config['mode'][0] * 100))}%", True, self.color)
         self.rect = self.img.get_rect()
 
         self.rect.centerx = max(
