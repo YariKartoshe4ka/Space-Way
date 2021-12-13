@@ -8,11 +8,14 @@ import pygame
 from . import scenes, collection, updater
 from .config import ConfigManager
 
+import android
+
 
 # Set environment variable for centering window
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 # Initialization of pygame
+pygame.K_ESCAPE = 1073742094
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 
@@ -31,7 +34,7 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED | pygame.HWSURFACE
     screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
@@ -85,6 +88,9 @@ def main() -> None:
                       settings_back_button, table_back_button, resume_button,
                       pause_lobby_button, again_button, end_lobby_button, pause_button)
 
+    # Remove presplash and show headpiece scene
+    android.remove_presplash()
+
     while True:
         # Showing a specific scene
         if config['scene'] == 'headpiece':
@@ -105,7 +111,7 @@ def main() -> None:
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
-                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED | pygame.HWSURFACE
                 screen = pygame.display.set_mode(config['mode'], flags=flags)
                 full_screen_button.changed = False
 

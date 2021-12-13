@@ -58,6 +58,41 @@ jobs:
           asset_name: "Space-Way-${{ needs.create-release.outputs.tag_name }}.exe"
           asset_content_type: application/exe
 
+  build-android:
+    name: Build for Android
+    runs-on: ubuntu-latest
+    needs: create-release
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          ref: android
+      - name: Configure payloads
+        run: |
+          VERSION=$(jq < spaceway/config/config.json .version -r)
+          sed -i "s/#VERSION#/$VERSION/" buildozer.spec
+          sed -i "s/#VERSION#/'$VERSION'/" setupfiles/android/p4a_recipes/spaceway/__init__.py
+      - name: Build APK
+        uses: ArtemSBulgakov/buildozer-action@v1
+        id: buildozer
+        with:
+          command: |
+            python3 setup.py sdist
+            PATH_TO_PACKAGES=$(pwd)/dist buildozer android debug
+      - name: Upload APK
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_API_TOKEN }}
+        with:
+          upload_url: ${{ needs.create-release.outputs.upload_url }}
+          asset_path: ${{ steps.buildozer.outputs.filename }}
+          asset_name: "Space-Way-${{ needs.create-release.outputs.tag_name }}.apk"
+          asset_content_type: application/vnd.android.package-archive
+
   publish-pypi:
     name: Publish on PyPI
     runs-on: ubuntu-latest
