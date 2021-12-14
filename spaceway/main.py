@@ -1,7 +1,6 @@
 """ Root file with main entrypoint """
 
 import os
-from sys import platform
 
 import pygame
 
@@ -34,7 +33,7 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED | pygame.HWSURFACE
+    flags = pygame.FULLSCREEN | pygame.SCALED | pygame.HWSURFACE
     screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
@@ -65,10 +64,10 @@ def main() -> None:
     table, table_back_button = scenes.table.init(screen, base_dir, config)
 
     # Initialization of settings scene
-    effects_button, full_screen_button, updates_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    effects_button, updates_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
-    settings_buttons.add(effects_button, full_screen_button, updates_button, difficulty_button)
+    settings_buttons.add(effects_button, updates_button, difficulty_button)
 
     # Initialization of game scene
     astrs = pygame.sprite.Group()
@@ -108,12 +107,6 @@ def main() -> None:
         elif config['scene'] == 'settings':
             scenes.settings.functions.check_events(config, scene_buttons, settings_buttons, nick_input)
             scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
-
-            # If fullscreen button was pressed, change screen to fullscreen and back again
-            if full_screen_button.changed:
-                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED | pygame.HWSURFACE
-                screen = pygame.display.set_mode(config['mode'], flags=flags)
-                full_screen_button.changed = False
 
         elif config['scene'] == 'game':
             scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)

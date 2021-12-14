@@ -49,7 +49,7 @@ requirements = python3,spaceway
 presplash.filename = %(source.dir)s/setupfiles/android/presplash.png
 
 # (str) Icon of the application
-#icon.filename = %(source.dir)s/data/icon.png
+icon.filename = %(source.dir)s/spaceway/icon.ico
 
 # (str) Supported orientation (one of landscape, sensorLandscape, portrait or all)
 orientation = landscape

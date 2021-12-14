@@ -12,20 +12,6 @@ class EffectsButton(SettingsButtonMixin):
         SettingsButtonMixin.__init__(self, screen, config, 'effects')
 
 
-class FullScreenButton(SettingsButtonMixin):
-    def __init__(self, screen, base_dir, config):
-        self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
-                     False: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
-
-        self.changed = False
-
-        SettingsButtonMixin.__init__(self, screen, config, 'full_screen')
-
-    def change_state(self):
-        SettingsButtonMixin.change_state(self)
-        self.changed = True
-
-
 class UpdatesButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_true.bmp'),
