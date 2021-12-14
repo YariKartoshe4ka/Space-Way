@@ -3,6 +3,7 @@ from .objects import *
 
 def init(screen, base_dir, config):
     config['ns'].speed = 2
+    config['ns'].current_time = 0
     config['ns'].score = 0
 
     bg = Background(screen, base_dir, config)
