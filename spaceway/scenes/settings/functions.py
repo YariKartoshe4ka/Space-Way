@@ -23,10 +23,11 @@ def check_events(config, scene_buttons, settings_buttons, nick):
                 config.save()
 
             if nick.rect.collidepoint((x, y)):
-                print('click nick!')
                 nick.is_enable = True
+                pygame.key.start_text_input()
             else:
                 nick.is_enable = False
+                pygame.key.stop_text_input()
 
         elif event.type == pygame.KEYDOWN and nick.is_enable:
             if event.key == pygame.K_BACKSPACE:

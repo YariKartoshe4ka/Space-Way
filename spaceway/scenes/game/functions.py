@@ -119,7 +119,9 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
         scene_buttons.draw()
 
-        if config['ns'].tick % (config['FPS'] * 7) == 0:
+        config['ns'].current_time += config['ns'].dt / 30
+        if config['ns'].current_time > 7:
+            config['ns'].current_time = 0
             if 'time' in boosts:
                 boosts.get('time').speed += 1
             else:
@@ -213,6 +215,7 @@ def defeat(plate, astrs, boosts, end, config, base_dir):
     boosts.empty()
 
     config['ns'].speed = 2
+    config['ns'].current_time = 0
     config['ns'].score = 0
     config['scene'] = 'game'
     config['sub_scene'] = 'end'
