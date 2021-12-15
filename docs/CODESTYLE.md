@@ -33,7 +33,7 @@ General files:
 - *collection.py* - file with the implementation of additional data structures, mainly the *pygame.sprite.Group* extensions
 - *config.py* - file with some objects for easier configuration management
 - *debug.py* - file with some objects for easier debugging game
-- *hitbox.py* - аile with implementation of hitboxes for some objects calculations
+- *hitbox.py* - file with implementation of hitboxes for some objects calculations
 - *main.py* - main file, import all modules, contains the entrypoint of game and connects all the scenes together
 - *mixins.py* - file with mixins which are needed for simple creation of the same type of objects (DRY principle)
 - *updater.py* - file responsible for updating Space Way
