@@ -5,8 +5,14 @@
 
 ###### Windows
 
-1. Download new Space Way binary from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (installer ends on **.exe**)
+1. Download new Space Way binary from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (ends on **.exe**)
 2. Launch program and play!
+
+###### Android
+
+1. Download new Space Way package from [latest releases](https://github.com/YariKartoshe4ka/Space-Way/releases/latest) (ends on **.apk**)
+2. Launch, it will offer you to update Space Way, you should agree
+3. Run game with shortcut and play!
 
 ###### Other
 

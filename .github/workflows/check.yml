@@ -1,0 +1,39 @@
+on:
+  push:
+    branches:
+      - develop
+
+  pull_request:
+    branches:
+      - develop
+
+name: Check
+
+jobs:
+  run-tests:
+    name: Run tests - Python ${{ matrix.py }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        py:
+          - "3.10"
+          - "3.9"
+          - "3.8"
+          - "3.7"
+          - "3.6"
+    steps:
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.py }}
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Install dependencies
+        run: pip install -r requirements.txt pytest pytest-cov pytest-xdist[psutil] pytest-timeout
+      - name: Run tests
+        run: python -m pytest -n auto --cov spaceway --cov-report xml --color=yes tests/
+        env:
+          SDL_VIDEODRIVER: dummy
+      - name: Upload coverage
+        uses: codecov/codecov-action@v2

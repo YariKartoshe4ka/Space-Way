@@ -10,9 +10,9 @@ Now project has this structure:
 |____ collection.py
 |____ config.py
 |____ debug.py
+|____ hitbox.py
 |____ main.py
 |____ mixins.py
-|____ rect.py
 |____ updater.py
 |____ assets
 | |____ <fonts, sprites, sounds and other binary files...>
@@ -33,9 +33,9 @@ General files:
 - *collection.py* - file with the implementation of additional data structures, mainly the *pygame.sprite.Group* extensions
 - *config.py* - file with some objects for easier configuration management
 - *debug.py* - file with some objects for easier debugging game
+- *hitbox.py* - file with implementation of hitboxes for some objects calculations
 - *main.py* - main file, import all modules, contains the entrypoint of game and connects all the scenes together
 - *mixins.py* - file with mixins which are needed for simple creation of the same type of objects (DRY principle)
-- *rect.py* - file with implementation of a `pygame.Rect` for working with float values
 - *updater.py* - file responsible for updating Space Way
 
 Assets:
