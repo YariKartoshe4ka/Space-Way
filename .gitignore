@@ -1,11 +1,10 @@
 venv
 __pycache__
 *.pyc
-*.debug.*
-.p4a
 other
-tmp
 build
 dist
 *.egg-info
-aliases
+.coverage
+bin
+.buildozer

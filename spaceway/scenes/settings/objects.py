@@ -1,13 +1,11 @@
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
-from ...rect import FloatRect
+from ...hitbox import Ellipse
 
 
 class EffectsButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
 
@@ -16,8 +14,6 @@ class EffectsButton(SettingsButtonMixin):
 
 class FullScreenButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
 
@@ -32,8 +28,6 @@ class FullScreenButton(SettingsButtonMixin):
 
 class UpdatesButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_false.bmp')}
 
@@ -42,8 +36,6 @@ class UpdatesButton(SettingsButtonMixin):
 
 class DifficultyButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.width = self.height = 63
-
         self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
                      1: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
                      2: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
@@ -60,22 +52,14 @@ class SettingsBackButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Ellipse(self.img.get_rect())
 
         self.rect.left = self.screen_rect.left + 5
-        self.rect.top = self.screen_rect.bottom - 5
+        self.rect.top = self.screen_rect.bottom
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'settings', 'settings', 'lobby', 'lobby', 4)
-
-    def keep_move(self):
-        if self.action == 'enter':
-            return self.rect.bottom > self.screen_rect.bottom - 5
-        if self.action == 'leave':
-            return self.rect.top < self.screen_rect.bottom
-        return False
+        SceneButtonMixin.__init__(self, base_dir, config, 'settings', 'settings', 'lobby', 'lobby',
+                                  4, self.screen_rect.bottom - self.rect.h - 5, self.rect.top, 4)
 
 
 class NickInput:

@@ -4,40 +4,50 @@ import os
 from shutil import copyfile
 from json import load, dump
 
-from appdirs import user_config_dir
+from platformdirs import user_config_dir
 
 
 class Namespace:
-    """ Stores variables that do not need to be imported or exported
-        Since `ConfigManager` is passed everywhere, it allows you to
-        safely exchange variables from different functions and even
-        scenes """
+    """Stores variables that do not need to be imported or exported. Since
+    :ConfigManager:`spaceway.config.ConfigManager` is passed everywhere, it
+    allows you to safely exchange variables from different functions and even
+    scenes
+    """
     pass
 
 
 class ConfigManager(dict):
-    """ Configuration manager. Inherited from `dict` class and can be
-        used as default dictionary. Different configuration files are
-        mounted to different points of dictionary, e.g.:
+    """Configuration manager. Inherited from `dict` class and can be used
+    as default dictionary
 
-            config.json -> `root dictionary`
+    Args:
+        base_dir (str): An absolute path to directory where file with the main
+            entrypoint is located
+
+    Important:
+        Manager can use original configurations (which come with the package) or
+        user configurations. Use original configurations for debugging (they are
+        easier to edit) and don't use them for release (because with update o
+        package they will be changed) and user progress will not be saved. Use
+        user configurations for release, because if they are created they won't
+        be changed to new ones
+
+    Note:
+        Different configuration files are mounted to different points of
+        dictionary, e.g.:
+        ::
+
+            config.json -> *root dictionary*
             user.json -> 'user'
             score.csv -> 'score_list'
-
-        Manager can use original configurations (which come with the
-        package) or user configurations. Use original configurations
-        for debugging (they are easier to edit) and do not use them
-        for release (because with update of package they will be changed)
-        and user progress will not be saved. Use user configurations for
-        release, because if they are created they will not be changed
-        to new ones """
+    """
 
     # Set `True` to use configurations in user directory, or `False` for package directory
     USE_USER_CONFIGS = True
 
     def __init__(self, base_dir) -> None:
-        """ Initializing of ConfigManager """
-
+        """Initializing of ConfigManager
+        """
         # Setting BASE_DIR const for the further use
         self.BASE_DIR = base_dir
 
@@ -57,11 +67,10 @@ class ConfigManager(dict):
         self.__load()
 
     def __check_configs(self) -> None:
-        """ Сhecks whether the configurations have been created and copies
-            them to the user's directory if not (if USE_USER_CONFIGS = `True`)
-            Replacing user configuration paths with original configuration
-            paths (if USE_USER_CONFIGS = `False`) """
-
+        """Сhecks whether the configurations have been created and copies them to the
+        user's directory if not (if USE_USER_CONFIGS = `True`) Replacing user configuration
+        paths with original configuration paths (if USE_USER_CONFIGS = `False`)
+        """
         # Checking whether configurations were created and copying its to
         # user configurations directory if not
         if self.USE_USER_CONFIGS:
@@ -79,8 +88,8 @@ class ConfigManager(dict):
             self.PATH_SCORE_CONFIG = self.__ORIGINAL_PATH_SCORE_CONFIG
 
     def __load(self) -> None:
-        """ Loading all configurations and initializing ConfigManager as dictionary """
-
+        """Loading all configurations and initializing ConfigManager as dictionary
+        """
         # Set root dictionary from main configuration
         with open(self.PATH_MAIN_CONFIG) as file:
             config: dict = load(file)
@@ -106,8 +115,8 @@ class ConfigManager(dict):
         dict.__init__(self, config)
 
     def save(self) -> None:
-        """ Saves all configurations """
-
+        """Saves all configurations
+        """
         # Saving user configuration
         with open(self.PATH_USER_CONFIG, 'w') as file:
             dump(self['user'], file, indent=4)
@@ -121,8 +130,8 @@ class ConfigManager(dict):
                 file.write(','.join((str(score), nick)) + '\n')
 
     def reset(self) -> None:
-        """ Resets user configurations, replacing them with default configurations """
-
+        """Resets user configurations, replacing them with default configurations
+        """
         if self.USE_USER_CONFIGS:
             # Loading default configurations
             ConfigManager.USE_USER_CONFIGS = False
@@ -142,8 +151,7 @@ class ConfigManager(dict):
             self.save()
 
     def filter_score(self) -> None:
-        """ Fiters scores of attempts. Attempts are sorted by best
-            score and then all other attempts are discarded so that
-            only the top 5 attempts remain """
-
+        """Fiters scores of attempts. Attempts are sorted by best score and then
+        all other attempts are discarded so that only the top 5 attempts remain
+        """
         self['score_list'] = list(reversed(sorted(self['score_list'])))[:5]

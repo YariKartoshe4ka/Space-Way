@@ -1,7 +1,7 @@
 import pygame
 
 from ...mixins import SceneButtonMixin
-from ...rect import FloatRect
+from ...hitbox import Ellipse
 
 
 class TableScore:
@@ -57,19 +57,11 @@ class TableBackButton(SceneButtonMixin):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = self.height = 63
-
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/back.bmp')
-        self.rect = FloatRect(self.img.get_rect())
+        self.rect = Ellipse(self.img.get_rect())
 
         self.rect.left = self.screen_rect.left + 5
-        self.rect.top = self.screen_rect.bottom - 5
+        self.rect.top = self.screen_rect.bottom
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'table', 'table', 'lobby', 'lobby', 4)
-
-    def keep_move(self):
-        if self.action == 'enter':
-            return self.rect.bottom > self.screen_rect.bottom - 5
-        if self.action == 'leave':
-            return self.rect.top < self.screen_rect.bottom
-        return False
+        SceneButtonMixin.__init__(self, base_dir, config, 'table', 'table', 'lobby', 'lobby',
+                                  4, self.screen_rect.bottom - self.rect.h - 5, self.rect.top, 4)

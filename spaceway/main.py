@@ -46,14 +46,14 @@ def main() -> None:
         from . import debug
         debugger = debug.Debugger(config['FPS'])
         debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
-        debugger.enable_module(debug.DebugHitbox)
+        debugger.enable_module(debug.DebugHitbox, screen)
 
     # Define variables in namespace
     config['ns'].dt = 0     # Set delta-time for the further use
-    config['ns'].tick = 0   # Set tick for calculating the past time in seconds
+    config['ns'].tick = 1   # Set tick for calculating the past time in seconds
 
     # Initialization of headpiece scene
-    text = scenes.headpiece.init(screen, base_dir, config)
+    text, pb = scenes.headpiece.init(screen, base_dir, config)
 
     # Initialization of lobby scene
     play_button, table_button, settings_button, caption = scenes.lobby.init(screen, base_dir, config)
@@ -71,7 +71,7 @@ def main() -> None:
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
-    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button = scenes.game.init(screen, base_dir, config, astrs, boosts)
+    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button, pause_button = scenes.game.init(screen, base_dir, config)
 
     pause_buttons = collection.CenteredButtonsGroup(config['mode'])
     pause_buttons.add(pause_lobby_button, resume_button)
@@ -83,16 +83,13 @@ def main() -> None:
     scene_buttons = collection.SceneButtonsGroup(config)
     scene_buttons.add(play_button, table_button, settings_button,
                       settings_back_button, table_back_button, resume_button,
-                      pause_lobby_button, again_button, end_lobby_button)
+                      pause_lobby_button, again_button, end_lobby_button, pause_button)
 
     while True:
-        # Update tick
-        config['ns'].tick += 1
-
         # Showing a specific scene
         if config['scene'] == 'headpiece':
             scenes.headpiece.functions.check_events(config, base_dir)
-            scenes.headpiece.functions.update(screen, config, text)
+            scenes.headpiece.functions.update(screen, config, text, pb)
 
         elif config['scene'] == 'lobby':
             scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
@@ -123,3 +120,6 @@ def main() -> None:
         # Update screen and adjust speed to FPS
         pygame.display.update()
         config['ns'].dt = clock.tick(config['FPS']) * 0.03
+
+        # Update tick
+        config['ns'].tick += 1
