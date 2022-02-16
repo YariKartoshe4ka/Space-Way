@@ -305,8 +305,11 @@ def test_ellipse_with_rect(ellipse, arg, expected):
     (Ellipse(20, 87, 111, 98), Ellipse(86, 100, 36, 45), (True, True)),
     (Ellipse(-40, 32, 85, 24), Ellipse(44, 17, 30, 54), (False, True)),
     (Ellipse(58, 74, 198, 166), Ellipse(76, 91, 54, 50), (False, True)),
-    (Ellipse(-100, -100, 115, 84), Ellipse(-100, -100, 115, 84), (True, True)),
-    # (Ellipse(34, 80, 10, 100), Ellipse(34, 82, 100, 10), (False, True)) - Problem test
+    (Ellipse(-100, -100, 115, 84), Ellipse(-100, -100, 115, 84), (False, True)),
+    (Ellipse(34, 80, 10, 100), Ellipse(34, 82, 100, 10), (False, True)),
+    (Ellipse(5, 221, 80, 42), Ellipse(175, 215, 66, 54), (False, False)),
+    (Ellipse(53, 92, 76, 120), Ellipse(129, 92, 34, 120), (False, True)),
+    (Ellipse(90, 60, 110, 210), Ellipse(130, 20, 110, 210), (False, True))
 ])
 def test_ellipse_with_ellipse(ellipse, arg, expected):
     assert ellipse.contains(arg) == expected[0]
