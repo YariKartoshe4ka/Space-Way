@@ -41,7 +41,7 @@ spaceway
 I am not a professional game developer (this is my first game), and I do not know if it makes sense to develop it, but if there is activity on the repository, then I'm going to do:
 
 1. Music and sprites update 
-2. Add more obstacles for different levels of difficulty
+2. Add more obstacles
 
 [and many other things...](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md)
 

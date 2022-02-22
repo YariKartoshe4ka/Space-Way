@@ -34,19 +34,6 @@ class UpdatesButton(SettingsButtonMixin):
         SettingsButtonMixin.__init__(self, screen, config, 'updates')
 
 
-class DifficultyButton(SettingsButtonMixin):
-    def __init__(self, screen, base_dir, config):
-        self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_easy.bmp'),
-                     1: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_middle.bmp'),
-                     2: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_hard.bmp'),
-                     3: pygame.image.load(f'{base_dir}/assets/images/buttons/difficulty_insanse.bmp')}
-
-        SettingsButtonMixin.__init__(self, screen, config, 'difficulty')
-
-    def change_state(self):
-        self.state = (self.state + 1) % 4
-
-
 class SettingsBackButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen

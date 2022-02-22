@@ -1,5 +1,5 @@
 from sys import exit
-from random import choice, randint
+from random import choices, randint
 
 import pygame
 
@@ -77,8 +77,8 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
             astr = Asteroid(screen, base_dir, config)
         astrs.add(astr)
 
-    # Spawn flying asteroid if difficulty >= middle
-    if config['ns'].score >= 10 and config['ns'].score % 5 == 0 and config['user']['difficulty'] >= 1:
+    # Spawn flying asteroid
+    if config['ns'].score >= 10 and config['ns'].score % 5 == 0:
         for sprite in astrs:
             if sprite.name == 'flying':
                 break
@@ -89,25 +89,28 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
     if config['ns'].score >= boosts.next_spawn:
         boosts.next_spawn += randint(4, 8)
 
-        choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
+        schema = {
+            'time':   TimeBoost,
+            'double': DoubleBoost,
+            'shield': ShieldBoost,
+            'mirror': MirrorBoost
+        }
 
-        # Spawn mirror boost if difficulty >= hard
-        if config['user']['difficulty'] >= 2:
-            choices['mirror'] = MirrorBoost
+        weights = (40, 30, 10, 20)
 
-        name = choice(list(choices))
+        name = choices(list(schema), weights)[0]
 
         if name == 'time' or name == 'double':
-            boost = choices[name](screen, base_dir, config)
+            boost = schema[name](screen, base_dir, config)
         elif name == 'shield' or name == 'mirror':
-            boost = choices[name](screen, base_dir, config, plate)
+            boost = schema[name](screen, base_dir, config, plate)
 
         while pygame.sprite.spritecollideany(boost, astrs):
-            name = choice(list(choices))
+            name = choices(list(schema))
             if name == 'time' or name == 'double':
-                boost = choices[name](screen, base_dir, config)
+                boost = schema[name](screen, base_dir, config)
             elif name == 'shield' or name == 'mirror':
-                boost = choices[name](screen, base_dir, config, plate)
+                boost = schema[name](screen, base_dir, config, plate)
 
         boosts.add(boost)
 
