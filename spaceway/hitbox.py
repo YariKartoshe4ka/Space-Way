@@ -821,6 +821,9 @@ class Ellipse(Hitbox):
         return self._contains_rect(rect)
 
     def _colliderect_ellipse(self, ellipse):
+        if not Rect._colliderect_rect(self, ellipse):
+            return False
+
         return (
             self.collidepoint(ellipse.center) or ellipse.collidepoint(self.center)
             or self.__intersects_ellipse(ellipse)
