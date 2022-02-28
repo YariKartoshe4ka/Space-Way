@@ -273,14 +273,10 @@ def test_setttings_button_mixin(monkeypatch, pygame_env, params, expected):
     assert test_button.state == config_value
     assert test_button.img == test_button.imgs[config_value]
 
-    @pygame_loop(pygame_env, 3)
+    @pygame_loop(pygame_env, 2)
     def loop2():
         test_button.draw()
         test_button.blit_hint()
-
-    x, y = test_button.rect.centerx + 1, test_button.rect.centery - test_button.border_radius - 5
-    s = screen.subsurface(pygame.Rect(x, y, 25, 3))
-    assert most_popular_colors(s, 1, [(0, 0, 0)])[0] == (255, 255, 255)
 
     # Test `change_state` with `update` method
     if change_state:
