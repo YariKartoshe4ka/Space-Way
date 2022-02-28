@@ -46,5 +46,8 @@ def update(bg, config, scene_buttons, settings_buttons, nick):
     scene_buttons.draw()
     settings_buttons.draw()
 
+    for settings_button in settings_buttons:
+        settings_button.blit_hint()
+
     nick.update()
     nick.blit()

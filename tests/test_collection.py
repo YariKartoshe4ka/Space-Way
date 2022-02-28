@@ -116,9 +116,12 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
             self.imgs = {True: pygame_surface(size),
                          False: pygame_surface(size, 1)}
 
+            self.hints = {True: rstring(),
+                          False: rstring()}
+
             config_index = rstring(15)
             config['user'][config_index] = True
-            SettingsButtonMixin.__init__(self, screen, config, config_index)
+            SettingsButtonMixin.__init__(self, screen, base_dir, config, config_index)
 
             self.rect = Rect(self.img.get_rect())
             self.rect.topleft = (randint(0, 550), randint(0, 250))

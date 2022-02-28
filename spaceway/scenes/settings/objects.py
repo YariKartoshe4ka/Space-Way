@@ -9,7 +9,10 @@ class EffectsButton(SettingsButtonMixin):
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
 
-        SettingsButtonMixin.__init__(self, screen, config, 'effects')
+        self.hints = {True: 'Disable sound effects like bumps',
+                      False: 'Enable sound effects like bumps'}
+
+        SettingsButtonMixin.__init__(self, screen, base_dir, config, 'effects')
 
 
 class FullScreenButton(SettingsButtonMixin):
@@ -17,9 +20,12 @@ class FullScreenButton(SettingsButtonMixin):
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_false.bmp')}
 
+        self.hints = {True: 'Quit from fullscreen mode',
+                      False: 'Enter to fullscreen mode'}
+
         self.changed = False
 
-        SettingsButtonMixin.__init__(self, screen, config, 'full_screen')
+        SettingsButtonMixin.__init__(self, screen, base_dir, config, 'full_screen')
 
     def change_state(self):
         SettingsButtonMixin.change_state(self)
@@ -31,7 +37,10 @@ class UpdatesButton(SettingsButtonMixin):
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_true.bmp'),
                      False: pygame.image.load(f'{base_dir}/assets/images/buttons/updates_false.bmp')}
 
-        SettingsButtonMixin.__init__(self, screen, config, 'updates')
+        self.hints = {True: 'Disable update notifications',
+                      False: 'Enable update notifications'}
+
+        SettingsButtonMixin.__init__(self, screen, base_dir, config, 'updates')
 
 
 class SettingsBackButton(SceneButtonMixin):

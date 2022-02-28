@@ -1,6 +1,5 @@
 from random import randint
 from math import inf
-from time import time
 
 import pytest
 import pygame
@@ -236,7 +235,7 @@ def test_caption_mixin(pygame_env, params):
         lambda self: setattr(self, 'state', (self.state - 1) % 4)
     ), (1, 0, 3, 2)]
 ])
-def test_setttings_button_mixin(pygame_env, params, expected):
+def test_setttings_button_mixin(monkeypatch, pygame_env, params, expected):
     screen, base_dir, config, clock = pygame_env
     config_value, imgs, change_state = params
     config_index = rstring(15)
@@ -244,7 +243,12 @@ def test_setttings_button_mixin(pygame_env, params, expected):
     class TestSettingsButton(SettingsButtonMixin):
         def __init__(self):
             self.imgs = imgs
-            SettingsButtonMixin.__init__(self, screen, config, config_index)
+
+            self.hints = {}
+            for state in self.imgs:
+                self.hints[state] = rstring()
+
+            SettingsButtonMixin.__init__(self, screen, base_dir, config, config_index)
 
         def draw(self):
             self.update()
@@ -260,6 +264,23 @@ def test_setttings_button_mixin(pygame_env, params, expected):
     @pygame_loop(pygame_env, 0.5)
     def loop1():
         test_button.draw()
+
+    # Test `update` and `blit` methods if mouse hovered on button
+    test_button = TestSettingsButton()
+
+    monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: test_button.rect.center)
+
+    assert test_button.state == config_value
+    assert test_button.img == test_button.imgs[config_value]
+
+    @pygame_loop(pygame_env, 3)
+    def loop2():
+        test_button.draw()
+        test_button.blit_hint()
+
+    x, y = test_button.rect.centerx + 1, test_button.rect.centery - test_button.border_radius - 5
+    s = screen.subsurface(pygame.Rect(x, y, 25, 3))
+    assert most_popular_colors(s, 1, [(0, 0, 0)])[0] == (255, 255, 255)
 
     # Test `change_state` with `update` method
     if change_state:

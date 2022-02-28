@@ -216,6 +216,8 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
 
     Args:
         screen (pygame.Surface): Screen (surface) obtained via pygame
+        base_dir (str): An absolute path to directory where file with the main
+            entrypoint is located
         config (spaceway.config.ConfigManager): The configuration object
         config_index (str): Key of the configuration (name of the state)
 
@@ -226,7 +228,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
             self.imgs = {state1: pygame.Surface, state2: pygame.Surface ...}
     """
 
-    def __init__(self, screen, config, config_index):
+    def __init__(self, screen, base_dir, config, config_index):
         """Constructor method
         """
         pygame.sprite.Sprite.__init__(self)
@@ -245,6 +247,53 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
         self.img = self.imgs[self.state]
         self.rect = Ellipse(self.img.get_rect())
 
+        # Configuring the generating hint images
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (0, 0, 0)
+        self.border = 5
+        self.border_radius = 3
+
+        # Generating all hint images
+        self.__gen_hints(base_dir)
+        self.img_hint = self.imgs_hint[self.state]
+
+        # Setting variables to work with the hover
+        self.is_hover = False
+        self.tick_hover = 0
+
+    def __gen_hints(self, base_dir):
+        """Generates hint images with description of the all button actions
+
+        Args:
+            base_dir (str): An absolute path to directory where file with the main
+                entrypoint is located
+        """
+        # Get font object for the further text rendering
+        font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 20)
+
+        # Dictionary with images of hint messages, the structure is similar to `self.imgs`
+        self.imgs_hint = {}
+
+        for state, hint_text in self.hints.items():
+            # Generating the text itself
+            img_text = font.render(hint_text, True, self.fg_color)
+            rect_text = img_text.get_rect()
+
+            # Generating hint background (size a little more than text)
+            rect_hint = rect_text.copy()
+            rect_hint.w += self.border * 2
+            rect_hint.h += self.border * 2
+
+            img_hint = pygame.Surface(rect_hint.size, flags=pygame.SRCALPHA)
+            pygame.draw.rect(img_hint, self.bg_color, rect_hint, 0, self.border_radius)
+
+            # Blitting text to background
+            rect_text.center = rect_hint.center
+            img_hint.blit(img_text, rect_text)
+
+            # Exporting hint image to dictionary
+            self.imgs_hint[state] = img_hint
+
     def change_state(self) -> None:
         """Changes state of button. By default it has on-off behaviour. Override
         method for another behaviour
@@ -254,19 +303,47 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
     def update(self) -> None:
         """Update button: synchronize image and configuration with button state
         """
+        # Synchronizing image and configuration
         self.img = self.imgs[self.state]
+        self.img_hint = self.imgs_hint[self.state]
         self.config['user'][self.config_index] = self.state
+
+        point = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(point):
+            # If mouse hovered on button, continue countdown
+            self.tick_hover += self.config['ns'].dt / 30
+        else:
+            # Otherwise, reset the tick to stop the countdown
+            self.tick_hover = 0
+            self.is_hover = False
+
+        # If enough time has passed, show a hint
+        if self.tick_hover > 1:
+            self.is_hover = True
 
     def blit(self) -> None:
         """Blit button
         """
         self.screen.blit(self.img, self.rect)
 
+    def blit_hint(self) -> None:
+        """Blit hint
+        """
+        if self.is_hover:
+            rect = self.img_hint.get_rect()
+            rect.bottomleft = pygame.mouse.get_pos()
+            self.screen.blit(self.img_hint, rect)
+
     def press(self) -> None:
         """Press callback of button. Changes self state and updates itself
         """
         self.change_state()
         self.update()
+
+        # Hide hint after button pressing
+        self.is_hover = False
+        self.tick_hover = 0
 
 
 class BoostMixin(pygame.sprite.Sprite):
