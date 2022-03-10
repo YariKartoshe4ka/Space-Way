@@ -44,9 +44,9 @@ def main() -> None:
     # Initialize debug modules if configuration allows it
     if config['debug']:
         from . import debug
-        debugger = debug.Debugger(config['FPS'])
-        debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
-        debugger.enable_module(debug.DebugHitbox, screen)
+        debugger = debug.Debugger(config)
+        debugger.enable_module(debug.DebugStat(screen, base_dir, clock))
+        debugger.enable_module(debug.DebugHitbox(screen))
 
     # Define variables in namespace
     config['ns'].dt = 0     # Set delta-time for the further use
