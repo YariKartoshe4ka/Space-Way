@@ -1,4 +1,5 @@
 import os
+from importlib import import_module, reload
 from time import time, sleep
 from random import choices
 from string import ascii_letters
@@ -140,9 +141,20 @@ def most_popular_colors(surface, amount=1, exclude=[]):
     return sorted_colors[:amount]
 
 
-def pygame_emulate_events(monkeypatch, thread, events):
-    """Emulates pygame events (keyboard presses, mouse clicks and other)
-    for testing program interface
+def reload_spaceway():
+    """Reloads :module:`spaceway` module and all submodules
+    """
+    from sys import modules
+
+    for name, module in modules.copy().items():
+        if name.startswith('spaceway'):
+            reload(import_module(name))
+
+
+def pygame_emulate_events(func):
+    """Decorator, which emulates pygame events (keyboard presses, mouse clicks and other)
+    for testing program interface. Test funciton must return args in list accordingly
+    specified below
 
     Args:
         thread (threading.Thread): Thread which targeted to the entry point of the program
@@ -152,33 +164,58 @@ def pygame_emulate_events(monkeypatch, thread, events):
     Raises:
         Exception: if thread is finished before emulating all events or
             if after thread finishing there are still some events
+
+    Example:
+        .. code:: python
+
+        def test():
+            return (
+                Thread(target=spaceway.main.main),
+                [
+                    (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 2000),
+                ]
+            )
     """
-    pos = (0, 0)
-    monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
+    thread, events = func()
 
-    thread.setDaemon(True)
-    thread.start()
-    events.reverse()
+    @pytest.mark.filterwarnings('ignore::pytest.PytestUnhandledThreadExceptionWarning')
+    def decorator(monkeypatch):
+        reload_spaceway()
 
-    while thread.is_alive():
-        if len(events) == 0:
-            # Waiting for the thread to finish
-            sleep(1)
+        pos = (0, 0)
+        monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
 
-            if thread.is_alive():
-                raise Exception('Thread is alive but there are no events!')
-            return
+        thread.daemon = True
+        thread.start()
+        events.reverse()
 
-        event, wait = events.pop()
-        sleep(wait / 1000)
+        while thread.is_alive():
+            if len(events) == 0:
+                # Waiting for the thread to finish
+                sleep(1)
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
+                if thread.is_alive():
+                    thread.join(0)
+                    reload_spaceway()
 
-        pygame.event.post(event)
+                    raise Exception('Thread is alive but there are no events!')
 
-    if len(events):
-        raise Exception('Thread was finished, but some events ramain!')
+                break
+
+            event, wait = events.pop()
+            sleep(wait / 1000)
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+
+            pygame.event.post(event)
+
+        reload_spaceway()
+
+        if len(events):
+            raise Exception('Thread was finished, but some events ramain!')
+
+    return decorator
 
 
 def rstring(k=5):
