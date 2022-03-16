@@ -35,5 +35,6 @@ jobs:
         run: python -m pytest -n auto --cov spaceway --cov tests --cov-report xml --color=yes tests/
         env:
           SDL_VIDEODRIVER: dummy
+          SDL_AUDIODRIVER: disk
       - name: Upload coverage
         uses: codecov/codecov-action@v2
