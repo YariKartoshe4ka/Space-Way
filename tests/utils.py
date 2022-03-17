@@ -1,6 +1,7 @@
 import os
 from importlib import import_module, reload
 from time import time, sleep
+from types import ModuleType
 from random import choices
 from string import ascii_letters
 
@@ -142,13 +143,27 @@ def most_popular_colors(surface, amount=1, exclude=[]):
 
 
 def reload_spaceway():
-    """Reloads :module:`spaceway` module and all submodules
+    """Reloads :module:`spaceway` module and all submodules by DFS strategy
     """
-    from sys import modules
+    visited = set()
 
-    for name, module in modules.copy().items():
-        if name.startswith('spaceway'):
-            reload(import_module(name))
+    def dfs(module):
+        if module in visited:
+            return
+
+        visited.add(module)
+
+        for obj in dir(module):
+            obj = getattr(module, obj)
+
+            if isinstance(obj, ModuleType) and obj.__package__.startswith('spaceway'):
+                dfs(obj)
+            elif hasattr(obj, '__module__') and obj.__module__.startswith('spaceway'):
+                dfs(import_module(obj.__module__))
+
+        reload(module)
+
+    dfs(spaceway)
 
 
 def pygame_emulate_events(func):

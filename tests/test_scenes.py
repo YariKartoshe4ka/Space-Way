@@ -67,19 +67,20 @@ def test_scenes_complexly():
         Thread(target=spaceway.main.main),
         [
 
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 4000),   # Press *table* button
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 2000),   # Press *back* button
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(664, 414)), 2000),  # Press *settings* button
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 2000),   # Press *back* button
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(350, 225)), 2000),  # Press *play* button
-            (Event(pygame.KEYDOWN, key=pygame.K_SPACE), 900),       # Press *SPACE* key
-            (Event(pygame.KEYDOWN, key=pygame.K_SPACE), 700),       # Press *SPACE* key
-            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),      # Press *ESC* key
-            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 500),      # Press *ESC* key
-            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),      # Press *ESC* key
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(385, 225)), 500),   # Press *resume* button
-            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),      # Press *ESC* key
-            (Event(pygame.MOUSEBUTTONDOWN, pos=(315, 225)), 500),   # Press *lobby* button
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 4000),          # Press *table* button
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 2000),          # Press *back* button
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(664, 414)), 2000),         # Press *settings* button
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(37, 414)), 2000),          # Press *back* button
+            *((Event(pygame.MOUSEBUTTONDOWN, pos=(100, 100)), 700),) * 3,  # Press background 3 times
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(350, 225)), 2000),         # Press *play* button
+            (Event(pygame.KEYDOWN, key=pygame.K_SPACE), 900),              # Press *SPACE* key
+            (Event(pygame.KEYDOWN, key=pygame.K_SPACE), 700),              # Press *SPACE* key
+            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),             # Press *ESC* key
+            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 500),             # Press *ESC* key
+            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),             # Press *ESC* key
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(385, 225)), 500),          # Press *resume* button
+            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 100),             # Press *ESC* key
+            (Event(pygame.MOUSEBUTTONDOWN, pos=(315, 225)), 500),          # Press *lobby* button
             (Event(pygame.QUIT), 2000)
         ]
     )
