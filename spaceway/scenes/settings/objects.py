@@ -1,3 +1,5 @@
+import re
+
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
@@ -59,40 +61,82 @@ class SettingsBackButton(SceneButtonMixin):
 
 
 class NickInput:
+    TICK_INTERVAL = 0.7
+
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
-        self.width = 315
-        self.height = 42
         self.fg_color = (0, 0, 0)
-        self.bg_color = (255, 255, 255)
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36)
 
         self.config = config
 
         self.settings_path = f'{base_dir}/config/user.json'
 
-        self.img_disable = pygame.image.load(f'{base_dir}/assets/images/inputs/nick_disable.bmp')
-        self.img_enable = pygame.image.load(f'{base_dir}/assets/images/inputs/nick_enable.bmp')
-        self.img = self.img_disable
+        self.imgs = {
+            0: pygame.image.load(f'{base_dir}/assets/images/inputs/nick_disable.bmp'),
+            1: pygame.image.load(f'{base_dir}/assets/images/inputs/nick_enable.bmp'),
+            2: pygame.image.load(f'{base_dir}/assets/images/inputs/nick_wrong.bmp')
+        }
+
+        self.state = 0
+        self.img = self.imgs[self.state]
         self.rect = self.img.get_rect()
 
         self.rect.centerx = self.screen_rect.centerx
         self.rect.centery = self.screen_rect.centery - 74
 
-        self.is_enable = False
+        self.tick = self.TICK_INTERVAL
 
     def update(self):
-        if self.is_enable:
-            self.img = self.img_enable
-        else:
-            self.img = self.img_disable
+        self.img = self.imgs[self.state]
 
-        self._img = self.font.render(self.config['user']['nick'][-17:], True, self.fg_color, self.bg_color)
-        self._rect = self._img.get_rect()
-        self._rect.center = self.rect.center
+        self.img_font = self.font.render(self.config['user']['nick'], True, self.fg_color)
+        self.rect_font = self.img_font.get_rect()
+
+        self.rect_font.center = self.rect.center
+
+        self.img_cursor = pygame.Surface((13, 25))
+        self.rect_cursor = self.img_cursor.get_rect()
+
+        self.rect_cursor.left = self.rect_font.right + 2
+        self.rect_cursor.centery = self.rect_font.centery - 1
+
+        if self.state > 0:
+            self.tick %= self.TICK_INTERVAL * 2
+            self.tick += self.config['ns'].dt / 30
 
     def blit(self):
         self.screen.blit(self.img, self.rect)
-        self.screen.blit(self._img, self._rect)
+        self.screen.blit(self.img_font, self.rect_font)
+
+        if self.state > 0 and self.tick > 0.7:
+            self.screen.blit(self.img_cursor, self.rect_cursor)
+
+    def enable(self):
+        self.tick = self.TICK_INTERVAL
+        self.state = 1
+        pygame.key.start_text_input()
+
+    def disable(self):
+        self.state = 0
+        pygame.key.stop_text_input()
+
+    def add_char(self, char):
+        if self.state == 0 or not char:
+            return
+
+        self.state = 1
+
+        if char == '\r':
+            self.state = 0
+
+        elif char == '\b':
+            self.config['user']['nick'] = self.config['user']['nick'][:-1]
+
+        elif re.match(r'^[\w!?:; \(\)]{1,15}$', self.config['user']['nick'] + char, flags=re.ASCII):
+            self.config['user']['nick'] += char
+
+        else:
+            self.state = 2

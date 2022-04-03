@@ -319,7 +319,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
             self.is_hover = False
 
         # If enough time has passed, show a hint
-        if self.tick_hover > 1:
+        if self.tick_hover > 0.7:
             self.is_hover = True
 
     def blit(self) -> None:
