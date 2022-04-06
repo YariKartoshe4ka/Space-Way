@@ -13,6 +13,7 @@ Now project has this structure:
 |____ hitbox.py
 |____ main.py
 |____ mixins.py
+|____ music.py
 |____ updater.py
 |____ assets
 | |____ <fonts, sprites, sounds and other binary files...>
@@ -36,6 +37,7 @@ General files:
 - *hitbox.py* - file with implementation of hitboxes for some objects calculations
 - *main.py* - main file, import all modules, contains the entrypoint of game and connects all the scenes together
 - *mixins.py* - file with mixins which are needed for simple creation of the same type of objects (DRY principle)
+- *music.py* - file with some objects for easier music (sounds) management
 - *updater.py* - file responsible for updating Space Way
 
 Assets:

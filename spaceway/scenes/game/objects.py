@@ -60,8 +60,6 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.is_jump = False
         self.jump = 10
-        self.sounds = {'bang': f'{base_dir}/assets/sounds/bang.ogg',
-                       'score': f'{base_dir}/assets/sounds/score.ogg'}
 
     def reset(self):
         self.rect.centery = self.screen_rect.centery

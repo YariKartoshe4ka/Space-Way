@@ -127,8 +127,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         for astr in astrs:
             if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
-                if config['user']['effects']:
-                    pygame.mixer.Sound(plate.sounds['score']).play()
+                config['ns'].m.get('score').play()
 
                 if 'double' in boosts:
                     config['ns'].score += 2
@@ -173,8 +172,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
     if astrs_collides:
-        if config['user']['effects']:
-            pygame.mixer.Sound(plate.sounds['bang']).play()
+        config['ns'].m.get('bang').play()
 
         if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
@@ -188,8 +186,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
                 boosts.activate(boost)
 
     elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
-        if config['user']['effects']:
-            pygame.mixer.Sound(plate.sounds['bang']).play()
+        config['ns'].m.get('bang').play()
 
         if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))

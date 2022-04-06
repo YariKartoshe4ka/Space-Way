@@ -7,6 +7,7 @@ import pygame
 
 from . import scenes, collection, updater
 from .config import ConfigManager
+from .music import MusicManager, SoundType
 
 
 # Set environment variable for centering window
@@ -51,6 +52,10 @@ def main() -> None:
     # Define variables in namespace
     config['ns'].dt = 0     # Set delta-time for the further use
     config['ns'].tick = 1   # Set tick for calculating the past time in seconds
+    config['ns'].m = MusicManager({
+        'bang': (f'{base_dir}/assets/sounds/bang.ogg', SoundType.EFFECT),
+        'score': (f'{base_dir}/assets/sounds/score.ogg', SoundType.EFFECT)
+    })
 
     # Initialization of headpiece scene
     text, pb = scenes.headpiece.init(screen, base_dir, config)

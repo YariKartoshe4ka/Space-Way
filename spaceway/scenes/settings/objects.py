@@ -3,18 +3,28 @@ import re
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
+from ...music import SoundType
 from ...hitbox import Ellipse
 
 
 class EffectsButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
-        self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_true.bmp'),
-                     False: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_false.bmp')}
+        self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_0.bmp'),
+                     0.25: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_25.bmp'),
+                     0.5: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_50.bmp'),
+                     1: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_100.bmp')}
 
-        self.hints = {True: 'Disable sound effects like bumps',
-                      False: 'Enable sound effects like bumps'}
+        self.hints = {0: 'Enable sound effects like bumps',
+                      0.25: 'Increase volume of effects',
+                      0.5: 'Increase volume of effects',
+                      1: 'Disable sound effects like bumps'}
 
         SettingsButtonMixin.__init__(self, screen, base_dir, config, 'effects')
+
+    def change_state(self):
+        states = list(self.imgs)
+        self.state = states[(states.index(self.state) + 1) % len(states)]
+        self.config['ns'].m.set_volume(self.state, SoundType.EFFECT)
 
 
 class FullScreenButton(SettingsButtonMixin):
