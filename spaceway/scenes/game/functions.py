@@ -17,22 +17,14 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
                 elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
                 elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
     elif config['sub_scene'] == 'end':
