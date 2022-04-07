@@ -295,7 +295,7 @@ class PauseCaption(CaptionMixin):
         self.rect.y = 125
 
 
-class ResumeButton(SceneButtonMixin, pygame.sprite.Sprite):
+class ResumeButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()

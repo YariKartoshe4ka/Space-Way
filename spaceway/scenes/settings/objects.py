@@ -3,7 +3,7 @@ import re
 import pygame
 
 from ...mixins import SettingsButtonMixin, SceneButtonMixin
-from ...music import SoundType
+from ...music import SoundGroup
 from ...hitbox import Ellipse
 
 
@@ -24,7 +24,7 @@ class EffectsButton(SettingsButtonMixin):
     def change_state(self):
         states = list(self.imgs)
         self.state = states[(states.index(self.state) + 1) % len(states)]
-        self.config['ns'].m.set_volume(self.state, SoundType.EFFECT)
+        self.config['ns'].mm.set_volume(self.state, SoundGroup.EFFECT)
 
 
 class FullScreenButton(SettingsButtonMixin):
