@@ -12,11 +12,13 @@ class EffectsButton(SettingsButtonMixin):
         self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_0.bmp'),
                      0.25: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_25.bmp'),
                      0.5: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_50.bmp'),
+                     0.75: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_75.bmp'),
                      1: pygame.image.load(f'{base_dir}/assets/images/buttons/effects_100.bmp')}
 
         self.hints = {0: 'Enable sound effects like bumps',
                       0.25: 'Increase volume of effects',
                       0.5: 'Increase volume of effects',
+                      0.75: 'Increase volume of effects',
                       1: 'Disable sound effects like bumps'}
 
         SettingsButtonMixin.__init__(self, screen, base_dir, config, 'effects')
