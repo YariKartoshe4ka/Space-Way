@@ -29,6 +29,28 @@ class EffectsButton(SettingsButtonMixin):
         self.config['ns'].mm.set_volume(self.state, SoundGroup.EFFECT)
 
 
+class MusicButton(SettingsButtonMixin):
+    def __init__(self, screen, base_dir, config):
+        self.imgs = {0: pygame.image.load(f'{base_dir}/assets/images/buttons/music_0.bmp'),
+                     0.25: pygame.image.load(f'{base_dir}/assets/images/buttons/music_25.bmp'),
+                     0.5: pygame.image.load(f'{base_dir}/assets/images/buttons/music_50.bmp'),
+                     0.75: pygame.image.load(f'{base_dir}/assets/images/buttons/music_75.bmp'),
+                     1: pygame.image.load(f'{base_dir}/assets/images/buttons/music_100.bmp')}
+
+        self.hints = {0: 'Enable background music',
+                      0.25: 'Increase volume of music',
+                      0.5: 'Increase volume of music',
+                      0.75: 'Increase volume of music',
+                      1: 'Disable background music'}
+
+        SettingsButtonMixin.__init__(self, screen, base_dir, config, 'music')
+
+    def change_state(self):
+        states = list(self.imgs)
+        self.state = states[(states.index(self.state) + 1) % len(states)]
+        self.config['ns'].mm.set_volume(self.state, SoundGroup.SOUND)
+
+
 class FullScreenButton(SettingsButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.imgs = {True: pygame.image.load(f'{base_dir}/assets/images/buttons/full_screen_true.bmp'),

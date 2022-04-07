@@ -54,7 +54,8 @@ def main() -> None:
     config['ns'].tick = 1   # Set tick for calculating the past time in seconds
     config['ns'].mm = MusicManager({
         'bang': (f'{base_dir}/assets/sounds/bang.ogg', SoundGroup.EFFECT),
-        'score': (f'{base_dir}/assets/sounds/score.ogg', SoundGroup.EFFECT)
+        'score': (f'{base_dir}/assets/sounds/score.ogg', SoundGroup.EFFECT),
+        'game': (f'{base_dir}/assets/sounds/game.ogg', SoundGroup.SOUND)
     })
 
     # Configure sounds volume
@@ -70,10 +71,10 @@ def main() -> None:
     table, table_back_button = scenes.table.init(screen, base_dir, config)
 
     # Initialization of settings scene
-    effects_button, full_screen_button, updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    effects_button, music_button, full_screen_button, updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
-    settings_buttons.add(effects_button, full_screen_button, updates_button)
+    settings_buttons.add(effects_button, music_button, full_screen_button, updates_button)
 
     # Initialization of game scene
     astrs = pygame.sprite.Group()

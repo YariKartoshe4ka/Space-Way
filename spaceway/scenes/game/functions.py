@@ -109,6 +109,9 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
 
 def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
+        if not config['ns'].mm.get('game').get_num_channels():
+            config['ns'].mm.get('game').play(-1)
+
         bg.update()
         bg.blit()
 
@@ -197,6 +200,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
 
 
 def defeat(plate, astrs, boosts, end, config, base_dir):
+    config['ns'].mm.get('game').stop()
     config['score_list'].append((config['ns'].score, config['user']['nick']))
     config.filter_score()
     config.save()
