@@ -6,6 +6,7 @@ from math import inf, ceil
 
 import pygame
 
+from .boost import render
 from .collection import SceneButtonsGroup
 from .hitbox import Ellipse
 
@@ -149,9 +150,6 @@ class CaptionMixin:
         # Setting color for text
         self.fg_color = (255, 255, 255)
 
-        # Setting width of border (px)
-        self.border = 1
-
         # Setting font for later generating image of text
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 72)
 
@@ -175,31 +173,21 @@ class CaptionMixin:
             position will be deleted (overwritten). Define `locate` function to change *rect*
             position after update
         """
-        # Render text of caption
-        self.img = self.font.render(self.caption.format(*args, **kwargs), True, self.fg_color)
+        # Render caption of different colors
+        self.imgs = [render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (0, 153, 255)),
+                     render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (252, 15, 192)),
+                     render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (0, 255, 0))]
 
-        # Render borders of different colors
-        self.colors = [self.font.render(self.caption.format(*args, **kwargs), True, (0, 153, 255)),
-                       self.font.render(self.caption.format(*args, **kwargs), True, (252, 15, 192)),
-                       self.font.render(self.caption.format(*args, **kwargs), True, (0, 255, 0))]
-
-        # Recreate rect of text
+        # Synchronize image with the user's choice
+        self.img = self.imgs[self.config['user']['color']]
         self.rect = self.img.get_rect()
 
         # Locate rect of text
         self.locate()
 
     def blit(self) -> None:
-        """Blit of caption in two steps: border, then text
+        """Blit of caption
         """
-        # Creating border: text of selected color is drawn with indents
-        # (size of border) in four directions: up, right, down, and left
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
-
-        # Text of main color is drawn in the center (over the top)
         self.screen.blit(self.img, self.rect)
 
     def locate(self) -> None:

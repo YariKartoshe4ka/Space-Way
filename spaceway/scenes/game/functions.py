@@ -169,6 +169,8 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pygame.mixer.pause()
 
         bg.blit()
+
+        pause.update()
         pause.blit()
 
         pause_buttons.draw()

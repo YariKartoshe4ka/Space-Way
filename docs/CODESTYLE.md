@@ -7,6 +7,7 @@ Now project has this structure:
 
 ```sh
 |____ __init__.py
+|____ boost.py
 |____ collection.py
 |____ config.py
 |____ debug.py
@@ -30,7 +31,8 @@ Now project has this structure:
 ```
 
 General files:
-- *\_\_init__.py* - default file for python modules. Checks version of Python and prints exception if it less than 3.6.0 
+- *\_\_init__.py* - default file for python modules. Checks version of Python and prints exception if it less than 3.6.0
+- *boost.py* - file with implementation of various utility functions
 - *collection.py* - file with the implementation of additional data structures, mainly the *pygame.sprite.Group* extensions
 - *config.py* - file with some objects for easier configuration management
 - *debug.py* - file with some objects for easier debugging game
