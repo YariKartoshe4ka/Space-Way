@@ -109,6 +109,8 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
 
 def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
+        pygame.mixer.unpause()
+
         if not config['ns'].mm.get('game').get_num_channels():
             config['ns'].mm.get('game').play(-1)
 
@@ -164,6 +166,8 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         end_buttons.draw()
 
     elif config['sub_scene'] == 'pause':
+        pygame.mixer.pause()
+
         bg.blit()
         pause.blit()
 
