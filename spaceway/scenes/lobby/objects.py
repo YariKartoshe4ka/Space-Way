@@ -33,6 +33,10 @@ class TableButton(SceneButtonMixin):
         SceneButtonMixin.__init__(self, base_dir, config, 'lobby', 'lobby', 'table', 'table',
                                   4, self.screen_rect.bottom - self.rect.h - 5, self.rect.top, 'enter')
 
+    def press(self):
+        self.config['ns'].table.update()
+        SceneButtonMixin.press(self)
+
 
 class SettingsButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):

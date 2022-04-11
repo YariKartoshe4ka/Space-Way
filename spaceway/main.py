@@ -60,6 +60,7 @@ def main() -> None:
 
     # Configure sounds volume
     config['ns'].mm.set_volume(config['user']['effects'], SoundGroup.EFFECT)
+    config['ns'].mm.set_volume(config['user']['music'], SoundGroup.SOUND)
 
     # Initialization of headpiece scene
     text, pb = scenes.headpiece.init(screen, base_dir, config)
@@ -69,6 +70,7 @@ def main() -> None:
 
     # Initialization of table scene
     table, table_back_button = scenes.table.init(screen, base_dir, config)
+    config['ns'].table = table
 
     # Initialization of settings scene
     effects_button, music_button, full_screen_button, updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)

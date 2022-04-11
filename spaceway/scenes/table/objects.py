@@ -1,5 +1,6 @@
 import pygame
 
+from ...boost import render
 from ...mixins import SceneButtonMixin
 from ...hitbox import Ellipse
 
@@ -13,43 +14,81 @@ class TableScore:
 
         self.config = config
 
-        self.fg_color = (255, 255, 255)
-        self.bg_color = (0, 0, 0)
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 36)
+        self.colors = {
+            'fg': (255, 255, 255),
+            'bg': (14, 5, 22),
+            'gold': (253, 170, 0),
+            'silver': (176, 176, 176),
+            'bronze': (189, 111, 34)
+        }
 
-        self.border = 1
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 40)
+
+        self.img_caption = render(self.font, 'Score table', self.colors['fg'], 2, self.colors['bg'])
 
     def update(self):
-        self.msgs = ['Score table']
-        self.imgs = []
-        self.rects = []
+        self.img_nicks = []
+        self.rect_nicks = []
 
-        for line in self.config['score_list']:
-            self.msgs.append(str(line[0]) + ' : ' + line[1])
+        self.img_scores = []
+        self.rect_scores = []
 
-        y = 100 + (6 - len(self.msgs)) * 25
+        last_nick_rect = last_score_rect = pygame.Rect(0, 0, 0, 0)
 
-        for line in self.msgs:
-            img_fg = self.font.render(line, True, self.fg_color)
-            img_bg = self.font.render(line, True, self.bg_color)
+        for i, info in enumerate(self.config['score_list']):
+            score, nick = info
 
-            self.imgs.append((img_fg, img_bg))
-            rect = img_fg.get_rect()
+            self.img_nicks.append(render(self.font, nick, self.colors['fg'], 2, self.colors['bg']))
+            last_nick_rect = self.img_nicks[-1].get_rect().move(0, last_nick_rect.bottom)
+            self.rect_nicks.append(last_nick_rect)
 
-            rect.centerx = self.screen_rect.centerx
-            rect.y = y
+            color_score = self.colors['fg']
 
-            self.rects.append(rect)
+            if i == 0:
+                color_score = self.colors['gold']
+            elif i == 1:
+                color_score = self.colors['silver']
+            elif i == 2:
+                color_score = self.colors['bronze']
 
-            y += 25 if line != 'Score table' else 50
+            self.img_scores.append(render(self.font, str(score), color_score, 2, self.colors['bg']))
+            last_score_rect = self.img_scores[-1].get_rect().move(0, last_score_rect.bottom)
+            self.rect_scores.append(last_score_rect)
+
+        # Union rects and prepare for centering
+        rect_all_nicks = last_nick_rect.unionall(self.rect_nicks)
+
+        rect_all_scores = last_score_rect.unionall(self.rect_scores)
+        rect_all_scores.left = rect_all_nicks.right + 35
+
+        self.rect_caption = self.img_caption.get_rect()
+        self.rect_caption.bottom = rect_all_nicks.top - 25
+
+        rect_all = self.rect_caption.unionall([rect_all_nicks, rect_all_scores])
+        rect_all.center = self.screen_rect.center
+        rect_all.y -= 35
+
+        # Center all rects
+        self.rect_caption.top = rect_all.top
+        self.rect_caption.centerx = rect_all.centerx
+
+        rect_all_nicks.bottomleft = rect_all.bottomleft
+        rect_all_scores.bottomright = rect_all.bottomright
+
+        for rect_nick in self.rect_nicks:
+            rect_nick.centerx = rect_all_nicks.centerx
+            rect_nick.y += rect_all_nicks.y
+
+        for rect_score in self.rect_scores:
+            rect_score.centerx = rect_all_scores.centerx
+            rect_score.y += rect_all_scores.y
 
     def blit(self):
-        for i in range(len(self.msgs)):
-            self.screen.blit(self.imgs[i][1], (self.rects[i].x + self.border, self.rects[i].y))
-            self.screen.blit(self.imgs[i][1], (self.rects[i].x - self.border, self.rects[i].y))
-            self.screen.blit(self.imgs[i][1], (self.rects[i].x, self.rects[i].y + self.border))
-            self.screen.blit(self.imgs[i][1], (self.rects[i].x, self.rects[i].y - self.border))
-            self.screen.blit(self.imgs[i][0], self.rects[i])
+        self.screen.blit(self.img_caption, self.rect_caption)
+
+        for i in range(len(self.img_nicks)):
+            self.screen.blit(self.img_nicks[i], self.rect_nicks[i])
+            self.screen.blit(self.img_scores[i], self.rect_scores[i])
 
 
 class TableBackButton(SceneButtonMixin):
