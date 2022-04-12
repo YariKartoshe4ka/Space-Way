@@ -229,7 +229,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
         self.config_index = config_index
 
         # Getting state from configuration by *config_index*
-        self.state = self.config['user'].get(self.config_index, 0)
+        self.state = self.config['user'][self.config_index]
 
         # Setting image by current state and getting its hitbox
         self.img = self.imgs[self.state]
