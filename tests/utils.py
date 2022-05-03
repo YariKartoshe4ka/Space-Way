@@ -200,6 +200,12 @@ def pygame_emulate_events(func):
         pos = (0, 0)
         monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
 
+        pressed = pygame.key.get_pressed()
+        monkeypatch.setattr(pygame.key, 'get_pressed', lambda: pressed)
+
+        mods = 0
+        monkeypatch.setattr(pygame.key, 'get_mods', lambda: mods)
+
         thread.daemon = True
         thread.start()
         events.reverse()
@@ -222,6 +228,15 @@ def pygame_emulate_events(func):
 
             if event.type == pygame.MOUSEBUTTONDOWN:
                 pos = event.pos
+
+            elif event.type == pygame.KEYDOWN:
+                if hasattr(event, 'mod'):
+                    mods |= event.mod
+
+                if hasattr(event, 'pressed'):
+                    scancodes = list(pressed)
+                    scancodes[event.scancode] = event.pressed
+                    pressed = pygame.key.ScancodeWrapper(scancodes)
 
             pygame.event.post(event)
 

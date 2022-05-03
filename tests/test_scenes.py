@@ -62,6 +62,19 @@ def test_scene_headpiece_wait_till_lobby():
 
 
 @pygame_emulate_events
+def test_debug_modules():
+    return (
+        Thread(target=spaceway.main.main),
+        [
+            (Event(pygame.KEYDOWN, key=pygame.KMOD_LCTRL, mod=pygame.KMOD_LCTRL), 2000),
+            (Event(pygame.KEYDOWN, key=pygame.K_s, scancode=22, pressed=True), 500),
+            (Event(pygame.KEYDOWN, key=pygame.K_h, scancode=11, pressed=True), 500),
+            (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 2000)
+        ]
+    )
+
+
+@pygame_emulate_events
 def test_scenes_complexly():
     return (
         Thread(target=spaceway.main.main),

@@ -5,7 +5,7 @@ from sys import platform
 
 import pygame
 
-from . import scenes, collection, updater
+from . import scenes, collection, updater, debug
 from .config import ConfigManager
 from .music import MusicManager, SoundGroup
 
@@ -44,7 +44,6 @@ def main() -> None:
 
     # Initialize debug modules if configuration allows it
     if config['debug']:
-        from . import debug
         debugger = debug.Debugger(config)
         debugger.enable_module(debug.DebugStat(screen, base_dir, clock))
         debugger.enable_module(debug.DebugHitbox(screen))

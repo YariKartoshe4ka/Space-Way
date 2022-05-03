@@ -16,15 +16,17 @@ class DebugModule:
     perform a specific task
 
     Args:
+        key (int): Keyboard key that activates/deactivates current module
         *args (any): Arguments needed to initialize the module
         **kwargs (any): Keyword arguments needed to initialize the module
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, key, *args, **kwargs) -> None:
         """Function is called only once when the module is enabled. Here the module gets
         and saves certain objects for further use and performs the configuration itself
         """
-        pass
+        self.is_activated = False
+        self._key = key
 
     def interval_update(self) -> None:
         """Function is called after a certain time interval,
@@ -55,6 +57,8 @@ class DebugStat(DebugModule):
     def __init__(self, screen, base_dir, clock) -> None:
         """Initialize the module, saving objects and configuring itself
         """
+        DebugModule.__init__(self, pygame.K_s)
+
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
@@ -124,6 +128,8 @@ class DebugHitbox(DebugModule):
         """Initialize the module. Replaces the default `__init__`
         function of `Hitbox` to track its instances
         """
+        DebugModule.__init__(self, pygame.K_h)
+
         # Saving screen for the further use
         self.screen = screen
 
@@ -175,6 +181,7 @@ class Debugger:
         self.__modules = []
         self.__tick = 0
         self.__config = config
+        self.__keys = pygame.key.get_pressed()
 
     def enable_module(self, module) -> None:
         """Enable a debug module
@@ -191,7 +198,18 @@ class Debugger:
         # Tick increase
         self.__tick += self.__config['ns'].dt / self.__config['FPS']
 
+        # Get keyboard input for modules activation
+        keys = pygame.key.get_pressed()
+        mod_key = pygame.key.get_mods() & pygame.KMOD_LCTRL
+
         for module in self.__modules:
+            # Toggle module state
+            if keys[module._key] and keys[module._key] != self.__keys[module._key] and mod_key:
+                module.is_activated = not module.is_activated
+
+            if not module.is_activated:
+                continue
+
             # Calling `interval_update` if the time has come
             if self.__tick > self.UPDATE_INTERVAL:
                 module.interval_update()
@@ -202,3 +220,5 @@ class Debugger:
         # If `tick` overflow, reset it
         if self.__tick > self.UPDATE_INTERVAL:
             self.__tick -= self.UPDATE_INTERVAL
+
+        self.__keys = keys
