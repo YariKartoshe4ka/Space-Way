@@ -22,9 +22,10 @@ class TableScore:
             'bronze': (189, 111, 34)
         }
 
-        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 40)
+        self.font_caption = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 40)
+        self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 32)
 
-        self.img_caption = render(self.font, 'Score table', self.colors['fg'], 2, self.colors['bg'])
+        self.img_caption = render(self.font_caption, 'Score table', self.colors['fg'], 2, self.colors['bg'])
 
     def update(self):
         self.img_nicks = []

@@ -16,7 +16,7 @@ class Background:
         self.rect = Rect(self.img.get_rect())
 
     def update(self):
-        self.rect.x -= 0.5 * self.config['ns'].dt
+        self.rect.x -= self.config['ns'].speed / 4 * self.config['ns'].dt
 
         if self.rect.x <= -840:
             self.rect.x = 0
