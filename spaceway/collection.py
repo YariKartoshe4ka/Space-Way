@@ -120,8 +120,8 @@ class BoostsGroup(pygame.sprite.Group):
         boost.number_in_queue = len(self.active) + 1
 
         if self.active.get(boost.name):
-            # If boost has already activated, zeroize its life time
-            self.active[boost.name].tick = 0
+            # If boost has already activated, reset its life time
+            self.active[boost.name].life = boost.life
             self.remove_internal(boost)
         else:
             # If boost has not activated yet, move it from passive

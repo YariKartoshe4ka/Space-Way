@@ -25,6 +25,10 @@ def test_boosts_group(pygame_env, boosts_params):
 
             BoostMixin.__init__(self, screen, base_dir, config, name, life)
 
+        def draw(self):
+            self.update()
+            self.blit()
+
     def create_boosts():
         return [TestBoost(life, name) for life, name in boosts_params]
 
@@ -93,6 +97,33 @@ def test_boosts_group(pygame_env, boosts_params):
     assert test_boost1 in test_group
     assert test_boost2.name not in test_group
     assert test_boost2 in test_group
+
+    # Test if boost replaced with new one
+    test_boost1 = TestBoost(3, 'a')
+    test_boost2 = TestBoost(10, 'a')
+
+    test_group = BoostsGroup(test_boost1, test_boost2)
+    test_group.activate(test_boost1)
+
+    exclude = [
+        *most_popular_colors(test_boost1.img_idle, 2),
+        *most_popular_colors(test_boost1.img_small, 2),
+        (0, 0, 0)
+    ]
+
+    @pygame_loop(pygame_env, 1)
+    def loop1():
+        test_boost1.draw()
+
+        assert most_popular_colors(screen, exclude=exclude)[0] == (255, 0, 0)
+
+    test_group.activate(test_boost2)
+
+    @pygame_loop(pygame_env, 1)
+    def loop2():
+        test_boost1.draw()
+
+        assert most_popular_colors(screen, exclude=exclude)[0] == (255, 255, 255)
 
 
 @pytest.mark.parametrize('buttons_sizes', [
