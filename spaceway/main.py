@@ -14,7 +14,7 @@ import android
 os.environ['SDL_VIDEO_CENTERED'] = '1'
 
 # Initialization of pygame
-pygame.K_ESCAPE = 1073742094
+pygame.K_ESCAPE = pygame.K_AC_BACK
 pygame.mixer.pre_init(44100, -16, 1, 512)
 pygame.init()
 

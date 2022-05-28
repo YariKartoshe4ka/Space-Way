@@ -12,7 +12,8 @@ def dialog(base_dir) -> None:
 
     # Setup screen
     MODE = (WIDTH, HEIGHT) = (300, 200)
-    screen = pygame.display.set_mode(MODE)
+    flags = pygame.FULLSCREEN | pygame.SCALED | pygame.HWSURFACE
+    screen = pygame.display.set_mode(MODE, flags=flags)
     screen_rect = screen.get_rect()
     pygame.display.set_caption('Space Way Update')
 
