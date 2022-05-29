@@ -153,6 +153,16 @@ class CaptionMixin:
         # Setting font for later generating image of text
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 72)
 
+        # Available caption colors
+        self.colors = [
+            (0, 153, 255),
+            (252, 15, 192),
+            (0, 255, 0)
+        ]
+
+        # Caching caption settings
+        self._prev_caption = (None, None)
+
         # Calling `update` function for generating all images
         self.update()
 
@@ -173,17 +183,23 @@ class CaptionMixin:
             position will be deleted (overwritten). Define `locate` function to change *rect*
             position after update
         """
-        # Render caption of different colors
-        self.imgs = [render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (0, 153, 255)),
-                     render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (252, 15, 192)),
-                     render(self.font, self.caption.format(*args, **kwargs), self.fg_color, 2, (0, 255, 0))]
+
+        # Check if caption wasn't modified
+        caption = self.caption.format(*args, **kwargs)
+        color = self.config['user']['color']
+
+        if (caption, color) == self._prev_caption:
+            return
 
         # Synchronize image with the user's choice
-        self.img = self.imgs[self.config['user']['color']]
+        self.img = render(self.font, caption, self.fg_color, 2, self.colors[color])
         self.rect = self.img.get_rect()
 
         # Locate rect of text
         self.locate()
+
+        # Cache caption
+        self._prev_caption = (caption, color)
 
     def blit(self) -> None:
         """Blit of caption
