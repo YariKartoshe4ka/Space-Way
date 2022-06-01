@@ -12,33 +12,36 @@ from spaceway.updater import check_software_updates
 from utils import pygame_emulate_events
 
 
-@pytest.mark.timeout(20)
-def test_updater(monkeypatch):
-    base_dir = os.path.dirname(os.path.abspath(main.__file__))
+BASE_DIR = os.path.dirname(os.path.abspath(main.__file__))
 
-    # Test *View* and *Close* buttons
-    pygame_emulate_events(
-        monkeypatch,
-        Thread(target=check_software_updates, args=('0.0.0a', base_dir)),
+
+@pygame_emulate_events
+def test_updater_buttons():
+    return (
+        Thread(target=check_software_updates, args=('0.0.0a', BASE_DIR)),
         [
             (Event(pygame.MOUSEBUTTONDOWN, pos=(75, 177)), 2500),     # Press *View* button
             (Event(pygame.MOUSEBUTTONDOWN, pos=(228, 177)), 3000),    # Press *Close* button
         ],
     )
 
-    # Test if window is closed by exiting
-    pygame_emulate_events(
-        monkeypatch,
-        Thread(target=check_software_updates, args=('0.0.0a', base_dir)),
+
+@pygame_emulate_events
+def test_updater_exit_button():
+    return (
+        Thread(target=check_software_updates, args=('0.0.0a', BASE_DIR)),
         [(Event(pygame.QUIT), 2500)]
     )
 
+
+@pytest.mark.timeout(5)
+def test_updater_logic(monkeypatch):
     # Test if installed version is newer than remote
-    check_software_updates('999.0.0', base_dir)
+    check_software_updates('999.0.0', BASE_DIR)
 
     # Test if there is no internet connection
     def guard(*args, **kwargs):
         raise Exception('Network error')
 
     monkeypatch.setattr(socket, 'socket', guard)
-    check_software_updates('0.0.0a', base_dir)
+    check_software_updates('0.0.0a', BASE_DIR)

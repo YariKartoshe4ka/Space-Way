@@ -7,12 +7,14 @@ Now project has this structure:
 
 ```sh
 |____ __init__.py
+|____ boost.py
 |____ collection.py
 |____ config.py
 |____ debug.py
 |____ hitbox.py
 |____ main.py
 |____ mixins.py
+|____ music.py
 |____ updater.py
 |____ assets
 | |____ <fonts, sprites, sounds and other binary files...>
@@ -29,13 +31,15 @@ Now project has this structure:
 ```
 
 General files:
-- *\_\_init__.py* - default file for python modules. Checks version of Python and prints exception if it less than 3.6.0 
+- *\_\_init__.py* - default file for python modules. Checks version of Python and prints exception if it less than 3.6.0
+- *boost.py* - file with implementation of various utility functions
 - *collection.py* - file with the implementation of additional data structures, mainly the *pygame.sprite.Group* extensions
 - *config.py* - file with some objects for easier configuration management
 - *debug.py* - file with some objects for easier debugging game
 - *hitbox.py* - file with implementation of hitboxes for some objects calculations
 - *main.py* - main file, import all modules, contains the entrypoint of game and connects all the scenes together
 - *mixins.py* - file with mixins which are needed for simple creation of the same type of objects (DRY principle)
+- *music.py* - file with some objects for easier music (sounds) management
 - *updater.py* - file responsible for updating Space Way
 
 Assets:

@@ -1,7 +1,7 @@
 {
     "nick": "your nick here",
-    "effects": true,
+    "effects": 1,
+    "music": 1,
     "updates": true,
-    "difficulty": 0,
     "color": 0
 }
