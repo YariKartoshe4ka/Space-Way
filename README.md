@@ -46,6 +46,11 @@ I am not a professional game developer (this is my first game), and I do not kno
 [and many other things...](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md)
 
 
+### Thanks to
+
+- [Arthur Karimullin](https://github.com/KarimullinArthur) for his original and wonderful 8-bit sounds
+
+
 ### Contribution
 
 If you want to contribute to this repo, check out [TODO.md](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md) and check out what you can do<br>

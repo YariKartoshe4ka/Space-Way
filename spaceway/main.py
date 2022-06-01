@@ -32,7 +32,7 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+    flags = pygame.FULLSCREEN * config['user']['full_screen'] | pygame.SCALED
     screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
@@ -117,7 +117,7 @@ def main() -> None:
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
-                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+                flags = pygame.FULLSCREEN * config['user']['full_screen'] | pygame.SCALED
                 screen = pygame.display.set_mode(config['mode'], flags=flags)
                 full_screen_button.changed = False
 

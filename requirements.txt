@@ -1,4 +1,4 @@
-pygame==2.0.3
+pygame==2.1.2
 packaging>=20.4
 requests>=2.24.0
 platformdirs>=2.1.0
