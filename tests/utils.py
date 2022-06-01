@@ -1,5 +1,7 @@
 import os
+from importlib import import_module, reload
 from time import time, sleep
+from types import ModuleType
 from random import choices
 from string import ascii_letters
 
@@ -140,9 +142,34 @@ def most_popular_colors(surface, amount=1, exclude=[]):
     return sorted_colors[:amount]
 
 
-def pygame_emulate_events(monkeypatch, thread, events):
-    """Emulates pygame events (keyboard presses, mouse clicks and other)
-    for testing program interface
+def reload_spaceway():
+    """Reloads :module:`spaceway` module and all submodules by DFS strategy
+    """
+    visited = set()
+
+    def dfs(module):
+        if module in visited:
+            return
+
+        visited.add(module)
+
+        for obj in dir(module):
+            obj = getattr(module, obj)
+
+            if isinstance(obj, ModuleType) and obj.__package__.startswith('spaceway'):
+                dfs(obj)
+            elif hasattr(obj, '__module__') and obj.__module__.startswith('spaceway'):
+                dfs(import_module(obj.__module__))
+
+        reload(module)
+
+    dfs(spaceway)
+
+
+def pygame_emulate_events(func):
+    """Decorator, which emulates pygame events (keyboard presses, mouse clicks and other)
+    for testing program interface. Test funciton must return args in list accordingly
+    specified below
 
     Args:
         thread (threading.Thread): Thread which targeted to the entry point of the program
@@ -152,33 +179,73 @@ def pygame_emulate_events(monkeypatch, thread, events):
     Raises:
         Exception: if thread is finished before emulating all events or
             if after thread finishing there are still some events
+
+    Example:
+        .. code:: python
+
+        def test():
+            return (
+                Thread(target=spaceway.main.main),
+                [
+                    (Event(pygame.KEYDOWN, key=pygame.K_ESCAPE), 2000),
+                ]
+            )
     """
-    pos = (0, 0)
-    monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
+    thread, events = func()
 
-    thread.setDaemon(True)
-    thread.start()
-    events.reverse()
+    @pytest.mark.filterwarnings('ignore::pytest.PytestUnhandledThreadExceptionWarning')
+    def decorator(monkeypatch):
+        reload_spaceway()
 
-    while thread.is_alive():
-        if len(events) == 0:
-            # Waiting for the thread to finish
-            sleep(1)
+        pos = (0, 0)
+        monkeypatch.setattr(pygame.mouse, 'get_pos', lambda: pos)
 
-            if thread.is_alive():
-                raise Exception('Thread is alive but there are no events!')
-            return
+        pressed = pygame.key.get_pressed()
+        monkeypatch.setattr(pygame.key, 'get_pressed', lambda: pressed)
 
-        event, wait = events.pop()
-        sleep(wait / 1000)
+        mods = 0
+        monkeypatch.setattr(pygame.key, 'get_mods', lambda: mods)
 
-        if event.type == pygame.MOUSEBUTTONDOWN:
-            pos = event.pos
+        thread.daemon = True
+        thread.start()
+        events.reverse()
 
-        pygame.event.post(event)
+        while thread.is_alive():
+            if len(events) == 0:
+                # Waiting for the thread to finish
+                sleep(1)
 
-    if len(events):
-        raise Exception('Thread was finished, but some events ramain!')
+                if thread.is_alive():
+                    thread.join(0)
+                    reload_spaceway()
+
+                    raise Exception('Thread is alive but there are no events!')
+
+                break
+
+            event, wait = events.pop()
+            sleep(wait / 1000)
+
+            if event.type == pygame.MOUSEBUTTONDOWN:
+                pos = event.pos
+
+            elif event.type == pygame.KEYDOWN:
+                if hasattr(event, 'mod'):
+                    mods |= event.mod
+
+                if hasattr(event, 'pressed'):
+                    scancodes = list(pressed)
+                    scancodes[event.scancode] = event.pressed
+                    pressed = pygame.key.ScancodeWrapper(scancodes)
+
+            pygame.event.post(event)
+
+        reload_spaceway()
+
+        if len(events):
+            raise Exception('Thread was finished, but some events ramain!')
+
+    return decorator
 
 
 def rstring(k=5):

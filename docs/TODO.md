@@ -15,7 +15,7 @@
 
 - Gameplay improvements
     - Add global score table
-    - Add more obstacles for different levels of difficulty (need ideas and sprite artist)
+    - Add more obstacles (need ideas and sprite artist)
 
 - Cross-platform
     - Add shortcut on Mac OS (needs maintainer)

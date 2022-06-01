@@ -5,7 +5,7 @@
 Arcade game about space, in which you must overcome the space path by flying around obstacles 
 
 ![](https://img.shields.io/pypi/v/spaceway) ![](https://img.shields.io/github/release-date/YariKartoshe4ka/Space-Way) ![](https://img.shields.io/pypi/dm/spaceway) <br>
-![](https://img.shields.io/codecov/c/github/YariKartoshe4ka/Space-Way) ![](https://img.shields.io/github/issues-raw/YariKartoshe4ka/Space-Way/help%20wanted)
+![](https://codecov.io/gh/YariKartoshe4ka/Space-Way/branch/develop/graph/badge.svg?token=PQGAWK18ZN) ![](https://img.shields.io/github/issues-raw/YariKartoshe4ka/Space-Way/help%20wanted)
 
 <img src="https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/docs/icons/icon.svg" width=128 />
 
@@ -41,9 +41,14 @@ spaceway
 I am not a professional game developer (this is my first game), and I do not know if it makes sense to develop it, but if there is activity on the repository, then I'm going to do:
 
 1. Music and sprites update 
-2. Add more obstacles for different levels of difficulty
+2. Add more obstacles
 
 [and many other things...](https://github.com/YariKartoshe4ka/Space-Way/blob/master/docs/TODO.md)
+
+
+### Thanks to
+
+- [Arthur Karimullin](https://github.com/KarimullinArthur) for his original and wonderful 8-bit sounds
 
 
 ### Contribution

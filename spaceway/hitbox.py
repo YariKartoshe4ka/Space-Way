@@ -1,7 +1,7 @@
 """ File with implementation of hitboxes for calculating collisions,
     position and other. Based on `pygame.Rect` """
 
-from math import sqrt, atan2, pi, sin, cos
+from math import sqrt, acos, cos, sin, atan2, pi
 
 
 class Hitbox:
@@ -170,7 +170,7 @@ class Hitbox:
     def __eq__(self, other):
         try:
             return self._rect == self.__class__(other)._rect
-        except:
+        except Exception:
             return False
 
     def __bool__(self):
@@ -223,7 +223,7 @@ class Hitbox:
     def clamp_ip(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
@@ -239,7 +239,7 @@ class Hitbox:
     def clip(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
@@ -260,7 +260,7 @@ class Hitbox:
     def union_ip(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
@@ -282,7 +282,7 @@ class Hitbox:
         for arg in args:
             try:
                 self.__class__(arg)
-            except:
+            except Exception:
                 raise TypeError("Argument must be hitbox style object")
 
             self.union_ip(arg)
@@ -290,7 +290,7 @@ class Hitbox:
     def fit(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
@@ -315,7 +315,7 @@ class Hitbox:
     def contains(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if isinstance(arg, Ellipse):
@@ -344,7 +344,7 @@ class Hitbox:
     def colliderect(self, arg):
         try:
             self.__class__(arg)
-        except:
+        except Exception:
             raise TypeError("Argument must be hitbox style object")
 
         if 0 in [self.w, self.h, arg.w, arg.h]:
@@ -514,19 +514,11 @@ class Rect(Hitbox):
         )
 
     def _colliderect_ellipse(self, ellipse):
-        def f_y(ellipse, x):
-            d = 1 - (x - ellipse.centerx)**2 / ellipse.a**2
-            return (ellipse.centery - ellipse.b * sqrt(d), ellipse.centery + ellipse.b * sqrt(d)) if d > 0 else ()
-
-        def f_x(ellipse, y):
-            d = 1 - (y - ellipse.centery)**2 / ellipse.b**2
-            return (ellipse.centerx - ellipse.a * sqrt(d), ellipse.centerx + ellipse.a * sqrt(d)) if d > 0 else ()
-
-        for i in f_x(ellipse, self.top) + f_x(ellipse, self.bottom):
+        for i in ellipse.fx(self.top) + ellipse.fx(self.bottom):
             if self.left <= i < self.right:
                 return True
 
-        for i in f_y(ellipse, self.left) + f_y(ellipse, self.right):
+        for i in ellipse.fy(self.left) + ellipse.fy(self.right):
             if self.top <= i < self.bottom:
                 return True
 
@@ -553,102 +545,286 @@ class Ellipse(Hitbox):
 
         Hitbox.__setattr__(self, name, value)
 
-    @property
-    def f1(self):
-        if self.a > self.b:
-            return (self.centerx - sqrt(self.a**2 - self.b**2), self.centery)
-        return (self.centerx, self.centery - sqrt(self.b**2 - self.a**2))
-
-    @property
-    def f2(self):
-        if self.a > self.b:
-            return (self.centerx + sqrt(self.a**2 - self.b**2), self.centery)
-        return (self.centerx, self.centery + sqrt(self.b**2 - self.a**2))
-
     def __str__(self):
         return f"<ellipse{tuple(self._rect)}>"
 
-    def radius(self, alpha):
-        return self.a * sin(alpha)**2 + self.b * cos(alpha)**2
+    def fy(self, x):
+        cx, cy = self.center
+        d = 1 - (x - cx) ** 2 / self.a ** 2
+
+        if d >= 0:
+            d = sqrt(d)
+            return (cy - self.b * d, cy + self.b * d)
+        return ()
+
+    def fx(self, y):
+        cx, cy = self.center
+        d = 1 - (y - cy) ** 2 / self.b ** 2
+
+        if d >= 0:
+            d = sqrt(d)
+            return (cx - self.a * d, cx + self.a * d)
+        return ()
+
+    def __intersects_ellipse(self, ellipse):
+        def cbrt(x):
+            return pow(x, 1 / 3) if x > 0 else -pow(-x, 1 / 3)
+
+        def filter_roots(roots):
+            return set([i[0] for i in roots if abs(i[1]) < 1e-6])
+
+        def solve_p1(a, b):
+            if a == 0:
+                return set([0])
+            return set([-b / a])
+
+        def solve_p2(a, b, c):
+            # Linear equation
+            if a == 0:
+                return solve_p1(b, c)
+
+            D = b ** 2 - 4 * a * c
+
+            # All roots are real (maybe two are equal)
+            if D >= 0:
+                d = sqrt(D)
+
+                roots = (
+                    ((-b - d) / 2 / a, 0),
+                    ((-b + d) / 2 / a, 0)
+                )
+
+            # Two roots are complex
+            else:
+                Im = sqrt(-D) / 2 / a
+
+                roots = (
+                    (-b / 2 / a, Im),
+                    (-b / 2 / a, -Im)
+                )
+
+            return filter_roots(roots)
+
+        def solve_p3(a, b, c, d):
+            # Quadratic equation
+            if a == 0:
+                return solve_p2(b, c, d)
+
+            if d == 0:
+                return set([
+                    *solve_p2(a, b, c),
+                    0
+                ])
+
+            b /= a
+            c /= a
+            d /= a
+
+            q = (3 * c - b * b) / 9
+            r = (b * (9 * c - 2 * b * b) - 27 * d) / 54
+
+            D = q * q * q + r * r
+            term = b / 3
+
+            # One root is real (two are complex)
+            if D > 0:
+                s = cbrt(r + sqrt(D))
+                t = cbrt(r - sqrt(D))
+
+                Im = sqrt(3) * (s - t) / 2
+
+                roots = (
+                    (s + t - term, 0),
+                    (-((s + t) / 2 + term), Im),
+                    (-((s + t) / 2 + term), -Im)
+                )
+
+            # All roots are real (at least two are equal)
+            elif D == 0:
+                r13 = cbrt(r)
+
+                roots = (
+                    (2 * r13 - term, 0),
+                    (-(r13 + term), 0)
+                )
+
+            # All roots are real (all roots are unequal)
+            else:
+                q = -q
+                dum1 = acos(r / sqrt(q * q * q))
+                r13 = 2 * sqrt(q)
+
+                roots = (
+                    (r13 * cos(dum1 / 3) - term, 0),
+                    (r13 * cos((dum1 + 2 * pi) / 3) - term, 0),
+                    (r13 * cos((dum1 + 4 * pi) / 3) - term, 0)
+                )
+
+            return filter_roots(roots)
+
+        def solve_p4(a, b, c, d, e):
+            # Cubic equation
+            if a == 0:
+                return solve_p3(b, c, d, e)
+
+            if e == 0:
+                return set([
+                    *solve_p3(a, b, c, d),
+                    0
+                ])
+
+            b /= a
+            c /= a
+            d /= a
+            e /= a
+
+            cb = -c
+            cc = -4 * e + d * b
+            cd = -(b * b * e + d * d) + 4 * c * e
+
+            q = (3 * cc - cb * cb) / 9
+            r = (cb * (9 * cc - 2 * cb * cb) - 27 * cd) / 54
+
+            D = q * q * q + r * r
+            term = cb / 3
+
+            # One root is real (two are complex)
+            if D > 0:
+                s = r + sqrt(D)
+                s = -cbrt(-s) if s < 0 else cbrt(s)
+                t = r - sqrt(D)
+                t = -cbrt(-t) if t < 0 else cbrt(t)
+
+                y1 = s + t - term
+
+            else:
+                if D == 0:
+                    r13 = -cbrt(-r) if r < 0 else cbrt(r)
+                    y1 = 2 * r13 - term
+                else:
+                    q = -q
+                    dum1 = acos(r / sqrt(q * q * q))
+                    r13 = 2 * sqrt(q)
+                    y1 = r13 * cos(dum1 / 3) - term
+
+            # y1 - real root of the cubic resolvent
+            term = b / 4
+            sqR = term * b + y1 - c
+            RRe = RIm = DRe = DIm = ERe = EIm = z1Re = z1Im = z2Re = 0
+
+            if sqR >= 0:
+                if sqR == 0:
+                    dum1 = y1 * y1 - 4 * e
+                    if dum1 < 0:
+                        z1Im = 2 * sqrt(-dum1)
+                    else:
+                        z1Re = 2 * sqrt(dum1)
+                        z2Re = - z1Re
+                else:
+                    RRe = sqrt(sqR)
+                    z1Re = -(8 * d + b * b * b) / 4 + b * c
+                    z1Re /= RRe
+                    z2Re = -z1Re
+            else:
+                RIm = sqrt(-sqR)
+                z1Im = -(8 * d + b * b * b) / 4 + b * c
+                z1Im /= RIm
+                z1Im = -z1Im
+
+            z1Re += 3 * b * term - 2 * c - sqR
+            z2Re += 3 * b * term - 2 * c - sqR
+
+            # z1 and z2 are real
+            if z1Im == 0:
+                if z1Re >= 0:
+                    DRe = sqrt(z1Re)
+                else:
+                    DIm = sqrt(-z1Re)
+
+                if z2Re >= 0:
+                    ERe = sqrt(z2Re)
+                else:
+                    EIm = sqrt(-z2Re)
+
+            else:
+                r = sqrt(sqrt(z1Re * z1Re + z1Im * z1Im))
+                dum1 = atan2(z1Im, z1Re) / 2
+                ERe = DRe = r * cos(dum1)
+                DIm = r * sin(dum1)
+                EIm = -DIm
+
+            roots = (
+                ((RRe + DRe) / 2 - term, (RIm + DIm) / 2),
+                (RRe / 2 - term - DRe / 2, (RIm - DIm) / 2),
+                (ERe / 2 - term - RRe / 2, (EIm - RIm) / 2),
+                (-term - (RRe + ERe) / 2, -(RIm + EIm) / 2)
+            )
+
+            return filter_roots(roots)
+
+        x1, y1 = self.center
+        x2, y2 = ellipse.center
+
+        x2 -= x1
+        y2 -= y1
+
+        x2_2 = x2 * x2
+        y2_2 = y2 * y2
+        a1_2 = self.a * self.a
+        b1_2 = self.b * self.b
+        a2_2 = ellipse.a * ellipse.a
+        b2_2 = ellipse.b * ellipse.b
+        RyRx = b2_2 / a2_2 - b1_2 / a1_2
+
+        coefs = (
+            -RyRx * RyRx,
+            4.0 * x2 * b2_2 * RyRx / a2_2,
+            -4.0 * (y2_2 * a2_2 * b2_2 + x2_2 * b2_2 * b2_2) / (a2_2 * a2_2) - 2.0 * RyRx * ((x2_2 / a2_2 - 1.0) * b2_2 - y2_2 + b1_2),
+            (4.0 * x2 * b2_2 * (y2_2 * a2_2 + b1_2 * a2_2 + (x2_2 - a2_2) * b2_2)) / (a2_2 * a2_2),
+            4.0 * y2_2 * b2_2 - (4.0 * x2_2 * y2_2 * b2_2) / a2_2 - (b1_2 - y2_2 + (x2_2 / a2_2 - 1.0) * b2_2)**2
+        )
+
+        for x in solve_p4(*coefs):
+            x += x1
+            for y in self.fy(x):
+                if ellipse.collidepoint((x, y)):
+                    return True
+
+        return False
 
     def _contains_rect(self, rect):
         return self.collidepoint(rect.topleft) and self.collidepoint(rect.bottomright)
 
     def _contains_ellipse(self, ellipse):
-        alpha = atan2(ellipse.centery - self.centery, ellipse.centerx - self.centerx)
-        beta = pi / 2 - alpha
-
         return (
             self.collidepoint(ellipse.left, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.top)
             and self.collidepoint(ellipse.right, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.bottom)
-            and sqrt((ellipse.centerx - self.centerx)**2 + (ellipse.centery - self.centery)**2) + ellipse.radius(beta)
-            <= self.radius(beta)
+            and not self.__intersects_ellipse(ellipse)
         )
 
     def _collidepoint(self, point):
-        if (point[0] - self.centerx)**2 / self.a**2 + (point[1] - self.centery)**2 / self.b**2 <= 1:
+        cx, cy = self.center
+        x, y = point
+        if (x - cx) ** 2 / self.a ** 2 + (y - cy) ** 2 / self.b ** 2 - 1e-6 <= 1:
             return True
         return False
 
     def _colliderect_rect(self, rect):
-        def f_y(ellipse, x):
-            d = 1 - (x - ellipse.centerx)**2 / ellipse.a**2
-            return (ellipse.centery - ellipse.b * sqrt(d), ellipse.centery + ellipse.b * sqrt(d)) if d > 0 else ()
-
-        def f_x(ellipse, y):
-            d = 1 - (y - ellipse.centery)**2 / ellipse.b**2
-            return (ellipse.centerx - ellipse.a * sqrt(d), ellipse.centerx + ellipse.a * sqrt(d)) if d > 0 else ()
-
-        for i in f_x(self, rect.top) + f_x(self, rect.bottom):
+        for i in self.fx(rect.top) + self.fx(rect.bottom):
             if rect.left <= i < rect.right:
                 return True
 
-        for i in f_y(self, rect.left) + f_y(self, rect.right):
+        for i in self.fy(rect.left) + self.fy(rect.right):
             if rect.top <= i < rect.bottom:
                 return True
 
         return self._contains_rect(rect)
 
     def _colliderect_ellipse(self, ellipse):
-        f1, f2 = self.f1, self.f2
+        if not Rect._colliderect_rect(self, ellipse):
+            return False
 
-        alpha = atan2(ellipse.centery - f1[1], f1[0] - ellipse.centerx)
-        beta = pi / 2 - alpha
-        r1 = ellipse.radius(beta)
-        rx1, ry1 = (ellipse.centerx - -r1 * sin(beta), ellipse.centery + -r1 * cos(beta))
-        
-        alpha = atan2(ellipse.centery - f2[1], ellipse.centerx - f2[0])
-        beta = pi / 2 - alpha
-        r2 = ellipse.radius(beta)
-        rx2, ry2 = (ellipse.centerx + -r2 * sin(beta), ellipse.centery + -r2 * cos(beta))
-
-        mhaxis = max(self.a, self.b)
-
-        if (
-            sqrt((rx1 - f1[0])**2 + (ry1 - f1[1])**2) + sqrt((rx1 - f2[0])**2 + (ry1 - f2[1])**2) <= 2 * mhaxis or
-            sqrt((rx2 - f1[0])**2 + (ry2 - f1[1])**2) + sqrt((rx2 - f2[0])**2 + (ry2 - f2[1])**2) <= 2 * mhaxis
-        ):
-            return True
-
-        f1, f2 = ellipse.f1, ellipse.f2
-
-        alpha = atan2(self.centery - f1[1], f1[0] - self.centerx)
-        beta = pi / 2 - alpha
-        r1 = self.radius(beta)
-        rx1, ry1 = (self.centerx - -r1 * sin(beta), self.centery + -r1 * cos(beta))
-
-        alpha = atan2(self.centery - f2[1], self.centerx - f2[0])
-        beta = pi / 2 - alpha
-        r2 = self.radius(beta)
-        rx2, ry2 = (self.centerx + -r2 * sin(beta), self.centery + -r2 * cos(beta))
-
-        mhaxis = max(ellipse.a, ellipse.b)
-
-        if (
-            sqrt((rx1 - f1[0])**2 + (ry1 - f1[1])**2) + sqrt((rx1 - f2[0])**2 + (ry1 - f2[1])**2) <= 2 * mhaxis or
-            sqrt((rx2 - f1[0])**2 + (ry2 - f1[1])**2) + sqrt((rx2 - f2[0])**2 + (ry2 - f2[1])**2) <= 2 * mhaxis
-        ):
-            return True
-
-        return False
-
+        return (
+            self.collidepoint(ellipse.center) or ellipse.collidepoint(self.center)
+            or self.__intersects_ellipse(ellipse)
+        )

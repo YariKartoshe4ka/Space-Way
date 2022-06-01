@@ -7,6 +7,7 @@ import pygame
 
 from . import scenes, collection, updater
 from .config import ConfigManager
+from .music import MusicManager, SoundGroup
 
 
 # Set environment variable for centering window
@@ -31,7 +32,7 @@ def main() -> None:
         updater.check_software_updates(config['version'], base_dir)
 
     # Сreate screen with accounting for user settings
-    flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+    flags = pygame.FULLSCREEN * config['user']['full_screen'] | pygame.SCALED
     screen = pygame.display.set_mode(config['mode'], flags=flags)
 
     # Configure screen
@@ -44,13 +45,23 @@ def main() -> None:
     # Initialize debug modules if configuration allows it
     if config['debug']:
         from . import debug
-        debugger = debug.Debugger(config['FPS'])
-        debugger.enable_module(debug.DebugStat, screen, base_dir, clock)
-        debugger.enable_module(debug.DebugHitbox, screen)
+
+        debugger = debug.Debugger(config)
+        debugger.enable_module(debug.DebugStat(screen, base_dir, clock))
+        debugger.enable_module(debug.DebugHitbox(screen))
 
     # Define variables in namespace
     config['ns'].dt = 0     # Set delta-time for the further use
     config['ns'].tick = 1   # Set tick for calculating the past time in seconds
+    config['ns'].mm = MusicManager({
+        'bang': (f'{base_dir}/assets/sounds/bang.ogg', SoundGroup.EFFECT),
+        'score': (f'{base_dir}/assets/sounds/score.ogg', SoundGroup.EFFECT),
+        'game': (f'{base_dir}/assets/sounds/game.ogg', SoundGroup.SOUND)
+    })
+
+    # Configure sounds volume
+    config['ns'].mm.set_volume(config['user']['effects'], SoundGroup.EFFECT)
+    config['ns'].mm.set_volume(config['user']['music'], SoundGroup.SOUND)
 
     # Initialization of headpiece scene
     text, pb = scenes.headpiece.init(screen, base_dir, config)
@@ -60,12 +71,13 @@ def main() -> None:
 
     # Initialization of table scene
     table, table_back_button = scenes.table.init(screen, base_dir, config)
+    config['ns'].table = table
 
     # Initialization of settings scene
-    effects_button, full_screen_button, updates_button, difficulty_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    effects_button, music_button, full_screen_button, updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
-    settings_buttons.add(effects_button, full_screen_button, updates_button, difficulty_button)
+    settings_buttons.add(effects_button, music_button, full_screen_button, updates_button)
 
     # Initialization of game scene
     astrs = pygame.sprite.Group()
@@ -105,7 +117,7 @@ def main() -> None:
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
-                flags = (pygame.FULLSCREEN | pygame.NOFRAME * int(not platform.startswith('win'))) * int(config['user']['full_screen']) | pygame.SCALED
+                flags = pygame.FULLSCREEN * config['user']['full_screen'] | pygame.SCALED
                 screen = pygame.display.set_mode(config['mode'], flags=flags)
                 full_screen_button.changed = False
 

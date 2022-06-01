@@ -6,6 +6,7 @@ from math import inf, ceil
 
 import pygame
 
+from .boost import render
 from .collection import SceneButtonsGroup
 from .hitbox import Ellipse
 
@@ -149,11 +150,18 @@ class CaptionMixin:
         # Setting color for text
         self.fg_color = (255, 255, 255)
 
-        # Setting width of border (px)
-        self.border = 1
-
         # Setting font for later generating image of text
         self.font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 72)
+
+        # Available caption colors
+        self.colors = [
+            (0, 153, 255),
+            (252, 15, 192),
+            (0, 255, 0)
+        ]
+
+        # Caching caption settings
+        self._prev_caption = (None, None)
 
         # Calling `update` function for generating all images
         self.update()
@@ -175,31 +183,27 @@ class CaptionMixin:
             position will be deleted (overwritten). Define `locate` function to change *rect*
             position after update
         """
-        # Render text of caption
-        self.img = self.font.render(self.caption.format(*args, **kwargs), True, self.fg_color)
 
-        # Render borders of different colors
-        self.colors = [self.font.render(self.caption.format(*args, **kwargs), True, (0, 153, 255)),
-                       self.font.render(self.caption.format(*args, **kwargs), True, (252, 15, 192)),
-                       self.font.render(self.caption.format(*args, **kwargs), True, (0, 255, 0))]
+        # Check if caption wasn't modified
+        caption = self.caption.format(*args, **kwargs)
+        color = self.config['user']['color']
 
-        # Recreate rect of text
+        if (caption, color) == self._prev_caption:
+            return
+
+        # Synchronize image with the user's choice
+        self.img = render(self.font, caption, self.fg_color, 2, self.colors[color])
         self.rect = self.img.get_rect()
 
         # Locate rect of text
         self.locate()
 
-    def blit(self) -> None:
-        """Blit of caption in two steps: border, then text
-        """
-        # Creating border: text of selected color is drawn with indents
-        # (size of border) in four directions: up, right, down, and left
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x + self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x - self.border, self.rect.y))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y + self.border))
-        self.screen.blit(self.colors[self.config['user']['color']], (self.rect.x, self.rect.y - self.border))
+        # Cache caption
+        self._prev_caption = (caption, color)
 
-        # Text of main color is drawn in the center (over the top)
+    def blit(self) -> None:
+        """Blit of caption
+        """
         self.screen.blit(self.img, self.rect)
 
     def locate(self) -> None:
@@ -216,6 +220,8 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
 
     Args:
         screen (pygame.Surface): Screen (surface) obtained via pygame
+        base_dir (str): An absolute path to directory where file with the main
+            entrypoint is located
         config (spaceway.config.ConfigManager): The configuration object
         config_index (str): Key of the configuration (name of the state)
 
@@ -226,7 +232,7 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
             self.imgs = {state1: pygame.Surface, state2: pygame.Surface ...}
     """
 
-    def __init__(self, screen, config, config_index):
+    def __init__(self, screen, base_dir, config, config_index):
         """Constructor method
         """
         pygame.sprite.Sprite.__init__(self)
@@ -245,6 +251,53 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
         self.img = self.imgs[self.state]
         self.rect = Ellipse(self.img.get_rect())
 
+        # Configuring the generating hint images
+        self.fg_color = (255, 255, 255)
+        self.bg_color = (0, 0, 0)
+        self.border = 5
+        self.border_radius = 3
+
+        # Generating all hint images
+        self.__gen_hints(base_dir)
+        self.img_hint = self.imgs_hint[self.state]
+
+        # Setting variables to work with the hover
+        self.is_hover = False
+        self.tick_hover = 0
+
+    def __gen_hints(self, base_dir):
+        """Generates hint images with description of the all button actions
+
+        Args:
+            base_dir (str): An absolute path to directory where file with the main
+                entrypoint is located
+        """
+        # Get font object for the further text rendering
+        font = pygame.font.Font(f'{base_dir}/assets/fonts/pixeboy.ttf', 20)
+
+        # Dictionary with images of hint messages, the structure is similar to `self.imgs`
+        self.imgs_hint = {}
+
+        for state, hint_text in self.hints.items():
+            # Generating the text itself
+            img_text = font.render(hint_text, True, self.fg_color)
+            rect_text = img_text.get_rect()
+
+            # Generating hint background (size a little more than text)
+            rect_hint = rect_text.copy()
+            rect_hint.w += self.border * 2
+            rect_hint.h += self.border * 2
+
+            img_hint = pygame.Surface(rect_hint.size, flags=pygame.SRCALPHA)
+            pygame.draw.rect(img_hint, self.bg_color, rect_hint, 0, self.border_radius)
+
+            # Blitting text to background
+            rect_text.center = rect_hint.center
+            img_hint.blit(img_text, rect_text)
+
+            # Exporting hint image to dictionary
+            self.imgs_hint[state] = img_hint
+
     def change_state(self) -> None:
         """Changes state of button. By default it has on-off behaviour. Override
         method for another behaviour
@@ -254,19 +307,47 @@ class SettingsButtonMixin(pygame.sprite.Sprite):
     def update(self) -> None:
         """Update button: synchronize image and configuration with button state
         """
+        # Synchronizing image and configuration
         self.img = self.imgs[self.state]
+        self.img_hint = self.imgs_hint[self.state]
         self.config['user'][self.config_index] = self.state
+
+        point = pygame.mouse.get_pos()
+
+        if self.rect.collidepoint(point):
+            # If mouse hovered on button, continue countdown
+            self.tick_hover += self.config['ns'].dt / 30
+        else:
+            # Otherwise, reset the tick to stop the countdown
+            self.tick_hover = 0
+            self.is_hover = False
+
+        # If enough time has passed, show a hint
+        if self.tick_hover > 0.7:
+            self.is_hover = True
 
     def blit(self) -> None:
         """Blit button
         """
         self.screen.blit(self.img, self.rect)
 
+    def blit_hint(self) -> None:
+        """Blit hint
+        """
+        if self.is_hover:
+            rect = self.img_hint.get_rect()
+            rect.bottomleft = pygame.mouse.get_pos()
+            self.screen.blit(self.img_hint, rect)
+
     def press(self) -> None:
         """Press callback of button. Changes self state and updates itself
         """
         self.change_state()
         self.update()
+
+        # Hide hint after button pressing
+        self.is_hover = False
+        self.tick_hover = 0
 
 
 class BoostMixin(pygame.sprite.Sprite):

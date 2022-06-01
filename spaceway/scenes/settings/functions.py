@@ -23,20 +23,12 @@ def check_events(config, scene_buttons, settings_buttons, nick):
                 config.save()
 
             if nick.rect.collidepoint((x, y)):
-                nick.is_enable = True
-                pygame.key.start_text_input()
+                nick.enable()
             else:
-                nick.is_enable = False
-                pygame.key.stop_text_input()
+                nick.disable()
 
-        elif event.type == pygame.KEYDOWN and nick.is_enable:
-            if event.key == pygame.K_BACKSPACE:
-                nick.config['user']['nick'] = nick.config['user']['nick'][:len(nick.config['user']['nick']) - 1]
-            elif event.key == pygame.K_RETURN:
-                nick.is_enable = False
-            elif event.unicode.encode('ascii', errors='ignore') != b'':
-                nick.config['user']['nick'] += event.unicode
-
+        elif event.type == pygame.KEYDOWN and nick.state > 0:
+            nick.add_char(event.unicode)
             config.save()
 
 
@@ -45,6 +37,9 @@ def update(bg, config, scene_buttons, settings_buttons, nick):
 
     scene_buttons.draw()
     settings_buttons.draw()
+
+    for settings_button in settings_buttons:
+        settings_button.blit_hint()
 
     nick.update()
     nick.blit()

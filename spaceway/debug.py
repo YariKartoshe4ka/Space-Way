@@ -14,13 +14,19 @@ class DebugModule:
     all the modules directly in the Debugger, but I didn't do this to get rid of the
     confusion in the code and to modify them more easily, so each module should
     perform a specific task
+
+    Args:
+        key (int): Keyboard key that activates/deactivates current module
+        *args (any): Arguments needed to initialize the module
+        **kwargs (any): Keyword arguments needed to initialize the module
     """
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, key, *args, **kwargs) -> None:
         """Function is called only once when the module is enabled. Here the module gets
         and saves certain objects for further use and performs the configuration itself
         """
-        pass
+        self.is_activated = False
+        self._key = key
 
     def interval_update(self) -> None:
         """Function is called after a certain time interval,
@@ -37,20 +43,22 @@ class DebugModule:
 class DebugStat(DebugModule):
     """Debug module for viewing the current state of CPU usage, RAM,
     and other game and system information in the lower-left corner
+
+    Args:
+        screen (pygame.Surface): Screen (surface) obtained via pygame
+        base_dir (str): An absolute path to directory where file with the main
+            entrypoint is located
+        clock (pygame.time.Clock): Clock object obtained via pygame
     """
 
     # Color of information text
     COLOR = (158, 46, 255)
 
     def __init__(self, screen, base_dir, clock) -> None:
-        """Initializes the module, saving objects and configuring itself
-
-        Args:
-            screen (pygame.Surface): Screen (surface) obtained via pygame
-            base_dir (str): An absolute path to directory where file with the main
-                entrypoint is located
-            clock (pygame.time.Clock): Clock object obtained via pygame
+        """Initialize the module, saving objects and configuring itself
         """
+        DebugModule.__init__(self, pygame.K_s)
+
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
@@ -60,9 +68,10 @@ class DebugStat(DebugModule):
 
         self.clock = clock
 
+        self.interval_update()
+
     def interval_update(self) -> None:
-        """In current module, this function is used to update the text
-        of the debugging information
+        """Update the text of the debugging information
         """
         # Creating list of messages as plain text
         self.msgs = (
@@ -97,8 +106,7 @@ class DebugStat(DebugModule):
             y -= 17
 
     def static_update(self) -> None:
-        """In current module, this function is used for
-        blitting information messages
+        """Blit information messages
         """
         # Blitting debug information messages
         for i in range(len(self.msgs)):
@@ -107,6 +115,9 @@ class DebugStat(DebugModule):
 
 class DebugHitbox(DebugModule):
     """Debug module for drawing hitbox of every image
+
+    Args:
+        screen (pygame.Surface): Screen (surface) obtained via pygame
     """
 
     # Color of hitbox
@@ -114,12 +125,10 @@ class DebugHitbox(DebugModule):
     COLOR_ELLIPSE = (0, 255, 255)
 
     def __init__(self, screen) -> None:
-        """Initializes the module. Replaces the default `__init__`
+        """Initialize the module. Replaces the default `__init__`
         function of `Hitbox` to track its instances
-
-        Args:
-            screen (pygame.Surface): Screen (surface) obtained via pygame
         """
+        DebugModule.__init__(self, pygame.K_h)
 
         # Saving screen for the further use
         self.screen = screen
@@ -136,7 +145,7 @@ class DebugHitbox(DebugModule):
 
     @staticmethod
     def __hitbox_init(self, *args, **kwargs):
-        """Initializing :hitbox:`spaceway.hitbox.Hitbox` with default method
+        """Initialize :hitbox:`spaceway.hitbox.Hitbox` with default method
         and adding hitbox to list to track its
         """
         # Adding hitbox to list
@@ -146,7 +155,7 @@ class DebugHitbox(DebugModule):
         return origin_hitbox_init(self, *args, **kwargs)
 
     def static_update(self):
-        """Blitting all hitboxes on a given surface (screen)
+        """Blit all hitboxes on a given surface (screen)
         """
         for hitbox in self.hitboxes:
             if isinstance(hitbox(), Ellipse):
@@ -160,44 +169,56 @@ class Debugger:
     """
 
     # Interval for calling `interval_update` of modules (in seconds)
-    UPDATE_INTERVAL = 0.5
+    UPDATE_INTERVAL = 0.2
 
-    def __init__(self, FPS) -> None:
-        """Initializing of Debugger, configuring itself
+    def __init__(self, config) -> None:
+        """Initialize Debugger, configuring itself
 
         Args:
-            FPS (int): The FPS of the game is defined in the configuration
+            config (spaceway.config.ConfigManager): The configuration object
         """
         # Setting objects for further using
         self.__modules = []
         self.__tick = 0
-        self.__FPS = FPS
+        self.__config = config
+        self.__keys = pygame.key.get_pressed()
 
-    def enable_module(self, module, *args, **kwargs) -> None:
-        """Enables a debug module
+    def enable_module(self, module) -> None:
+        """Enable a debug module
 
         Args:
             module (spaceway.debug.DebugModule): Module object which should
-                be initialized
-            *args (any): Arguments needed to initialize the module
-            **kwargs (any): Keyword arguments needed to initialize the module
+                be enabled
         """
-        self.__modules.append(module(*args, **kwargs))
+        self.__modules.append(module)
 
     def update(self) -> None:
-        """Updates debug modules
+        """Update debug modules
         """
-        # If `tick` overflow, reset it
-        if self.__tick == 10 * self.__FPS:
-            self.__tick = 0
+        # Tick increase
+        self.__tick += self.__config['ns'].dt / self.__config['FPS']
+
+        # Get keyboard input for modules activation
+        keys = pygame.key.get_pressed()
+        mod_key = pygame.key.get_mods() & pygame.KMOD_LCTRL
 
         for module in self.__modules:
+            # Toggle module state
+            if keys[module._key] and keys[module._key] != self.__keys[module._key] and mod_key:
+                module.is_activated = not module.is_activated
+
+            if not module.is_activated:
+                continue
+
             # Calling `interval_update` if the time has come
-            if self.__tick % (self.UPDATE_INTERVAL * self.__FPS) == 0:
+            if self.__tick > self.UPDATE_INTERVAL:
                 module.interval_update()
 
             # Calling `static_update`
             module.static_update()
 
-        # Tick increase
-        self.__tick += 1
+        # If `tick` overflow, reset it
+        if self.__tick > self.UPDATE_INTERVAL:
+            self.__tick -= self.UPDATE_INTERVAL
+
+        self.__keys = keys

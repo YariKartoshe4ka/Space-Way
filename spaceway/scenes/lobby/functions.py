@@ -25,4 +25,5 @@ def update(bg, scene_buttons, caption):
 
     scene_buttons.draw()
 
+    caption.update()
     caption.blit()
