@@ -94,9 +94,13 @@ class ConfigManager(dict):
         with open(self.PATH_MAIN_CONFIG) as file:
             config: dict = load(file)
 
-        # Mount user configuration to 'user' section of dictionary
-        with open(self.PATH_USER_CONFIG) as file:
+        # Mount original user configuration (for compatibility between updates)
+        with open(self.__ORIGINAL_PATH_USER_CONFIG) as file:
             config['user'] = load(file)
+
+        # Update user configuration with an existing one
+        with open(self.PATH_USER_CONFIG) as file:
+            config['user'].update(load(file))
 
         # Initializing `list` for scores of attempts
         config['score_list'] = list()

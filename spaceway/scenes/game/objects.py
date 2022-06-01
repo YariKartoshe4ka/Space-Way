@@ -16,7 +16,7 @@ class Background:
         self.rect = Rect(self.img.get_rect())
 
     def update(self):
-        self.rect.x -= 0.5 * self.config['ns'].dt
+        self.rect.x -= self.config['ns'].speed / 4 * self.config['ns'].dt
 
         if self.rect.x <= -840:
             self.rect.x = 0
@@ -60,9 +60,6 @@ class SpacePlate(pygame.sprite.Sprite):
 
         self.is_jump = False
         self.jump = 10
-        self.sounds = {'jump': f'{base_dir}/assets/sounds/jump.wav',
-                       'bang': f'{base_dir}/assets/sounds/bang.wav',
-                       'score': f'{base_dir}/assets/sounds/score.wav'}
 
     def reset(self):
         self.rect.centery = self.screen_rect.centery
@@ -298,7 +295,7 @@ class PauseCaption(CaptionMixin):
         self.rect.y = 125
 
 
-class ResumeButton(SceneButtonMixin, pygame.sprite.Sprite):
+class ResumeButton(SceneButtonMixin):
     def __init__(self, screen, base_dir, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()

@@ -5,7 +5,7 @@ from webbrowser import open
 import pygame
 from packaging.version import parse
 from requests import get
-pygame.init()
+
 
 def dialog(base_dir) -> None:
     """ Creator of information dialog """

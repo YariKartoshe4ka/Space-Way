@@ -22,7 +22,6 @@ def check_events(config, scene_buttons):
 def update(base_dir, bg, table, scene_buttons):
     bg.blit()
 
-    table.update()
     table.blit()
 
     scene_buttons.draw()

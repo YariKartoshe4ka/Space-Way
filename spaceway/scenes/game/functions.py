@@ -1,5 +1,5 @@
 from sys import exit
-from random import choice, randint
+from random import choices, randint
 
 import pygame
 
@@ -17,22 +17,14 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
 
             elif event.type == pygame.KEYDOWN and event.key == pygame.K_SPACE:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
                 elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
             elif event.type == pygame.MOUSEBUTTONDOWN:
                 if plate.rect.top >= plate.screen_rect.top + 50 and not plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
                 elif plate.rect.bottom <= plate.screen_rect.bottom - 50 and plate.flip:
-                    if config['user']['effects'] and plate.jump == 10:
-                        pygame.mixer.Sound(plate.sounds['jump']).play()
                     plate.is_jump = True
 
     elif config['sub_scene'] == 'end':
@@ -77,8 +69,8 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
             astr = Asteroid(screen, base_dir, config)
         astrs.add(astr)
 
-    # Spawn flying asteroid if difficulty >= middle
-    if config['ns'].score >= 10 and config['ns'].score % 5 == 0 and config['user']['difficulty'] >= 1:
+    # Spawn flying asteroid
+    if config['ns'].score >= 10 and config['ns'].score % 5 == 0:
         for sprite in astrs:
             if sprite.name == 'flying':
                 break
@@ -89,31 +81,39 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
     if config['ns'].score >= boosts.next_spawn:
         boosts.next_spawn += randint(4, 8)
 
-        choices = {'time': TimeBoost, 'double': DoubleBoost, 'shield': ShieldBoost}
+        schema = {
+            'time':   TimeBoost,
+            'double': DoubleBoost,
+            'shield': ShieldBoost,
+            'mirror': MirrorBoost
+        }
 
-        # Spawn mirror boost if difficulty >= hard
-        if config['user']['difficulty'] >= 2:
-            choices['mirror'] = MirrorBoost
+        weights = (40, 30, 10, 20)
 
-        name = choice(list(choices))
+        name = choices(list(schema), weights)[0]
 
         if name == 'time' or name == 'double':
-            boost = choices[name](screen, base_dir, config)
+            boost = schema[name](screen, base_dir, config)
         elif name == 'shield' or name == 'mirror':
-            boost = choices[name](screen, base_dir, config, plate)
+            boost = schema[name](screen, base_dir, config, plate)
 
         while pygame.sprite.spritecollideany(boost, astrs):
-            name = choice(list(choices))
+            name = choices(list(schema))
             if name == 'time' or name == 'double':
-                boost = choices[name](screen, base_dir, config)
+                boost = schema[name](screen, base_dir, config)
             elif name == 'shield' or name == 'mirror':
-                boost = choices[name](screen, base_dir, config, plate)
+                boost = schema[name](screen, base_dir, config, plate)
 
         boosts.add(boost)
 
 
 def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
     if config['sub_scene'] == 'game':
+        pygame.mixer.unpause()
+
+        if not config['ns'].mm.get('game').get_num_channels():
+            config['ns'].mm.get('game').play(-1)
+
         bg.update()
         bg.blit()
 
@@ -132,8 +132,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         for astr in astrs:
             if astr.rect.right < 0 or astr.rect.top > config['mode'][1]:
                 astrs.remove(astr)
-                if config['user']['effects']:
-                    pygame.mixer.Sound(plate.sounds['score']).play()
+                config['ns'].mm.get('score').play()
 
                 if 'double' in boosts:
                     config['ns'].score += 2
@@ -167,7 +166,11 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         end_buttons.draw()
 
     elif config['sub_scene'] == 'pause':
+        pygame.mixer.pause()
+
         bg.blit()
+
+        pause.update()
         pause.blit()
 
         pause_buttons.draw()
@@ -178,8 +181,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
     if astrs_collides:
-        if config['user']['effects']:
-            pygame.mixer.Sound(plate.sounds['bang']).play()
+        config['ns'].mm.get('bang').play()
 
         if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
@@ -193,8 +195,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
                 boosts.activate(boost)
 
     elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
-        if config['user']['effects']:
-            pygame.mixer.Sound(plate.sounds['bang']).play()
+        config['ns'].mm.get('bang').play()
 
         if 'shield' in boosts:
             boosts.remove(boosts.get('shield'))
@@ -205,6 +206,7 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
 
 
 def defeat(plate, astrs, boosts, end, config, base_dir):
+    config['ns'].mm.get('game').stop()
     config['score_list'].append((config['ns'].score, config['user']['nick']))
     config.filter_score()
     config.save()
