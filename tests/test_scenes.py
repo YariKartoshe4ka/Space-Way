@@ -9,7 +9,7 @@ import spaceway
 from utils import pygame_env, pygame_emulate_events
 
 
-ROOT_DIR = os.path.dirname(os.path.dirname(__file__)) + '/'
+ROOT_DIR = os.path.dirname(os.path.dirname(spaceway.__file__)) + '/'
 
 
 def test_recursive_import():

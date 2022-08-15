@@ -8,7 +8,9 @@ bin
 .buildozer
 
 # Test data
+.tox
 .coverage
+coverage.xml
 .cProfile
 
 # Build and other
@@ -16,3 +18,4 @@ build
 dist
 *.egg-info
 other
+sdlaudio.raw

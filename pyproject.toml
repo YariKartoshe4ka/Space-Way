@@ -1,0 +1,65 @@
+[build-system]
+requires = ["hatchling>=1.7"]
+build-backend = "hatchling.build"
+
+[project]
+name = "spaceway"
+description = "Space Way is arcade game about space, in which you must overcome the space path by flying around obstacles"
+readme = "README.md"
+license = "GPL-3.0-only"
+authors = [
+    { name = "Yaroslav Kikel", email = "yaroslav.kikel.06@inbox.ru"}
+]
+keywords = ["game", "arcade", "space", "pygame"]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.6",
+    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Games/Entertainment :: Arcade",
+    "Environment :: X11 Applications"
+]
+dependencies = [
+    "pygame==2.1.2",
+    "packaging>=20.4",
+    "requests>=2.24.0",
+    "platformdirs>=2.1.0",
+    "psutil>=5.5.1"
+]
+dynamic = ["version"]
+
+[project.urls]
+Homepage = "https://github.com/YariKartoshe4ka/Space-Way"
+Source = "https://github.com/YariKartoshe4ka/Space-Way"
+Tracker = "https://github.com/YariKartoshe4ka/Space-Way"
+
+[project.optional-dependencies]
+test = [
+    "pytest>=6.2",
+    "pytest-cov>=3.0",
+    "pytest-xdist[psutil]>=2.4",
+    "pytest-timeout>=2.0"
+]
+
+[project.scripts]
+spaceway = "spaceway.main:main"
+
+[tool.hatch.build]
+include = [
+    "spaceway/**/*.py",
+    "spaceway/assets/**",
+    "spaceway/config/**",
+    "spaceway/icon.ico"
+]
+
+[tool.hatch.version]
+path = "spaceway/config/config.json"
+pattern = '"version": "(?P<version>[^"]+)"'

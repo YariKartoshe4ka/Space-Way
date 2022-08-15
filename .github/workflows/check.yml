@@ -7,6 +7,9 @@ on:
     branches:
       - develop
 
+  schedule:
+    - cron: "0 12 * * 6"
+
 name: Check
 
 jobs:
@@ -17,24 +20,27 @@ jobs:
       fail-fast: false
       matrix:
         py:
-          - "3.10"
-          - "3.9"
-          - "3.8"
-          - "3.7"
           - "3.6"
+          - "3.7"
+          - "3.8"
+          - "3.9"
+          - "3.10"
     steps:
-      - name: Setup Python
+      - name: Setup Python for tox
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Install tox
+        run: pip install tox
+      - name: Setup Python ${{ matrix.py }} for test
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.py }}
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Install dependencies
-        run: pip install -r requirements.txt -r tests/requirements.txt
-      - name: Run tests
-        run: python -m pytest -n auto --cov spaceway --cov tests --cov-report xml --color=yes tests/
-        env:
-          SDL_VIDEODRIVER: dummy
-          SDL_AUDIODRIVER: disk
+      - name: Setup test suite
+        run: tox -vv --notest
+      - name: Run test suite
+        run: tox --skip-pkg-install
       - name: Upload coverage
         uses: codecov/codecov-action@v2
