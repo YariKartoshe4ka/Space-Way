@@ -1,12 +1,14 @@
-from sys import exit
 from random import choices, randint
+from sys import exit
 
 import pygame
 
-from .objects import *
+from .objects import (Asteroid, DoubleBoost, EndLobbyButton, FlyingAsteroid,
+                      MirrorBoost, PauseButton, PauseLobbyButton, ResumeButton,
+                      ShieldBoost, TimeBoost)
 
 
-def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons):
+def check_events(config, plate, astrs, boosts, end, scene_buttons):
     if config['sub_scene'] == 'game':
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -53,7 +55,7 @@ def check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_butto
 
                 pause_lobby_button = scene_buttons.get_by_instance(PauseLobbyButton)
                 if pause_lobby_button.rect.collidepoint((x, y)):
-                    defeat(plate, astrs, boosts, end, config, base_dir)
+                    defeat(plate, astrs, boosts, end, config)
                     config['scene'] = 'game'
                     config['sub_scene'] = 'pause'
                     pause_lobby_button.press()
@@ -107,7 +109,10 @@ def spawn(screen, base_dir, config, plate, astrs, boosts):
         boosts.add(boost)
 
 
-def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons):
+def update(
+    screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause,
+    pause_buttons, end_buttons, scene_buttons
+):
     if config['sub_scene'] == 'game':
         pygame.mixer.unpause()
 
@@ -155,7 +160,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
 
         plate.blit()
 
-        check_collides(config, base_dir, astrs, boosts, plate, end)
+        check_collides(config, astrs, boosts, plate, end)
 
     elif config['sub_scene'] == 'end':
         bg.blit()
@@ -176,7 +181,7 @@ def update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause
         pause_buttons.draw()
 
 
-def check_collides(config, base_dir, astrs, boosts, plate, end):
+def check_collides(config, astrs, boosts, plate, end):
     astrs_collides = pygame.sprite.spritecollide(plate, astrs, True)
     boosts_collides = pygame.sprite.spritecollide(plate, boosts, False)
 
@@ -187,14 +192,15 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
             boosts.remove(boosts.get('shield'))
 
         else:
-            defeat(plate, astrs, boosts, end, config, base_dir)
+            defeat(plate, astrs, boosts, end, config)
 
     elif boosts_collides:
         for boost in boosts_collides:
             if not boost.is_active:
                 boosts.activate(boost)
 
-    elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip) or (plate.rect.top <= plate.screen_rect.top and plate.flip):
+    elif (plate.rect.bottom >= plate.screen_rect.bottom and not plate.flip
+            or plate.rect.top <= plate.screen_rect.top and plate.flip):
         config['ns'].mm.get('bang').play()
 
         if 'shield' in boosts:
@@ -202,10 +208,10 @@ def check_collides(config, base_dir, astrs, boosts, plate, end):
             plate.is_jump = True
 
         else:
-            defeat(plate, astrs, boosts, end, config, base_dir)
+            defeat(plate, astrs, boosts, end, config)
 
 
-def defeat(plate, astrs, boosts, end, config, base_dir):
+def defeat(plate, astrs, boosts, end, config):
     config['ns'].mm.get('game').stop()
     config['score_list'].append((config['ns'].score, config['user']['nick']))
     config.filter_score()

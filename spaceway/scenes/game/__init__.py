@@ -1,4 +1,6 @@
-from .objects import *
+from .objects import (AgainButton, Background, EndCaption, EndLobbyButton,
+                      PauseButton, PauseCaption, PauseLobbyButton,
+                      ResumeButton, Score, SpacePlate)
 
 
 def init(screen, base_dir, config):
@@ -18,7 +20,7 @@ def init(screen, base_dir, config):
     again_button = AgainButton(screen, base_dir, config)
     end_lobby_button = EndLobbyButton(screen, base_dir, config)
 
-    pause_button = PauseButton(screen, base_dir, config)
+    pause_button = PauseButton(screen, config)
 
     return bg, plate, score, end, pause, resume_button, \
         pause_lobby_button, again_button, end_lobby_button, pause_button

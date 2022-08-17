@@ -2,8 +2,8 @@ from random import randint
 
 import pygame
 
+from ...hitbox import Ellipse, Rect
 from ...mixins import BoostMixin, CaptionMixin, SceneButtonMixin
-from ...hitbox import Rect, Ellipse
 
 
 class Background:
@@ -303,7 +303,7 @@ class ResumeButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/resume.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'game', 'game')
+        SceneButtonMixin.__init__(self, config, 'game', 'pause', 'game', 'game')
 
 
 class PauseLobbyButton(SceneButtonMixin):
@@ -314,7 +314,7 @@ class PauseLobbyButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'pause', 'lobby', 'lobby')
+        SceneButtonMixin.__init__(self, config, 'game', 'pause', 'lobby', 'lobby')
 
 
 class AgainButton(SceneButtonMixin):
@@ -325,7 +325,7 @@ class AgainButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/again.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'game', 'game')
+        SceneButtonMixin.__init__(self, config, 'game', 'end', 'game', 'game')
 
 
 class EndLobbyButton(SceneButtonMixin):
@@ -336,15 +336,15 @@ class EndLobbyButton(SceneButtonMixin):
         self.img = pygame.image.load(f'{base_dir}/assets/images/buttons/lobby.bmp')
         self.rect = Ellipse(self.img.get_rect())
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'end', 'lobby', 'lobby')
+        SceneButtonMixin.__init__(self, config, 'game', 'end', 'lobby', 'lobby')
 
 
 class PauseButton(SceneButtonMixin):
-    def __init__(self, screen, base_dir, config):
+    def __init__(self, screen, config):
         self.screen = screen
         self.screen_rect = self.screen.get_rect()
 
         self.img = pygame.Surface((0, 0))
         self.rect = self.img.get_rect()
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'game', 'game', 'game', 'pause')
+        SceneButtonMixin.__init__(self, config, 'game', 'game', 'game', 'pause')

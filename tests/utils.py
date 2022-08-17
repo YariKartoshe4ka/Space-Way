@@ -1,39 +1,13 @@
-import os
 from importlib import import_module, reload
-from time import time, sleep
-from types import ModuleType
 from random import choices
 from string import ascii_letters
-
-import pytest
+from time import sleep, time
+from types import ModuleType
 
 import pygame
+import pytest
+
 import spaceway
-
-
-@pytest.fixture(scope='module')
-def pygame_env():
-    """Creates the basic environment of the game
-
-    Returns:
-        screen (pygame.Surface): Screen (surface) obtained via pygame
-        base_dir (str): An absolute path to directory where file with the main
-            entrypoint is located
-        config (spaceway.config.ConfigManager): The configuration object
-        clock (pygame.time.Clock): Clock object obtained via pygame
-    """
-    base_dir = os.path.dirname(os.path.abspath(spaceway.main.__file__))
-    config = spaceway.config.ConfigManager(base_dir)
-    screen = pygame.display.set_mode(config['mode'])
-
-    config['ns'].dt = 0
-    config['ns'].tick = 1
-    config['ns'].speed = 2
-    config['ns'].score = 0
-
-    clock = pygame.time.Clock()
-
-    return screen, base_dir, config, clock
 
 
 def pygame_loop(pygame_env, duration):
@@ -91,7 +65,7 @@ def pygame_surface(size, color=0):
     Returns:
         pygame.Surface: Colored surface (grid 2x2 colored in two colors, in a staggered order)
     """
-    COLORS = (
+    colors = (
         ((0, 57, 255), (255, 46, 222)),
         ((0, 195, 12), (251, 255, 0)),
         ((255, 11, 0), (0, 255, 228))
@@ -102,21 +76,21 @@ def pygame_surface(size, color=0):
 
     a, b = r.w // 2, r.h // 2
 
-    pygame.draw.rect(s, COLORS[color][0], pygame.Rect(0, 0, a, b))
-    pygame.draw.rect(s, COLORS[color][1], pygame.Rect(a, 0, a, b))
-    pygame.draw.rect(s, COLORS[color][1], pygame.Rect(0, b, a, b))
-    pygame.draw.rect(s, COLORS[color][0], pygame.Rect(a, b, a, b))
+    pygame.draw.rect(s, colors[color][0], pygame.Rect(0, 0, a, b))
+    pygame.draw.rect(s, colors[color][1], pygame.Rect(a, 0, a, b))
+    pygame.draw.rect(s, colors[color][1], pygame.Rect(0, b, a, b))
+    pygame.draw.rect(s, colors[color][0], pygame.Rect(a, b, a, b))
 
     return s
 
 
-def most_popular_colors(surface, amount=1, exclude=[]):
+def most_popular_colors(surface, amount=1, exclude=None):
     """Finds the most common surface colors
 
     Args:
         surface (pygame.Surface): Surface on which the colors will be searched
         amount (int): Amount of returned colors, defaults to 0
-        exclude (list): List of colors that don't need to be counted, defaluts to empty list
+        exclude (Optional[list]): List of colors that don't need to be counted, defaluts to empty list
 
     Returns:
         List[Tuple[int, int, int]]: List of the most common colors
@@ -126,6 +100,9 @@ def most_popular_colors(surface, amount=1, exclude=[]):
         considers rgba(1, 12, 123, 55) and rgb(1, 12, 123) to be the same, while fully transparent
         pixels (alpha = 0) aren't taken into account in the calculations
     """
+    if not exclude:
+        exclude = []
+
     width, height = surface.get_size()
     colors = {}
 

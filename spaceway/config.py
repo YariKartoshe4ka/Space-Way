@@ -1,8 +1,8 @@
 """ File with some objects for easier configuration management """
 
 import os
+from json import dump, load
 from shutil import copyfile
-from json import load, dump
 
 from platformdirs import user_config_dir
 
@@ -103,7 +103,7 @@ class ConfigManager(dict):
             config['user'].update(load(file))
 
         # Initializing `list` for scores of attempts
-        config['score_list'] = list()
+        config['score_list'] = []
 
         # Loading score configuration to 'score_list' section of dictionary
         with open(self.PATH_SCORE_CONFIG) as file:
@@ -158,4 +158,4 @@ class ConfigManager(dict):
         """Fiters scores of attempts. Attempts are sorted by best score and then
         all other attempts are discarded so that only the top 5 attempts remain
         """
-        self['score_list'] = list(reversed(sorted(self['score_list'])))[:5]
+        self['score_list'] = sorted(self['score_list'], reverse=True)[:5]

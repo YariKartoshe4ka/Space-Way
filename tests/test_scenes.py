@@ -4,10 +4,9 @@ from threading import Thread
 
 import pygame
 from pygame.event import Event
+from utils import pygame_emulate_events
 
 import spaceway
-from utils import pygame_env, pygame_emulate_events
-
 
 ROOT_DIR = os.path.dirname(os.path.dirname(spaceway.__file__)) + '/'
 
@@ -33,7 +32,7 @@ def test_scenes_functions_availability(pygame_env):
     exclude_dirs = ('__pycache__',)
     functions = ('check_events', 'update')
 
-    for root, dirs, files in os.walk(os.path.dirname(spaceway.scenes.__file__)):
+    for root, dirs, _ in os.walk(os.path.dirname(spaceway.scenes.__file__)):
         dirs[:] = [d for d in dirs if d not in exclude_dirs]
 
         if not dirs:

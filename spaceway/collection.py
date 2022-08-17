@@ -1,7 +1,5 @@
 """ File with implementations of additional data structures """
 
-from typing import List, Dict
-
 import pygame
 
 
@@ -30,8 +28,8 @@ class BoostsGroup(pygame.sprite.Group):
         """Constructor method
         """
         # Define additional groups
-        self.active: Dict[str, 'BoostMixin'] = {}
-        self.passive: Dict['BoostMixin', int] = {}
+        self.active = {}
+        self.passive = {}
 
         # Define interval for next boost spawn (in score)
         self.next_spawn = 3
@@ -249,7 +247,7 @@ class SceneButtonsGroup(pygame.sprite.Group):
     """
 
     # Define an additional dictionary for structuring buttons by scenes
-    buttons: Dict[str, Dict[str, List['SceneButtonMixin']]] = {}
+    buttons = {}
 
     def __init__(self, config, *buttons):
         """Constructor method
@@ -268,11 +266,11 @@ class SceneButtonsGroup(pygame.sprite.Group):
         """
         # If there were not buttons with scene of current button yet
         if self.buttons.get(button.scene) is None:
-            self.buttons[button.scene] = dict()
+            self.buttons[button.scene] = {}
 
         # If there were not buttons with sub scene of current button yet
         if self.buttons[button.scene].get(button.sub_scene) is None:
-            self.buttons[button.scene][button.sub_scene] = list()
+            self.buttons[button.scene][button.sub_scene] = []
 
         # After checking group structure, we can safely add the button to group
         self.buttons[button.scene][button.sub_scene].append(button)

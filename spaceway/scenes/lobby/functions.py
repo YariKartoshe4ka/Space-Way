@@ -3,7 +3,7 @@ from sys import exit
 import pygame
 
 
-def check_events(config, base_dir, scene_buttons, caption):
+def check_events(config, scene_buttons):
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             exit()

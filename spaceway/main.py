@@ -1,14 +1,12 @@
 """ Root file with main entrypoint """
 
 import os
-from sys import platform
 
 import pygame
 
-from . import scenes, collection, updater
+from . import collection, scenes, updater
 from .config import ConfigManager
 from .music import MusicManager, SoundGroup
-
 
 # Set environment variable for centering window
 os.environ['SDL_VIDEO_CENTERED'] = '1'
@@ -74,7 +72,8 @@ def main() -> None:
     config['ns'].table = table
 
     # Initialization of settings scene
-    effects_button, music_button, full_screen_button, updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
+    effects_button, music_button, full_screen_button, \
+        updates_button, settings_back_button, nick_input = scenes.settings.init(screen, base_dir, config)
 
     settings_buttons = collection.CenteredButtonsGroup(config['mode'])
     settings_buttons.add(effects_button, music_button, full_screen_button, updates_button)
@@ -83,7 +82,8 @@ def main() -> None:
     astrs = pygame.sprite.Group()
     boosts = collection.BoostsGroup()
 
-    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, end_lobby_button, pause_button = scenes.game.init(screen, base_dir, config)
+    bg, plate, score, end, pause, resume_button, pause_lobby_button, again_button, \
+        end_lobby_button, pause_button = scenes.game.init(screen, base_dir, config)
 
     pause_buttons = collection.CenteredButtonsGroup(config['mode'])
     pause_buttons.add(pause_lobby_button, resume_button)
@@ -100,20 +100,20 @@ def main() -> None:
     while True:
         # Showing a specific scene
         if config['scene'] == 'headpiece':
-            scenes.headpiece.functions.check_events(config, base_dir)
-            scenes.headpiece.functions.update(screen, config, text, pb)
+            scenes.headpiece.functions.check_events()
+            scenes.headpiece.functions.update(text, pb)
 
         elif config['scene'] == 'lobby':
-            scenes.lobby.functions.check_events(config, base_dir, scene_buttons, caption)
+            scenes.lobby.functions.check_events(config, scene_buttons)
             scenes.lobby.functions.update(bg, scene_buttons, caption)
 
         elif config['scene'] == 'table':
-            scenes.table.functions.check_events(config, scene_buttons)
-            scenes.table.functions.update(base_dir, bg, table, scene_buttons)
+            scenes.table.functions.check_events(scene_buttons)
+            scenes.table.functions.update(bg, table, scene_buttons)
 
         elif config['scene'] == 'settings':
             scenes.settings.functions.check_events(config, scene_buttons, settings_buttons, nick_input)
-            scenes.settings.functions.update(bg, config, scene_buttons, settings_buttons, nick_input)
+            scenes.settings.functions.update(bg, scene_buttons, settings_buttons, nick_input)
 
             # If fullscreen button was pressed, change screen to fullscreen and back again
             if full_screen_button.changed:
@@ -122,8 +122,11 @@ def main() -> None:
                 full_screen_button.changed = False
 
         elif config['scene'] == 'game':
-            scenes.game.functions.check_events(config, base_dir, plate, astrs, boosts, end, pause, scene_buttons)
-            scenes.game.functions.update(screen, config, base_dir, bg, plate, astrs, boosts, score, end, pause, pause_buttons, end_buttons, scene_buttons)
+            scenes.game.functions.check_events(config, plate, astrs, boosts, end, scene_buttons)
+            scenes.game.functions.update(
+                screen, config, base_dir, bg, plate, astrs, boosts, score,
+                end, pause, pause_buttons, end_buttons, scene_buttons
+            )
 
         # Update debugger if debug mode enabled
         if config['debug']:

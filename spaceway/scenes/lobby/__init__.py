@@ -1,4 +1,4 @@
-from .objects import *
+from .objects import Caption, PlayButton, SettingsButton, TableButton
 
 
 def init(screen, base_dir, config):

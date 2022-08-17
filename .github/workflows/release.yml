@@ -128,4 +128,3 @@ jobs:
           asset_path: ./dist/${{ steps.wheel_path.outputs.path }}
           asset_name: ${{ steps.wheel_path.outputs.path }}
           asset_content_type: application/x-wheel+zip
-

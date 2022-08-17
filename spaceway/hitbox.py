@@ -1,23 +1,24 @@
 """ File with implementation of hitboxes for calculating collisions,
     position and other. Based on `pygame.Rect` """
 
-from math import sqrt, acos, cos, sin, atan2, pi
+from abc import abstractmethod
+from math import acos, atan2, cos, pi, sin, sqrt
 
 
 class Hitbox:
     def __init__(self, *args):
         if len(args) == 2:
             if len(args[0]) == 2 and len(args[1]) == 2:
-                l = [*args[0], *args[1]]
+                t = [*args[0], *args[1]]
             else:
                 raise TypeError("Argument must be hitbox style object")
         elif len(args) == 4:
-            l = [*args]
+            t = [*args]
         elif len(args) == 1:
             if len(args[0]) == 2:
-                l = [*args[0][0], *args[0][1]]
+                t = [*args[0][0], *args[0][1]]
             elif len(args[0]) == 4:
-                l = list(args[0])
+                t = list(args[0])
             else:
                 raise TypeError(
                     f"sequence argument takes 2 or 4 items ({len(args[0])} given)"
@@ -26,7 +27,7 @@ class Hitbox:
         else:
             raise TypeError("Argument must be hitbox style object")
 
-        self.__dict__["_rect"] = l
+        self.__dict__["_rect"] = t
 
     getattr_dict = {
         "x": lambda x: x._rect[0],
@@ -230,9 +231,11 @@ class Hitbox:
             return self._clamp_ip_ellipse(Ellipse(arg))
         return self._clamp_ip_rect(Rect(arg))
 
+    @abstractmethod
     def _clamp_ip_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _clamp_ip_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -246,9 +249,11 @@ class Hitbox:
             return self._clip_ellipse(Ellipse(arg))
         return self._clip_rect(Rect(arg))
 
+    @abstractmethod
     def _clip_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _clip_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -267,9 +272,11 @@ class Hitbox:
             return self._union_ip_ellipse(Ellipse(arg))
         return self._union_ip_rect(arg)
 
+    @abstractmethod
     def _union_ip_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _union_ip_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -297,9 +304,11 @@ class Hitbox:
             return self._fit_ellipse(Ellipse(arg))
         return self._fit_rect(Rect(arg))
 
+    @abstractmethod
     def _fit_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _fit_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -322,9 +331,11 @@ class Hitbox:
             return self._contains_ellipse(Ellipse(arg))
         return self._contains_rect(Rect(arg))
 
+    @abstractmethod
     def _contains_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _contains_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -338,6 +349,7 @@ class Hitbox:
 
         return self._collidepoint(point)
 
+    @abstractmethod
     def _collidepoint(self, point):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -354,9 +366,11 @@ class Hitbox:
             return self._colliderect_ellipse(Ellipse(arg))
         return self._colliderect_rect(Rect(arg))
 
+    @abstractmethod
     def _colliderect_rect(self, rect):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
+    @abstractmethod
     def _colliderect_ellipse(self, ellipse):
         raise NotImplementedError('Method hasn\'t been implemented yet')
 
@@ -571,12 +585,12 @@ class Ellipse(Hitbox):
             return pow(x, 1 / 3) if x > 0 else -pow(-x, 1 / 3)
 
         def filter_roots(roots):
-            return set([i[0] for i in roots if abs(i[1]) < 1e-6])
+            return {i[0] for i in roots if abs(i[1]) < 1e-6}
 
         def solve_p1(a, b):
             if a == 0:
-                return set([0])
-            return set([-b / a])
+                return {0}
+            return {-b / a}
 
         def solve_p2(a, b, c):
             # Linear equation
@@ -611,10 +625,7 @@ class Ellipse(Hitbox):
                 return solve_p2(b, c, d)
 
             if d == 0:
-                return set([
-                    *solve_p2(a, b, c),
-                    0
-                ])
+                return solve_p2(a, b, c) | {0}
 
             b /= a
             c /= a
@@ -668,10 +679,7 @@ class Ellipse(Hitbox):
                 return solve_p3(b, c, d, e)
 
             if e == 0:
-                return set([
-                    *solve_p3(a, b, c, d),
-                    0
-                ])
+                return solve_p3(a, b, c, d) | {0}
 
             b /= a
             c /= a
@@ -779,9 +787,16 @@ class Ellipse(Hitbox):
         coefs = (
             -RyRx * RyRx,
             4.0 * x2 * b2_2 * RyRx / a2_2,
-            -4.0 * (y2_2 * a2_2 * b2_2 + x2_2 * b2_2 * b2_2) / (a2_2 * a2_2) - 2.0 * RyRx * ((x2_2 / a2_2 - 1.0) * b2_2 - y2_2 + b1_2),
+            (
+                -4.0 * (y2_2 * a2_2 * b2_2 + x2_2 * b2_2 * b2_2)
+                / (a2_2 * a2_2) - 2.0 * RyRx
+                * ((x2_2 / a2_2 - 1.0) * b2_2 - y2_2 + b1_2)
+            ),
             (4.0 * x2 * b2_2 * (y2_2 * a2_2 + b1_2 * a2_2 + (x2_2 - a2_2) * b2_2)) / (a2_2 * a2_2),
-            4.0 * y2_2 * b2_2 - (4.0 * x2_2 * y2_2 * b2_2) / a2_2 - (b1_2 - y2_2 + (x2_2 / a2_2 - 1.0) * b2_2)**2
+            (
+                4.0 * y2_2 * b2_2 - (4.0 * x2_2 * y2_2 * b2_2)
+                / a2_2 - (b1_2 - y2_2 + (x2_2 / a2_2 - 1.0) * b2_2)**2
+            )
         )
 
         for x in solve_p4(*coefs):
@@ -797,8 +812,10 @@ class Ellipse(Hitbox):
 
     def _contains_ellipse(self, ellipse):
         return (
-            self.collidepoint(ellipse.left, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.top)
-            and self.collidepoint(ellipse.right, ellipse.centery) and self.collidepoint(ellipse.centerx, ellipse.bottom)
+            self.collidepoint(ellipse.left, ellipse.centery)
+            and self.collidepoint(ellipse.centerx, ellipse.top)
+            and self.collidepoint(ellipse.right, ellipse.centery)
+            and self.collidepoint(ellipse.centerx, ellipse.bottom)
             and not self.__intersects_ellipse(ellipse)
         )
 

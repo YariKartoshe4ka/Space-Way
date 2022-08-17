@@ -11,7 +11,7 @@ def dialog(base_dir) -> None:
     """ Creator of information dialog """
 
     # Setup screen
-    MODE = (WIDTH, HEIGHT) = (300, 200)
+    MODE = (WIDTH, HEIGHT) = (300, 200)  # noqa: N806
     screen = pygame.display.set_mode(MODE)
     screen_rect = screen.get_rect()
     pygame.display.set_caption('Space Way Update')
@@ -81,7 +81,7 @@ def check_software_updates(version, base_dir) -> None:
 
     # Get remote vesrion of `config.json` if network connection available
     try:
-        r = get('https://raw.githubusercontent.com/YariKartoshe4ka/Space-Way/master/spaceway/config/config.json')
+        r = get('https://raw.github.com/YariKartoshe4ka/Space-Way/master/spaceway/config/config.json')
     except Exception:
         return
 

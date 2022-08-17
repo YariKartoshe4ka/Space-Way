@@ -3,9 +3,9 @@ from re import match
 
 import pytest
 from pygame import Rect as PgRect
-
-from spaceway.hitbox import Hitbox, Rect, Ellipse
 from utils import rstring
+
+from spaceway.hitbox import Ellipse, Hitbox, Rect
 
 
 def test_hitbox_init():
@@ -233,15 +233,15 @@ def test_rect_with_rect(rect, arg):
 
     # Test `collidedict` and `collidedictall`
     assert (
-        rect.collidedict({0: arg, 1: rect, True: arg, None: rect}, True) ==
-        PgRect(rect).collidedict({0: arg, 1: rect, True: arg, None: rect}, True)
+        rect.collidedict({0: arg, 1: rect, Exception: arg, None: rect}, True) ==
+        PgRect(rect).collidedict({0: arg, 1: rect, Exception: arg, None: rect}, True)
     )
     assert rect.collidedict({rect: 0}) == PgRect(rect).collidedict({rect: 0})
     assert rect.collidedict({}) == PgRect(rect).collidedict({})
 
     assert (
-        rect.collidedictall({0: arg, 1: rect, True: arg, None: rect}, True) ==
-        PgRect(rect).collidedictall({0: arg, 1: rect, True: arg, None: rect}, True)
+        rect.collidedictall({0: arg, 1: rect, Exception: arg, None: rect}, True) ==
+        PgRect(rect).collidedictall({0: arg, 1: rect, Exception: arg, None: rect}, True)
     )
     assert rect.collidedictall({rect: 0}) == PgRect(rect).collidedictall({rect: 0})
     assert rect.collidedictall({}) == PgRect(rect).collidedictall({})

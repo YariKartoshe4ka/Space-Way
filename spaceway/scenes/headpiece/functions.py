@@ -3,13 +3,13 @@ from sys import exit
 import pygame
 
 
-def check_events(config, base_dir):
+def check_events():
     for event in pygame.event.get():
         if event.type == pygame.QUIT or (event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE):
             exit()
 
 
-def update(screen, config, text, pb):
+def update(text, pb):
     text.update()
     text.blit()
 

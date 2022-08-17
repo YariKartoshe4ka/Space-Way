@@ -5,7 +5,7 @@ from weakref import ref
 import pygame
 from psutil import Process, cpu_count
 
-from .hitbox import Hitbox, Ellipse
+from .hitbox import Ellipse, Hitbox
 
 
 class DebugModule:
@@ -17,11 +17,9 @@ class DebugModule:
 
     Args:
         key (int): Keyboard key that activates/deactivates current module
-        *args (any): Arguments needed to initialize the module
-        **kwargs (any): Keyword arguments needed to initialize the module
     """
 
-    def __init__(self, key, *args, **kwargs) -> None:
+    def __init__(self, key) -> None:
         """Function is called only once when the module is enabled. Here the module gets
         and saves certain objects for further use and performs the configuration itself
         """
@@ -149,10 +147,10 @@ class DebugHitbox(DebugModule):
         and adding hitbox to list to track its
         """
         # Adding hitbox to list
-        hitboxes.append(ref(self, hitboxes.remove))
+        hitboxes.append(ref(self, hitboxes.remove))  # noqa: F821
 
         # Calling original `__init__` function
-        return origin_hitbox_init(self, *args, **kwargs)
+        return origin_hitbox_init(self, *args, **kwargs)  # noqa: F821
 
     def static_update(self):
         """Blit all hitboxes on a given surface (screen)

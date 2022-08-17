@@ -2,15 +2,13 @@ import os
 import socket
 from threading import Thread
 
-import pytest
 import pygame
+import pytest
 from pygame.event import Event
+from utils import pygame_emulate_events
 
 from spaceway import main
 from spaceway.updater import check_software_updates
-
-from utils import pygame_emulate_events
-
 
 BASE_DIR = os.path.dirname(os.path.abspath(main.__file__))
 

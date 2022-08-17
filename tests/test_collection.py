@@ -1,11 +1,13 @@
-from random import randint, choice
+from random import choice, randint
 
+import pygame
 import pytest
+from utils import most_popular_colors, pygame_loop, pygame_surface, rstring
 
-from spaceway.collection import *
-from spaceway.mixins import BoostMixin, SceneButtonMixin, SettingsButtonMixin
+from spaceway.collection import (BoostsGroup, CenteredButtonsGroup,
+                                 SceneButtonsGroup)
 from spaceway.hitbox import Rect
-from utils import *
+from spaceway.mixins import BoostMixin, SceneButtonMixin, SettingsButtonMixin
 
 
 @pytest.mark.parametrize('boosts_params', [
@@ -140,7 +142,7 @@ def test_centered_buttons_group(pygame_env, buttons_sizes):
             self.img = pygame_surface(size)
             self.rect = Rect(self.img.get_rect())
             self.rect.topleft = (randint(0, 550), randint(0, 250))
-            SceneButtonMixin.__init__(self, base_dir, config, '', '', '', '')
+            SceneButtonMixin.__init__(self, config, '', '', '', '')
 
     class TestSettingsButton(SettingsButtonMixin):
         def __init__(self, size):
@@ -232,7 +234,7 @@ def test_scene_buttons_group(pygame_env, buttons_scenes):
             self.img = pygame_surface((randint(20, 80), randint(20, 80)), color)
             self.rect = Rect(self.img.get_rect())
             self.rect.topleft = (randint(20, 120), randint(20, 120))
-            SceneButtonMixin.__init__(self, base_dir, config, *scenes)
+            SceneButtonMixin.__init__(self, config, *scenes)
 
     class UniqueTestInstance:
         pass

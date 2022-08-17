@@ -32,7 +32,7 @@ def check_events(config, scene_buttons, settings_buttons, nick):
             config.save()
 
 
-def update(bg, config, scene_buttons, settings_buttons, nick):
+def update(bg, scene_buttons, settings_buttons, nick):
     bg.blit()
 
     scene_buttons.draw()

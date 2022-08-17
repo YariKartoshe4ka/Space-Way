@@ -2,9 +2,9 @@ import re
 
 import pygame
 
-from ...mixins import SettingsButtonMixin, SceneButtonMixin
-from ...music import SoundGroup
 from ...hitbox import Ellipse
+from ...mixins import SceneButtonMixin, SettingsButtonMixin
+from ...music import SoundGroup
 
 
 class EffectsButton(SettingsButtonMixin):
@@ -90,7 +90,7 @@ class SettingsBackButton(SceneButtonMixin):
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'settings', 'settings', 'lobby', 'lobby',
+        SceneButtonMixin.__init__(self, config, 'settings', 'settings', 'lobby', 'lobby',
                                   4, self.screen_rect.bottom - self.rect.h - 5, self.rect.top, 4)
 
 

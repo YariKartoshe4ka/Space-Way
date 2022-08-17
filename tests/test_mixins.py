@@ -1,13 +1,14 @@
-from random import randint
 from math import inf
+from random import randint
 
-import pytest
 import pygame
+import pytest
+from utils import most_popular_colors, pygame_loop, pygame_surface, rstring
 
-from spaceway.mixins import *
-from spaceway.hitbox import Ellipse
 from spaceway.collection import SceneButtonsGroup
-from utils import *
+from spaceway.hitbox import Ellipse
+from spaceway.mixins import (BoostMixin, CaptionMixin, SceneButtonMixin,
+                             SettingsButtonMixin)
 
 
 @pytest.mark.parametrize('params,expected', [
@@ -34,7 +35,7 @@ def test_scene_button_mixin_actions(pygame_env, params, expected):
             self.rect = Ellipse(self.img.get_rect())
             self.rect.topleft = (x, y)
             SceneButtonMixin.__init__(
-                self, base_dir, config, '', '', '', '',
+                self, config, '', '', '', '',
                 speed, top, bottom, action
             )
 
@@ -111,7 +112,7 @@ def test_scene_button_mixin_scenes(pygame_env, params, expected):
             self.rect = Ellipse(self.img.get_rect())
             self.rect.topleft = pos
             SceneButtonMixin.__init__(
-                self, base_dir, config, scene, sub_scene, change_scene_to,
+                self, config, scene, sub_scene, change_scene_to,
                 change_sub_scene_to, speed, top, bottom
             )
 
@@ -226,7 +227,11 @@ def test_caption_mixin(pygame_env, params):
         lambda self: setattr(self, 'state', (self.state + 1) % 3)
     ), (1, 2, 0)],
     [(
-        'a', {'a': pygame_surface((41, 71)), 'aa': pygame_surface((41, 71), 1), 'aaa': pygame_surface((41, 71), 2)},
+        'a', {
+            'a': pygame_surface((41, 71)),
+            'aa': pygame_surface((41, 71), 1),
+            'aaa': pygame_surface((41, 71), 2)
+        },
         lambda self: setattr(self, 'state', 'a' if len(self.state) == 3 else self.state + 'a')
     ), ('aa', 'aaa', 'a')],
     [(

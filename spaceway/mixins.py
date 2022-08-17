@@ -1,8 +1,8 @@
 """ File with implementations of various mixins for easier creation of
     objects and following the DRY principle  """
 
+from math import ceil, inf
 from random import randint
-from math import inf, ceil
 
 import pygame
 
@@ -36,7 +36,7 @@ class SceneButtonMixin(pygame.sprite.Sprite):
             initialization - one of *enter*, *leave* or *stop*, defaults to *stop*
     """
 
-    def __init__(self, base_dir, config, scene, sub_scene, change_scene_to,
+    def __init__(self, config, scene, sub_scene, change_scene_to,
                  change_sub_scene_to, speed=0, top=-inf, bottom=inf,
                  action='stop'):
         """Constructor method
@@ -412,20 +412,32 @@ class BoostMixin(pygame.sprite.Sprite):
                 return
 
             # Vertical positioning of boost, taking into account the number in the boost queue
-            self.rect_small.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
+            self.rect_small.top = (
+                self.screen_rect.top
+                + 2 * self.number_in_queue
+                + 18 * (self.number_in_queue - 1)
+            )
 
             # Generating text with the remaining lifetime
             if ceil(self.life) <= 3:
                 # Rendering text using *COLOR_SHORT*, if there is little time left
                 self.img_life = self.font.render(f"{ceil(self.life)}S", True, self.COLOR_SHORT)
                 self.rect_life = self.img_life.get_rect()
-                self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
+                self.rect_life.top = (
+                    self.screen_rect.top
+                    + 2 * self.number_in_queue
+                    + 18 * (self.number_in_queue - 1)
+                )
                 self.rect_life.left = self.screen_rect.left + 24
             else:
                 # Rendering text using *COLOR_LONG*, if there is a lot of time left
                 self.img_life = self.font.render(f"{ceil(self.life)}S", True, self.COLOR_LONG)
                 self.rect_life = self.img_life.get_rect()
-                self.rect_life.top = self.screen_rect.top + 2 * self.number_in_queue + 18 * (self.number_in_queue - 1)
+                self.rect_life.top = (
+                    self.screen_rect.top
+                    + 2 * self.number_in_queue
+                    + 18 * (self.number_in_queue - 1)
+                )
                 self.rect_life.left = self.screen_rect.left + 24
         else:
             # Continue movement of boost if it has not activated yet

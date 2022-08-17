@@ -4,7 +4,7 @@
     - Add background music
     - Refactoring
         - Move music to a separate object (like ConfigManager) for easier music cntrol
-    - Add an inscription with the name and author 
+    - Add an inscription with the name and author
     - Add on-off button in settings to control music playback
     - _Maybe_ add changing the current track by small buttons
 

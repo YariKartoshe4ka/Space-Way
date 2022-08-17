@@ -5,7 +5,7 @@ import pygame
 from .objects import TableBackButton
 
 
-def check_events(config, scene_buttons):
+def check_events(scene_buttons):
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             exit()
@@ -19,7 +19,7 @@ def check_events(config, scene_buttons):
             scene_buttons.perform_point_collides((x, y))
 
 
-def update(base_dir, bg, table, scene_buttons):
+def update(bg, table, scene_buttons):
     bg.blit()
 
     table.blit()

@@ -1,4 +1,4 @@
-from .objects import *
+from .objects import ProgressBar, Text
 
 
 def init(screen, base_dir, config):

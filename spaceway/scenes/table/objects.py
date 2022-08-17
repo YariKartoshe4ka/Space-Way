@@ -1,8 +1,8 @@
 import pygame
 
 from ...boost import render
-from ...mixins import SceneButtonMixin
 from ...hitbox import Ellipse
+from ...mixins import SceneButtonMixin
 
 
 class TableScore:
@@ -103,5 +103,5 @@ class TableBackButton(SceneButtonMixin):
         self.rect.left = self.screen_rect.left + 5
         self.rect.top = self.screen_rect.bottom
 
-        SceneButtonMixin.__init__(self, base_dir, config, 'table', 'table', 'lobby', 'lobby',
+        SceneButtonMixin.__init__(self, config, 'table', 'table', 'lobby', 'lobby',
                                   4, self.screen_rect.bottom - self.rect.h - 5, self.rect.top, 4)

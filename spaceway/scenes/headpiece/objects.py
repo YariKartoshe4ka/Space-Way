@@ -1,7 +1,7 @@
 import pygame
 
-from ...mixins import CaptionMixin
 from ...hitbox import Rect
+from ...mixins import CaptionMixin
 
 
 class Text(CaptionMixin):
@@ -71,7 +71,10 @@ class ProgressBar:
     def update(self):
         self.line.width += self.config['ns'].dt * self.config['mode'][0] / 90
 
-        self.img = self.font.render(f"{min(100, round(self.line.width / self.config['mode'][0] * 100))}%", True, self.color)
+        self.img = self.font.render(
+            f"{min(100, round(self.line.width / self.config['mode'][0] * 100))}%",
+            True, self.color
+        )
         self.rect = self.img.get_rect()
 
         self.rect.centerx = max(

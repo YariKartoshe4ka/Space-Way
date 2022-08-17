@@ -1,4 +1,5 @@
-from .objects import *
+from .objects import (EffectsButton, FullScreenButton, MusicButton, NickInput,
+                      SettingsBackButton, UpdatesButton)
 
 
 def init(screen, base_dir, config):
