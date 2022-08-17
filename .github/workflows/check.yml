@@ -39,3 +39,25 @@ jobs:
         run: tox --skip-pkg-install
       - name: Upload coverage
         uses: codecov/codecov-action@v2
+
+  check-tox:
+    name: Check - Tox ${{ matrix.tox_env }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        tox_env:
+          - fix
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+      - name: Setup Python for tox
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.10"
+      - name: Install tox
+        run: pip install tox
+      - name: Setup test suite
+        run: tox -vv --notest -e ${{ matrix.tox_env }}
+      - name: Run test suite
+        run: tox --skip-pkg-install -e ${{ matrix.tox_env }}
